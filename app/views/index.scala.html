@@ -1,5 +1,10 @@
-@()
+@(gameState: String)
 
-@main("Welcome to Play") {
-  <h1>Welcome to Play!</h1>
+@main("Blackjack") {
+    <pre>@gameState</pre>
+    
+    <form action="/command" method="post">
+        <input type="text" name="command" placeholder="Enter command">
+        <button type="submit">Send</button>
+    </form>
 }
