@@ -6,5 +6,25 @@
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index()
 
+# Game control
+POST    /loadGame                   controllers.HomeController.loadGame()
+POST    /saveGame                   controllers.HomeController.saveGame()
+POST    /initializeGame             controllers.HomeController.initializeGame()
+POST    /startGame                  controllers.HomeController.startGame()
+POST    /exit                       controllers.HomeController.exit()
+
+# Player management
+POST    /addPlayer                  controllers.HomeController.addPlayer()
+POST    /leavePlayer                controllers.HomeController.leavePlayer()
+
+# Game actions
+POST    /hitNextPlayer              controllers.HomeController.hitNextPlayer()
+POST    /standNextPlayer            controllers.HomeController.standNextPlayer()
+POST    /doubleDown                 controllers.HomeController.doubleDown()
+POST    /bet                        controllers.HomeController.bet()
+
+# General command (for text input)
+GET     /command                    controllers.HomeController.command()
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

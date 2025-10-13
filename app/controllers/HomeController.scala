@@ -102,10 +102,10 @@ class HomeController @Inject()(
   }
 
   def command() = Action { implicit request: Request[AnyContent] =>
-    val input = request.body.asFormUrlEncoded.getOrElse(Map.empty)
-    val command_input = input.get("command").flatMap(_.headOption).getOrElse("")
-    val command = command_input.split(" ")(0)
-    val command_arg = command_input.split(" ")(1)
+    val command_input = request.getQueryString("command").getOrElse("")
+    val parts = command_input.split(" ")
+    val command = if (parts.nonEmpty) parts(0) else ""
+    val command_arg = if (parts.length > 1) parts(1) else ""
 
     command match {
       case "add" =>
@@ -118,20 +118,16 @@ class HomeController @Inject()(
         blackjackController.hitNextPlayer()
       case "stand" =>
         blackjackController.standNextPlayer()
-      case "double" =>
-        blackjackController.doubleDown()
       case "bet" =>
         blackjackController.bet(command_arg)
-      case "leave" =>
-        blackjackController.leavePlayer()
-      case "undo" =>
-        blackjackController.loadGame()
       case "exit" =>
         blackjackController.exit()
       case _ =>
     }
     
     val gameState = blackjackController.toString
+    val cleanGameState = gameState.replaceAll("\\u001b\\[\\d+m", "")
+
     Ok(views.html.index(gameState))
   }
 }
