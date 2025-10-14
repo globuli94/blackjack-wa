@@ -1,4 +1,4 @@
-@(gameState: String)
+@(gameState: String, gameStateJSON: String)
 
 @main("Blackjack") {
     <pre>@gameState</pre>
@@ -7,4 +7,6 @@
         <input type="text" name="command" placeholder="Enter command">
         <button type="submit">Send</button>
     </form>
+
+    <pre>@gameStateJSON</pre>
 }
