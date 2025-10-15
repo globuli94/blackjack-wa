@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<game>
+    <current_idx>0</current_idx>
+    <players>
+        <player>
+            <name>Sofia</name>
+            <hand>
+                <cards> </cards>
+            </hand>
+            <money>1000</money>
+            <bet>0</bet>
+            <state>Idle</state>
+        </player>
+        <player>
+            <name>Joni</name>
+            <hand>
+                <cards> </cards>
+            </hand>
+            <money>1000</money>
+            <bet>0</bet>
+            <state>Idle</state>
+        </player>
+    </players>
+    <deck>
+        <cards> </cards>
+    </deck>
+    <dealer>
+        <dealer>
+            <hand>
+                <cards> </cards>
+            </hand>
+            <state>Idle</state>
+        </dealer>
+    </dealer>
+    <state>Initialized</state>
+</game>
