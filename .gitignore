@@ -23,6 +23,8 @@ target
 .cache-tests
 .cache
 .sbt
+.bloop/
+
 lib_managed/
 src_managed/
 project/boot/
