@@ -28,5 +28,5 @@ lazy val playserver = (project in file("."))
     libraryDependencies ++= Seq(
       guice,
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.2" % Test
-    )
+    ),
   )
