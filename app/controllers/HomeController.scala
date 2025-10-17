@@ -31,7 +31,6 @@ class HomeController @Inject()(
   tuiThread.setDaemon(true)
   tuiThread.start()
 
-
   def serialize(): Action[AnyContent] = Action {implicit request: Request[AnyContent] =>
     Ok(views.html.index.apply(blackjackController.toString, blackjackController.serialize))
   }
@@ -55,6 +54,8 @@ class HomeController @Inject()(
         blackjackController.standNextPlayer()
       case "bet" =>
         blackjackController.bet(command_arg)
+      case "leave" =>
+        blackjackController.leavePlayer()
       case "exit" =>
         blackjackController.exit()
       case "serialize" =>
