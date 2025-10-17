@@ -4,7 +4,7 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET     /                           controllers.HomeController.command()
+GET     /                           controllers.HomeController.index()
 
 # Game control
 #POST    /loadGame                   controllers.HomeController.loadGame()

@@ -1,5 +1,20 @@
-@(gameController: ControllerInterface)
+@(gameController: controller.controllerComponent.ControllerInterface)
 
 @main("Blackjack") {
+    <div style="text-align: center">
+        <img src="@routes.Assets.versioned("images/logo/blackjack_logo.png")" alt="Blackjack">
+        <div style ="display:flex; flex-direction: column; justify-content: center; gap: 10px;">
+            <form action = "/command" method="get">
+                <button style="width: 150px; height: 40px; padding:10px 20px; background-color:#28a745; color:white; border:none; border-radius:5px; cursor:pointer;">
+                    Add Player
+                </button>
+            </form>
+            <form>
+                <button style="width: 150px; height: 40px; padding:10px 20px; background-color:#28a745; color:white; border:none; border-radius:5px; cursor:pointer;">
+                    Reset
+                </button>
+            </form>
+        </div>
+    </div>
     <pre>@gameController.toString</pre>
 }
