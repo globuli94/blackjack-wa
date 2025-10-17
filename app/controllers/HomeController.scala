@@ -31,6 +31,10 @@ class HomeController @Inject()(
   tuiThread.setDaemon(true)
   tuiThread.start()
 
+  def index(): Action[AnyContent] = Action {implicit request: Request[AnyContent] =>
+    Ok(views.html.blackjack.apply(blackjackController))
+  }
+
   def serialize(): Action[AnyContent] = Action {implicit request: Request[AnyContent] =>
     Ok(views.html.index.apply(blackjackController.toString, blackjackController.serialize))
   }
