@@ -1,6 +1,7 @@
 package controllers
 
 import controller.controllerComponent.ControllerInterface
+import io.jsonwebtoken.impl.AndroidBase64Codec
 
 import javax.inject.*
 import play.api.*
@@ -37,6 +38,25 @@ class HomeController @Inject()(
 
   def serialize(): Action[AnyContent] = Action {implicit request: Request[AnyContent] =>
     Ok(views.html.index.apply(blackjackController.toString, blackjackController.serialize))
+  }
+
+  def initializeGame(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    blackjackController.initializeGame()
+    Ok(views.html.blackjack.apply(blackjackController))
+  }
+
+  def addPlayerForm(): Action[AnyContent] = Action {implicit request: Request[AnyContent] =>
+    Ok(views.html.addPlayerForm.apply())
+  }
+
+  def addPlayer(): Action[AnyContent] = Action {implicit request: Request[AnyContent] =>
+    val player_name_input = request.body
+      .asFormUrlEncoded
+      .flatMap(_.get("PlayerForm").flatMap(_.headOption))
+      .getOrElse("")
+
+    blackjackController.addPlayer(player_name_input)
+    Ok(views.html.blackjack.apply(blackjackController))
   }
 
   def command(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
