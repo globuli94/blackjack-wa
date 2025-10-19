@@ -1,0 +1,37 @@
+@(implicit request: RequestHeader)
+@import helper._
+
+@main("Blackjack") {
+    <div style="text-align: center">
+        <div style ="display:flex; flex-direction: column; justify-content: center; gap: 10px;">
+            <form action = "/addPlayer" method="post">
+                @CSRF.formField
+                <label>
+                    <input
+                        type ="text"
+                        name="PlayerForm"
+                        placeholder="Enter player name"
+                        style="
+                            width: 150px;
+                            height: 40px;
+                            box-sizing: border-box;
+                            padding: 10px;
+                            border-radius: 5px;
+                            border: 1px solid #ccc;"
+                    >
+                </label>
+                <button style="
+                    width: 150px;
+                    height: 40px;
+                    padding:10px 20px;
+                    background-color:#28a745;
+                    color:white;
+                    border:none;
+                    border-radius:5px;
+                    cursor:pointer;">
+                    Add Player
+                </button>
+            </form>
+        </div>
+    </div>
+}
