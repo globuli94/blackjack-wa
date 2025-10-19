@@ -1,0 +1,51 @@
+@(player: model.playerComponent.PlayerInterface)
+
+<div
+    class="player"
+    style="
+        width: 200px;
+        padding: 15px;
+        margin: 10px;
+        border: 2px solid #28a745;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        background-color: #f8f9fa;
+        text-align: center;
+        font-family: Arial, sans-serif;
+        align-items: center;
+        ">
+
+    <p style="margin: 0; font-weight: bold">@player.getName</p>
+
+    <div style="
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+        justify-content: center;
+        align-items: center;
+        margin-top: 8px;
+    ">
+        <span>@player.getMoney</span>
+        <img
+            style="height: 32px; width: 32px"
+            src="@routes.Assets.versioned("images/icons/dollars.png")"
+            alt="Dollars"
+        >
+    </div>
+
+    <div style="
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+        justify-content: center;
+        align-items: center;
+        margin-top: 8px;
+    ">
+        <span>@player.getBet</span>
+        <img
+            style="height: 26px; width: 26px"
+            src="@routes.Assets.versioned("images/icons/casino-chip.png")"
+            alt="Dollars"
+        >
+    </div>
+</div>

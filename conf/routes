@@ -9,12 +9,13 @@ GET     /                           controllers.HomeController.index()
 # Game control
 #POST    /loadGame                   controllers.HomeController.loadGame()
 #POST    /saveGame                   controllers.HomeController.saveGame()
-#POST    /initializeGame             controllers.HomeController.initializeGame()
+GET    /initializeGame             controllers.HomeController.initializeGame()
 #POST    /startGame                  controllers.HomeController.startGame()
 #POST    /exit                       controllers.HomeController.exit()
 
 # Player management
-#POST    /addPlayer                  controllers.HomeController.addPlayer()
+POST    /addPlayer                  controllers.HomeController.addPlayer()
+GET     /addPlayerForm              controllers.HomeController.addPlayerForm()
 #POST    /leavePlayer                controllers.HomeController.leavePlayer()
 
 # Game actions
