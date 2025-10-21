@@ -88,4 +88,8 @@ class HomeController @Inject()(
 
     Ok(views.html.index(blackjackController.toString, blackjackController.serialize))
   }
+
+  def toHistory(): Action[AnyContent] = Action {implicit request: Request[AnyContent] =>
+    Ok(views.html.history())
+  }
 }
