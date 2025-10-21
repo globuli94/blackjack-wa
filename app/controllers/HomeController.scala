@@ -92,4 +92,7 @@ class HomeController @Inject()(
   def toHistory(): Action[AnyContent] = Action {implicit request: Request[AnyContent] =>
     Ok(views.html.history())
   }
+  def toRule(): Action[AnyContent] = Action {implicit request: Request[AnyContent] =>
+    Ok(views.html.rule())
+  }
 }
