@@ -32,3 +32,5 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 GET     /toHistory                    controllers.HomeController.toHistory()
 GET     /toRule                       controllers.HomeController.toRule()
+GET     /toIndex                      controllers.HomeController.toIndex()
+GET     /toGame                       controllers.HomeController.toGame()

@@ -16,8 +16,46 @@
 
     </head>
     <body>
-        <div style="text-align: center">
-            <img src="@routes.Assets.versioned("images/logo/blackjack_logo.png")" alt="Blackjack">
+        <div style="display: flex; flex-direction: row; gap: 10px; text-align: left; justify-content: left; align-items: center">
+            <a href="/toGame">
+                <img src="@routes.Assets.versioned("images/logo/blackjack_logo.png")" alt="Blackjack" style="height: 100px">
+            </a>
+            <form action ="/toHistory" method="get">
+                <button style="
+                    width: 150px;
+                    height: 40px;
+                    padding:10px 20px;
+                    background-color:#28a745;
+                    color:white; border:none;
+                    border-radius:5px;
+                    cursor:pointer;">
+                    History
+                </button>
+            </form>
+            <form action ="/toRule" method="get">
+                <button style="
+                    width: 150px;
+                    height: 40px;
+                    padding:10px 20px;
+                    background-color:#28a745;
+                    color:white; border:none;
+                    border-radius:5px;
+                    cursor:pointer;">
+                    Rules
+                </button>
+            </form>
+            <form action ="/toIndex" method="get">
+                <button style="
+                    width: 150px;
+                    height: 40px;
+                    padding:10px 20px;
+                    background-color:#28a745;
+                    color:white; border:none;
+                    border-radius:5px;
+                    cursor:pointer;">
+                    TUI
+                </button>
+            </form>
         </div>
         @* And here's where we render the `Html` object containing
          * the page content. *@

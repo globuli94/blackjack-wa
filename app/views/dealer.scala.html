@@ -5,7 +5,7 @@
     class="dealer"
     style="
         width: 600px;
-        height: 200px;
+        height: 180px;
         padding: 15px;
         margin: 10px;
         border: 2px solid #28a745;
@@ -15,7 +15,7 @@
         font-family: Arial, sans-serif;
         align-items: center;
     ">
-    <p>Dealer</p>
+    <p style="color: #cccccc">Dealer</p>
 
     <div style="display: flex; flex-direction: row; align-items: center; gap: 10px; justify-content: center">
 
@@ -29,7 +29,7 @@
     </div>
 
     @if(dealer.getHand.getCards.length != 0) {
-        <p>Value: @dealer.getHand.getHandValue</p>
+        <p style="color: #cccccc">Value: @dealer.getHand.getHandValue</p>
     }
 
 </div>
