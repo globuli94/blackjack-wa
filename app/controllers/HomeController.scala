@@ -49,6 +49,20 @@ class HomeController @Inject()(
     Ok(views.html.blackjack.apply(blackjackController))
   }
 
+  def addPlayerForm(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    Ok(views.html.addPlayerForm.apply())
+  }
+
+  def addPlayer(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    val player_name_input = request.body
+      .asFormUrlEncoded
+      .flatMap(_.get("PlayerForm").flatMap(_.headOption))
+      .getOrElse("")
+
+    blackjackController.addPlayer(player_name_input)
+    Ok(views.html.blackjack.apply(blackjackController))
+  }
+
   def bet(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     val player_bet_input = request.body
       .asFormUrlEncoded
@@ -59,17 +73,23 @@ class HomeController @Inject()(
     Ok(views.html.blackjack.apply(blackjackController))
   }
 
-  def addPlayerForm(): Action[AnyContent] = Action {implicit request: Request[AnyContent] =>
-    Ok(views.html.addPlayerForm.apply())
+  def hitNextPlayer(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    blackjackController.hitNextPlayer()
+    Ok(views.html.blackjack.apply(blackjackController))
   }
 
-  def addPlayer(): Action[AnyContent] = Action {implicit request: Request[AnyContent] =>
-    val player_name_input = request.body
-      .asFormUrlEncoded
-      .flatMap(_.get("PlayerForm").flatMap(_.headOption))
-      .getOrElse("")
+  def standNextPlayer(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    blackjackController.standNextPlayer()
+    Ok(views.html.blackjack.apply(blackjackController))
+  }
 
-    blackjackController.addPlayer(player_name_input)
+  def doubleDown(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    blackjackController.doubleDown()
+    Ok(views.html.blackjack.apply(blackjackController))
+  }
+
+  def leavePlayer(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    blackjackController.leavePlayer()
     Ok(views.html.blackjack.apply(blackjackController))
   }
 

@@ -16,12 +16,12 @@ GET    /startGame                  controllers.HomeController.startGame()
 # Player management
 POST    /addPlayer                  controllers.HomeController.addPlayer()
 GET     /addPlayerForm              controllers.HomeController.addPlayerForm()
-#POST    /leavePlayer                controllers.HomeController.leavePlayer()
+GET     /leavePlayer                controllers.HomeController.leavePlayer()
 
 # Game actions
-#POST    /hitNextPlayer              controllers.HomeController.hitNextPlayer()
-#POST    /standNextPlayer            controllers.HomeController.standNextPlayer()
-#POST    /doubleDown                 controllers.HomeController.doubleDown()
+GET    /hitNextPlayer              controllers.HomeController.hitNextPlayer()
+GET    /standNextPlayer            controllers.HomeController.standNextPlayer()
+GET    /doubleDown                 controllers.HomeController.doubleDown()
 POST    /bet                        controllers.HomeController.bet()
 
 # General command (for text input)

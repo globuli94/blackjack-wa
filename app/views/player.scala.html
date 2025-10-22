@@ -1,4 +1,8 @@
-@(player: model.playerComponent.PlayerInterface)
+@(
+        player: model.playerComponent.PlayerInterface,
+        currentPlayer: Boolean, gameController:
+        controller.controllerComponent.ControllerInterface
+)
 
 <div
     class="player"
@@ -6,9 +10,9 @@
         width: 200px;
         padding: 15px;
         margin: 10px;
-        border: 2px solid #28a745;
+        border: 2px solid @if(currentPlayer) {'#28a745'} else {'#6c757d'};
         border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 6px @if(currentPlayer) {rgba(0,0,0,0.1)} else {rgba(0,0,0,0} ;
         background-color: transparent;
         text-align: center;
         font-family: Arial, sans-serif;
@@ -54,4 +58,5 @@
             alt="Dollars"
         >
     </div>
+
 </div>

@@ -1,4 +1,5 @@
 @(dealer: model.dealerComponent.DealerInterface)
+@import model.cardComponent.Card
 
 <div
     class="dealer"
@@ -14,6 +15,21 @@
         font-family: Arial, sans-serif;
         align-items: center;
     ">
-    <img src="@routes.Assets.versioned("images/icons/business.png")">
-    <p></p>
+    <p>Dealer</p>
+
+    <div style="display: flex; flex-direction: row; align-items: center; gap: 10px; justify-content: center">
+
+        @for(card <- dealer.getHand.getCards) {
+            @views.html.card(card)
+        }
+
+        @if(dealer.getHand.getCards.length == 1) {
+            @views.html.card(Card("blank", "blank"))
+        }
+    </div>
+
+    @if(dealer.getHand.getCards.length != 0) {
+        <p>Value: @dealer.getHand.getHandValue</p>
+    }
+
 </div>

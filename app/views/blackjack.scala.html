@@ -1,4 +1,5 @@
-@(gameController: controller.controllerComponent.ControllerInterface)
+@(gameController: controller.controllerComponent.ControllerInterface)(implicit request: RequestHeader)
+@import helper._
 
 @main("Blackjack") {
     <div style="text-align: center">
@@ -8,41 +9,53 @@
                 @views.html.dealer(gameController.getGame.getDealer)
             </div>
 
-            <div style="display: flex; flex-direction: row; justify-content: center; gap 10px">
-                @for(player <- gameController.getGame.getPlayers) {
-                    @views.html.player(player)
+            <div style="display: flex; flex-direction: row; justify-content: center; gap: 10px;">
+                @for(playerIndex <- gameController.getGame.getPlayers.zipWithIndex) {
+                    @views.html.player(playerIndex._1, gameController.getGame.getIndex == playerIndex._2, gameController)
                 }
             </div>
 
             <div style="display: flex; flex-direction: row; justify-content: center; gap: 10px">
+
+                <!-- GAME CONTROLS -->
                 <form action = "/addPlayerForm" method="get">
                     <button style="
                         width: 150px;
                         height: 40px;
                         padding:10px 20px;
-                        background-color: #cccccc;
-                        color: #28a745;
-                        border:none;
+                        background-color:#28a745;
+                        color:white; border:none;
                         border-radius:5px;
                         cursor:pointer;">
                         Add Player
                     </button>
                 </form>
-
                 <form action ="/startGame" method="get">
                     <button style="
                         width: 150px;
                         height: 40px;
                         padding:10px 20px;
-                        background-color: #cccccc;
-                        color: #28a745;
-                        border:none;
+                        background-color:#28a745;
+                        color:white; border:none;
                         border-radius:5px;
                         cursor:pointer;">
                         Start
                     </button>
                 </form>
+                <form action ="/initializeGame" method="get">
+                    <button style="
+                        width: 150px;
+                        height: 40px;
+                        padding:10px 20px;
+                        background-color:#28a745;
+                        color:white; border:none;
+                        border-radius:5px;
+                        cursor:pointer;">
+                        Reset
+                    </button>
+                </form>
 
+                <!-- PLAYER CONTROLS -->
                 <div style ="display:flex; flex-direction: column; justify-content: center; gap: 10px;">
                     <form action = "/bet" method="post">
                         @CSRF.formField
@@ -65,29 +78,63 @@
                             width: 150px;
                             height: 40px;
                             padding:10px 20px;
-                            background-color: #cccccc;
-                            color: #28a745;
-                            border:none;
+                            background-color:#28a745;
+                            color:white; border:none;
                             border-radius:5px;
                             cursor:pointer;">
                             Bet
                         </button>
                     </form>
                 </div>
-
-                <form action ="/initializeGame" method="get">
+                <form action ="/hitNextPlayer" method="get">
                     <button style="
                         width: 150px;
                         height: 40px;
                         padding:10px 20px;
-                        background-color: #cccccc;
-                        color: #28a745;
-                        border:none;
+                        background-color:#28a745;
+                        color:white; border:none;
                         border-radius:5px;
                         cursor:pointer;">
-                        Reset
+                        Hit
                     </button>
                 </form>
+                <form action ="/standNextPlayer" method="get">
+                    <button style="
+                        width: 150px;
+                        height: 40px;
+                        padding:10px 20px;
+                        background-color:#28a745;
+                        color:white; border:none;
+                        border-radius:5px;
+                        cursor:pointer;">
+                        Stand
+                    </button>
+                </form>
+                <form action ="/doubleDown" method="get">
+                    <button style="
+                        width: 150px;
+                        height: 40px;
+                        padding:10px 20px;
+                        background-color:#28a745;
+                        color:white; border:none;
+                        border-radius:5px;
+                        cursor:pointer;">
+                        Double Down
+                    </button>
+                </form>
+                <form action ="/leavePlayer" method="get">
+                    <button style="
+                        width: 150px;
+                        height: 40px;
+                        padding:10px 20px;
+                        background-color:#28a745;
+                        color:white; border:none;
+                        border-radius:5px;
+                        cursor:pointer;">
+                        Leave
+                    </button>
+                </form>
+
             </div>
             <form action ="/toHistory" method="get">
                 <button style="
