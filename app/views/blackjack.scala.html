@@ -13,31 +13,82 @@
                     @views.html.player(player)
                 }
             </div>
-            <form action = "/addPlayerForm" method="get">
-                <button style="
-                    width: 150px;
-                    height: 40px;
-                    padding:10px 20px;
-                    background-color:#28a745;
-                    color:white;
-                    border:none;
-                    border-radius:5px;
-                    cursor:pointer;">
-                    Add Player
-                </button>
-            </form>
-            <form action ="/initializeGame" method="get">
-                <button style="
-                    width: 150px;
-                    height: 40px;
-                    padding:10px 20px;
-                    background-color:#28a745;
-                    color:white; border:none;
-                    border-radius:5px;
-                    cursor:pointer;">
-                    Reset
-                </button>
-            </form>
+
+            <div style="display: flex; flex-direction: row; justify-content: center; gap: 10px">
+                <form action = "/addPlayerForm" method="get">
+                    <button style="
+                        width: 150px;
+                        height: 40px;
+                        padding:10px 20px;
+                        background-color: #cccccc;
+                        color: #28a745;
+                        border:none;
+                        border-radius:5px;
+                        cursor:pointer;">
+                        Add Player
+                    </button>
+                </form>
+
+                <form action ="/startGame" method="get">
+                    <button style="
+                        width: 150px;
+                        height: 40px;
+                        padding:10px 20px;
+                        background-color: #cccccc;
+                        color: #28a745;
+                        border:none;
+                        border-radius:5px;
+                        cursor:pointer;">
+                        Start
+                    </button>
+                </form>
+
+                <div style ="display:flex; flex-direction: column; justify-content: center; gap: 10px;">
+                    <form action = "/bet" method="post">
+                        @CSRF.formField
+                        <label>
+                            <input
+                            type ="text"
+                            name="BetForm"
+                            placeholder="Enter player bet"
+                            style="
+                                width: 150px;
+                                height: 40px;
+                                background-color:#cccccc;
+                                box-sizing: border-box;
+                                padding: 10px;
+                                border-radius: 5px;
+                                border: 1px solid #ccc;"
+                            >
+                        </label>
+                        <button style="
+                            width: 150px;
+                            height: 40px;
+                            padding:10px 20px;
+                            background-color: #cccccc;
+                            color: #28a745;
+                            border:none;
+                            border-radius:5px;
+                            cursor:pointer;">
+                            Bet
+                        </button>
+                    </form>
+                </div>
+
+                <form action ="/initializeGame" method="get">
+                    <button style="
+                        width: 150px;
+                        height: 40px;
+                        padding:10px 20px;
+                        background-color: #cccccc;
+                        color: #28a745;
+                        border:none;
+                        border-radius:5px;
+                        cursor:pointer;">
+                        Reset
+                    </button>
+                </form>
+            </div>
             <form action ="/toHistory" method="get">
                 <button style="
                     width: 150px;

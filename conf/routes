@@ -10,7 +10,7 @@ GET     /                           controllers.HomeController.index()
 #POST    /loadGame                   controllers.HomeController.loadGame()
 #POST    /saveGame                   controllers.HomeController.saveGame()
 GET    /initializeGame             controllers.HomeController.initializeGame()
-#POST    /startGame                  controllers.HomeController.startGame()
+GET    /startGame                  controllers.HomeController.startGame()
 #POST    /exit                       controllers.HomeController.exit()
 
 # Player management
@@ -22,7 +22,7 @@ GET     /addPlayerForm              controllers.HomeController.addPlayerForm()
 #POST    /hitNextPlayer              controllers.HomeController.hitNextPlayer()
 #POST    /standNextPlayer            controllers.HomeController.standNextPlayer()
 #POST    /doubleDown                 controllers.HomeController.doubleDown()
-#POST    /bet                        controllers.HomeController.bet()
+POST    /bet                        controllers.HomeController.bet()
 
 # General command (for text input)
 GET     /command                    controllers.HomeController.command()

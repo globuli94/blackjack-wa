@@ -1,7 +1,6 @@
 package controllers
 
 import controller.controllerComponent.ControllerInterface
-import io.jsonwebtoken.impl.AndroidBase64Codec
 
 import javax.inject.*
 import play.api.*
@@ -42,6 +41,21 @@ class HomeController @Inject()(
 
   def initializeGame(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     blackjackController.initializeGame()
+    Ok(views.html.blackjack.apply(blackjackController))
+  }
+
+  def startGame(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    blackjackController.startGame()
+    Ok(views.html.blackjack.apply(blackjackController))
+  }
+
+  def bet(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    val player_bet_input = request.body
+      .asFormUrlEncoded
+      .flatMap(_.get("BetForm").flatMap(_.headOption))
+      .getOrElse("")
+
+    blackjackController.bet(player_bet_input)
     Ok(views.html.blackjack.apply(blackjackController))
   }
 

@@ -9,11 +9,17 @@
         border: 2px solid #28a745;
         border-radius: 10px;
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        background-color: #f8f9fa;
+        background-color: transparent;
         text-align: center;
         font-family: Arial, sans-serif;
         align-items: center;
         ">
+
+    <div style="display: flex; flex-direction: row; align-items: center; gap: 10px; justify-content: center">
+        @for(card <- player.getHand.getCards) {
+            @views.html.card(card)
+        }
+    </div>
 
     <p style="margin: 0; font-weight: bold">@player.getName</p>
 
