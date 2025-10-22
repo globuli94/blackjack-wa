@@ -1,6 +1,7 @@
 @(gameState: String, gameStateJSON: String)
 
 @main("Blackjack") {
+    <div style="color: #cccccc; display: flex; justify-content: center; flex-direction: column; align-items: center">
     <pre>@gameState</pre>
     
     <form action="/command" method="get">
@@ -9,4 +10,5 @@
     </form>
 
     <pre>@gameStateJSON</pre>
+    </div>
 }

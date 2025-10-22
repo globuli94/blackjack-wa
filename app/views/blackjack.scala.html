@@ -1,3 +1,5 @@
+@import model.gameComponent.GameState.Betting
+@import model.gameComponent.GameState.Initialized
 @(gameController: controller.controllerComponent.ControllerInterface)(implicit request: RequestHeader)
 @import helper._
 
@@ -5,43 +7,40 @@
     <div style="text-align: center">
         <div style ="display:flex; flex-direction: column; justify-content: center; gap: 10px;">
 
-            <div style="display: flex; justify-content: center; flex-direction: row">
-                @views.html.dealer(gameController.getGame.getDealer)
-            </div>
-
-            <div style="display: flex; flex-direction: row; justify-content: center; gap: 10px;">
-                @for(playerIndex <- gameController.getGame.getPlayers.zipWithIndex) {
-                    @views.html.player(playerIndex._1, gameController.getGame.getIndex == playerIndex._2, gameController)
-                }
-            </div>
-
             <div style="display: flex; flex-direction: row; justify-content: center; gap: 10px">
 
                 <!-- GAME CONTROLS -->
-                <form action = "/addPlayerForm" method="get">
-                    <button style="
-                        width: 150px;
-                        height: 40px;
-                        padding:10px 20px;
-                        background-color:#28a745;
-                        color:white; border:none;
-                        border-radius:5px;
-                        cursor:pointer;">
-                        Add Player
-                    </button>
-                </form>
-                <form action ="/startGame" method="get">
-                    <button style="
-                        width: 150px;
-                        height: 40px;
-                        padding:10px 20px;
-                        background-color:#28a745;
-                        color:white; border:none;
-                        border-radius:5px;
-                        cursor:pointer;">
-                        Start
-                    </button>
-                </form>
+
+                @if(gameController.getGame.getState == Initialized && gameController.getGame.getPlayers.nonEmpty) {
+                    <form action="/startGame" method="get">
+                        <button style="
+                            width: 150px;
+                            height: 40px;
+                            padding:10px 20px;
+                            background-color:#28a745;
+                            color:white; border:none;
+                            border-radius:5px;
+                            cursor:pointer;">
+                            Start
+                        </button>
+                    </form>
+                }
+
+                @if(gameController.getGame.getState == Initialized) {
+                    <form action = "/addPlayerForm" method="get">
+                        <button style="
+                            width: 150px;
+                            height: 40px;
+                            padding:10px 20px;
+                            background-color:#28a745;
+                            color:white; border:none;
+                            border-radius:5px;
+                            cursor:pointer;">
+                            Add Player
+                        </button>
+                    </form>
+                }
+
                 <form action ="/initializeGame" method="get">
                     <button style="
                         width: 150px;
@@ -54,113 +53,17 @@
                         Reset
                     </button>
                 </form>
-
-                <!-- PLAYER CONTROLS -->
-                <div style ="display:flex; flex-direction: column; justify-content: center; gap: 10px;">
-                    <form action = "/bet" method="post">
-                        @CSRF.formField
-                        <label>
-                            <input
-                            type ="text"
-                            name="BetForm"
-                            placeholder="Enter player bet"
-                            style="
-                                width: 150px;
-                                height: 40px;
-                                background-color:#cccccc;
-                                box-sizing: border-box;
-                                padding: 10px;
-                                border-radius: 5px;
-                                border: 1px solid #ccc;"
-                            >
-                        </label>
-                        <button style="
-                            width: 150px;
-                            height: 40px;
-                            padding:10px 20px;
-                            background-color:#28a745;
-                            color:white; border:none;
-                            border-radius:5px;
-                            cursor:pointer;">
-                            Bet
-                        </button>
-                    </form>
-                </div>
-                <form action ="/hitNextPlayer" method="get">
-                    <button style="
-                        width: 150px;
-                        height: 40px;
-                        padding:10px 20px;
-                        background-color:#28a745;
-                        color:white; border:none;
-                        border-radius:5px;
-                        cursor:pointer;">
-                        Hit
-                    </button>
-                </form>
-                <form action ="/standNextPlayer" method="get">
-                    <button style="
-                        width: 150px;
-                        height: 40px;
-                        padding:10px 20px;
-                        background-color:#28a745;
-                        color:white; border:none;
-                        border-radius:5px;
-                        cursor:pointer;">
-                        Stand
-                    </button>
-                </form>
-                <form action ="/doubleDown" method="get">
-                    <button style="
-                        width: 150px;
-                        height: 40px;
-                        padding:10px 20px;
-                        background-color:#28a745;
-                        color:white; border:none;
-                        border-radius:5px;
-                        cursor:pointer;">
-                        Double Down
-                    </button>
-                </form>
-                <form action ="/leavePlayer" method="get">
-                    <button style="
-                        width: 150px;
-                        height: 40px;
-                        padding:10px 20px;
-                        background-color:#28a745;
-                        color:white; border:none;
-                        border-radius:5px;
-                        cursor:pointer;">
-                        Leave
-                    </button>
-                </form>
-
             </div>
-            <form action ="/toHistory" method="get">
-                <button style="
-                    width: 150px;
-                    height: 40px;
-                    padding:10px 20px;
-                    background-color:#28a745;
-                    color:white; border:none;
-                    border-radius:5px;
-                    cursor:pointer;">
-                    To History
-                </button>
-            </form>
-            <form action ="/toRule" method="get">
-                <button style="
-                    width: 150px;
-                    height: 40px;
-                    padding:10px 20px;
-                    background-color:#28a745;
-                    color:white; border:none;
-                    border-radius:5px;
-                    cursor:pointer;">
-                    To Rule
-                </button>
-            </form>
+
+            <div style="display: flex; justify-content: center; flex-direction: row">
+                @views.html.dealer(gameController.getGame.getDealer)
+            </div>
+
+            <div style="display: flex; flex-direction: row; justify-content: center; gap: 10px;">
+                @for(playerIndex <- gameController.getGame.getPlayers.zipWithIndex) {
+                    @views.html.player(playerIndex._1, gameController.getGame.getIndex == playerIndex._2, gameController)
+                }
+            </div>
         </div>
     </div>
-    <pre>@gameController.toString</pre>
 }
