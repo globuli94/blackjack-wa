@@ -1,51 +1,175 @@
-@(player: model.playerComponent.PlayerInterface)
+@(
+        player: model.playerComponent.PlayerInterface,
+        currentPlayer: Boolean,
+        gameController: controller.controllerComponent.ControllerInterface
+)(implicit request: RequestHeader)
+@import helper._
+@import model.gameComponent.GameState.{Betting, Started, Evaluated, Initialized}
+@import model.playerComponent.PlayerState.{Busted, Blackjack, WON, LOST, DoubledDown, Standing}
 
 <div
     class="player"
     style="
-        width: 200px;
-        padding: 15px;
-        margin: 10px;
-        border: 2px solid #28a745;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        background-color: #f8f9fa;
+        display: flex;
+        flex-direction: column;
+        width: 350px;
+        height: 275px;
+        gap: 5px;
         text-align: center;
         font-family: Arial, sans-serif;
         align-items: center;
+        justify-content: center;
+        border: 2px solid @if(currentPlayer && (gameController.getGame.getState == Betting || gameController.getGame.getState == Started)){'#28a745'} else {'#6c757d'};
+        border-radius: 10px;
+        box-shadow: 0 4px 6px @if(currentPlayer && (gameController.getGame.getState == Betting || gameController.getGame.getState == Started)) {rgba(0,0,0,0.1)} else {rgba(0,0,0,0};
+        background-color: transparent;
         ">
 
-    <p style="margin: 0; font-weight: bold">@player.getName</p>
+    <p style="margin: 0; font-weight: bold; color: #cccccc">@player.getName</p>
 
-    <div style="
-        display: flex;
-        flex-direction: row;
-        gap: 20px;
-        justify-content: center;
-        align-items: center;
-        margin-top: 8px;
-    ">
-        <span>@player.getMoney</span>
-        <img
-            style="height: 32px; width: 32px"
-            src="@routes.Assets.versioned("images/icons/dollars.png")"
-            alt="Dollars"
-        >
+    <div style="display: flex; flex-direction: row; align-items: center; gap: 10px; justify-content: center">
+        @for(card <- player.getHand.getCards) {
+            @views.html.card(card)
+        }
+    </div>
+
+    <div style="display: flex; flex-direction: row; gap: 5px">
+        @if(player.getHand.getCards.nonEmpty){
+            <span style="color: #cccccc">@player.getHand.getHandValue</span>
+            @{player.getState match {
+                case Blackjack => <span style="color: #cccccc">- Blackjack</span>
+                case Standing => <span style="color: #cccccc">- Standing</span>
+                case Busted => <span style="color: #cccccc">- Busted</span>
+                case WON => <span style="color: #cccccc">- you won</span>
+                case LOST => <span style="color: #cccccc">- you lost</span>
+                case DoubledDown => <span style="color: #cccccc">Doubled Down</span>
+                case _ =>
+            }}
+        }
     </div>
 
     <div style="
         display: flex;
         flex-direction: row;
+        height: 50px;
         gap: 20px;
         justify-content: center;
         align-items: center;
         margin-top: 8px;
     ">
-        <span>@player.getBet</span>
+        <span style="color: #cccccc">@player.getMoney</span>
         <img
-            style="height: 26px; width: 26px"
-            src="@routes.Assets.versioned("images/icons/casino-chip.png")"
+            style="height: 32px; width: 32px"
+            src="@routes.Assets.versioned("images/icons/dollars.png")"
             alt="Dollars"
         >
+        <span style="color: #cccccc">@player.getBet</span>
+        <img
+        style="height: 26px; width: 26px"
+        src="@routes.Assets.versioned("images/icons/casino-chip.png")"
+        alt="Dollars"
+        >
+    </div>
+
+    <div style="display: flex; flex-direction: row; justify-content: center; gap: 10px">
+            <!--BETTING-->
+        @defining(gameController.getGame.getState == Betting && currentPlayer) { showBetForm =>
+            @if(showBetForm) {
+                <div style="display:flex; flex-direction: row; justify-content: center; gap: 10px;">
+                    <form action="/bet" method="post">
+                        @CSRF.formField
+                        <label>
+                            <input
+                            type="text"
+                            name="BetForm"
+                            placeholder="Enter bet"
+                            style="
+                                width: 100px;
+                                height: 40px;
+                                background-color:#cccccc;
+                                box-sizing: border-box;
+                                padding: 10px;
+                                border-radius: 5px;
+                                border: 1px solid #ccc;"
+                            >
+                        </label>
+                        <button style="
+                            text-align: center;
+                            width: 100px;
+                            height: 40px;
+                            padding:10px 20px;
+                            background-color:#28a745;
+                            color:white;
+                            border:none;
+                            border-radius:5px;
+                            cursor:pointer;">
+                            Bet
+                        </button>
+                    </form>
+                </div>
+            }
+        }
+
+        @defining(gameController.getGame.getState == Started && currentPlayer) { started =>
+            @if(started) {
+                <form action ="/standNextPlayer" method="get">
+                    <button style="
+                        width: 75px;
+                        height: 40px;
+                        padding:10px 20px;
+                        background-color:#28a745;
+                        color:white; border:none;
+                        border-radius:5px;
+                        cursor:pointer;">
+                        Stand
+                    </button>
+                </form>
+
+                @if(player.getHand.canHit) {
+                    <div style="display:flex; flex-direction: row; justify-content: center; gap: 10px;">
+                        <form action ="/hitNextPlayer" method="get">
+                            <button style="
+                                width: 75px;
+                                height: 40px;
+                                padding:10px 20px;
+                                background-color:#28a745;
+                                color:white; border:none;
+                                border-radius:5px;
+                                cursor:pointer;">
+                                Hit
+                            </button>
+                        </form>
+                    </div>
+                }
+
+                @if(player.getHand.canDoubleDown) {
+                    <form action ="/doubleDown" method="get">
+                        <button style="
+                            width: 115px;
+                            height: 40px;
+                            padding:10px 20px;
+                            background-color:#28a745;
+                            color:white; border:none;
+                            border-radius:5px;
+                            cursor:pointer;">
+                            Double Down
+                        </button>
+                    </form>
+                }
+            }
+        }
+
+        <form action ="/leavePlayer" method="get">
+            <button style="
+                width: 50px;
+                height: 40px;
+                padding:10px 20px;
+                background-color:#28a745;
+                color:white; border:none;
+                border-radius:5px;
+                cursor:pointer;">
+                X
+            </button>
+        </form>
     </div>
 </div>
