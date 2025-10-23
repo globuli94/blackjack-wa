@@ -1,7 +1,6 @@
 package controllers
 
 import controller.controllerComponent.ControllerInterface
-import io.jsonwebtoken.impl.AndroidBase64Codec
 
 import javax.inject.*
 import play.api.*
@@ -45,17 +44,52 @@ class HomeController @Inject()(
     Ok(views.html.blackjack.apply(blackjackController))
   }
 
-  def addPlayerForm(): Action[AnyContent] = Action {implicit request: Request[AnyContent] =>
+  def startGame(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    blackjackController.startGame()
+    Ok(views.html.blackjack.apply(blackjackController))
+  }
+
+  def addPlayerForm(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.addPlayerForm.apply())
   }
 
-  def addPlayer(): Action[AnyContent] = Action {implicit request: Request[AnyContent] =>
+  def addPlayer(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     val player_name_input = request.body
       .asFormUrlEncoded
       .flatMap(_.get("PlayerForm").flatMap(_.headOption))
       .getOrElse("")
 
     blackjackController.addPlayer(player_name_input)
+    Ok(views.html.blackjack.apply(blackjackController))
+  }
+
+  def bet(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    val player_bet_input = request.body
+      .asFormUrlEncoded
+      .flatMap(_.get("BetForm").flatMap(_.headOption))
+      .getOrElse("")
+
+    blackjackController.bet(player_bet_input)
+    Ok(views.html.blackjack.apply(blackjackController))
+  }
+
+  def hitNextPlayer(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    blackjackController.hitNextPlayer()
+    Ok(views.html.blackjack.apply(blackjackController))
+  }
+
+  def standNextPlayer(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    blackjackController.standNextPlayer()
+    Ok(views.html.blackjack.apply(blackjackController))
+  }
+
+  def doubleDown(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    blackjackController.doubleDown()
+    Ok(views.html.blackjack.apply(blackjackController))
+  }
+
+  def leavePlayer(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    blackjackController.leavePlayer()
     Ok(views.html.blackjack.apply(blackjackController))
   }
 
@@ -87,5 +121,20 @@ class HomeController @Inject()(
     }
 
     Ok(views.html.index(blackjackController.toString, blackjackController.serialize))
+  }
+
+  def toIndex(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    Ok(views.html.index(blackjackController.toString, blackjackController.serialize))
+  }
+
+  def toGame(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    Ok(views.html.blackjack.apply(blackjackController))
+  }
+
+  def toHistory(): Action[AnyContent] = Action {implicit request: Request[AnyContent] =>
+    Ok(views.html.history.apply())
+  }
+  def toRule(): Action[AnyContent] = Action {implicit request: Request[AnyContent] =>
+    Ok(views.html.rule.apply())
   }
 }

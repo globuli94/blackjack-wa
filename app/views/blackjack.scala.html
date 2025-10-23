@@ -1,44 +1,69 @@
-@(gameController: controller.controllerComponent.ControllerInterface)
+@import model.gameComponent.GameState.Betting
+@import model.gameComponent.GameState.Initialized
+@(gameController: controller.controllerComponent.ControllerInterface)(implicit request: RequestHeader)
+@import helper._
 
 @main("Blackjack") {
     <div style="text-align: center">
         <div style ="display:flex; flex-direction: column; justify-content: center; gap: 10px;">
 
+            <div style="display: flex; flex-direction: row; justify-content: center; gap: 10px">
+
+                <!-- GAME CONTROLS -->
+
+                @if(gameController.getGame.getState == Initialized && gameController.getGame.getPlayers.nonEmpty) {
+                    <form action="/startGame" method="get">
+                        <button style="
+                            width: 150px;
+                            height: 40px;
+                            padding:10px 20px;
+                            background-color:#28a745;
+                            color:white; border:none;
+                            border-radius:5px;
+                            cursor:pointer;">
+                            Start
+                        </button>
+                    </form>
+                }
+
+                @if(gameController.getGame.getState == Initialized) {
+                    <form action = "/addPlayerForm" method="get">
+                        <button style="
+                            width: 150px;
+                            height: 40px;
+                            padding:10px 20px;
+                            background-color:#28a745;
+                            color:white; border:none;
+                            border-radius:5px;
+                            cursor:pointer;">
+                            Add Player
+                        </button>
+                    </form>
+                }
+
+                <form action ="/initializeGame" method="get">
+                    <button style="
+                        width: 150px;
+                        height: 40px;
+                        padding:10px 20px;
+                        background-color:#28a745;
+                        color:white; border:none;
+                        border-radius:5px;
+                        cursor:pointer;">
+                        Reset
+                    </button>
+                </form>
+            </div>
+
             <div style="display: flex; justify-content: center; flex-direction: row">
                 @views.html.dealer(gameController.getGame.getDealer)
             </div>
 
-            <div style="display: flex; flex-direction: row; justify-content: center; gap 10px">
-                @for(player <- gameController.getGame.getPlayers) {
-                    @views.html.player(player)
+            <div style="display: flex; flex-direction: row; justify-content: center; gap: 10px;">
+                @for(playerIndex <- gameController.getGame.getPlayers.zipWithIndex) {
+                    @views.html.player(playerIndex._1, gameController.getGame.getIndex == playerIndex._2, gameController)
                 }
             </div>
-            <form action = "/addPlayerForm" method="get">
-                <button style="
-                    width: 150px;
-                    height: 40px;
-                    padding:10px 20px;
-                    background-color:#28a745;
-                    color:white;
-                    border:none;
-                    border-radius:5px;
-                    cursor:pointer;">
-                    Add Player
-                </button>
-            </form>
-            <form action ="/initializeGame" method="get">
-                <button style="
-                    width: 150px;
-                    height: 40px;
-                    padding:10px 20px;
-                    background-color:#28a745;
-                    color:white; border:none;
-                    border-radius:5px;
-                    cursor:pointer;">
-                    Reset
-                </button>
-            </form>
         </div>
     </div>
-    <pre>@gameController.toString</pre>
 }
