@@ -4,10 +4,9 @@
 @import helper._
 
 @main("Blackjack") {
-    <div style="text-align: center">
-        <div style ="display:flex; flex-direction: column; justify-content: center; gap: 10px;">
+        <div class="game-container">
 
-            <div style="display: flex; flex-direction: row; justify-content: center; gap: 10px">
+            <div class="game-controls">
 
                 <!-- GAME CONTROLS -->
 
@@ -28,15 +27,14 @@
                 </form>
             </div>
 
-            <div style="display: flex; justify-content: center; flex-direction: row">
+            <div class="dealer-section">
                 @views.html.dealer(gameController.getGame.getDealer)
             </div>
 
-            <div style="display: flex; flex-direction: row; justify-content: center; gap: 10px;">
+            <div class="player-section">
                 @for(playerIndex <- gameController.getGame.getPlayers.zipWithIndex) {
                     @views.html.player(playerIndex._1, gameController.getGame.getIndex == playerIndex._2, gameController)
                 }
             </div>
         </div>
-    </div>
 }
