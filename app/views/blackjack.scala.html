@@ -13,45 +13,18 @@
 
                 @if(gameController.getGame.getState == Initialized && gameController.getGame.getPlayers.nonEmpty) {
                     <form action="/startGame" method="get">
-                        <button style="
-                            width: 150px;
-                            height: 40px;
-                            padding:10px 20px;
-                            background-color:#28a745;
-                            color:white; border:none;
-                            border-radius:5px;
-                            cursor:pointer;">
-                            Start
-                        </button>
+                        <button class="button">Start</button>
                     </form>
                 }
 
                 @if(gameController.getGame.getState == Initialized) {
                     <form action = "/addPlayerForm" method="get">
-                        <button style="
-                            width: 150px;
-                            height: 40px;
-                            padding:10px 20px;
-                            background-color:#28a745;
-                            color:white; border:none;
-                            border-radius:5px;
-                            cursor:pointer;">
-                            Add Player
-                        </button>
+                        <button class="button">Add Player</button>
                     </form>
                 }
 
                 <form action ="/initializeGame" method="get">
-                    <button style="
-                        width: 150px;
-                        height: 40px;
-                        padding:10px 20px;
-                        background-color:#28a745;
-                        color:white; border:none;
-                        border-radius:5px;
-                        cursor:pointer;">
-                        Reset
-                    </button>
+                    <button class="button">Reset</button>
                 </form>
             </div>
 
