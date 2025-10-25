@@ -1,0 +1,36 @@
+@main_background:#006400;
+@text_color:#ffffff;
+@button_color: #28a745;
+
+body{
+    background-color: @main_background;
+    color: @text_color;
+    margin: 0;
+    padding: 0;
+
+}
+.nav-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 1em;
+  margin: 2vh 0;
+  justify-content: left;
+  align-items: center;
+}
+
+.button {
+  background-color: @button_color;
+  color: @text_color;
+  border: none;
+  border-radius: 0.5em;
+  padding: 1em 2em;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.button:hover {
+  background-color: #40f266;
+  transform: scale(1.05);
+}
+
