@@ -86,3 +86,52 @@ body{
   font-size: 1em;
 }
 
+
+.card {
+  height: 15vh;           // responsive: 15% der Fensterhöhe
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.card img {
+  width: auto;
+  height: 100%;
+  display: block;
+}
+
+/* ===============================
+   DEALER SECTION
+   =============================== */
+
+.dealer {
+  width: 40vw;                        // statt fester Pixelbreite → responsive
+  height: 25vh;
+  padding: 1.5em;
+  margin: 1em;
+  border: 2px solid #28a745;
+  border-radius: 0.8em;
+  box-shadow: 0 0.5em 0.8em rgba(0,0,0,0.1);
+  text-align: center;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.dealer p {
+  color: #cccccc;
+  margin: 0.5em 0;
+}
+
+.dealer .card-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1em;             // Abstand zwischen den Karten
+  justify-content: center;
+}
+
+
