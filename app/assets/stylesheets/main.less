@@ -1,6 +1,8 @@
 @main_background:#006400;
 @text_color:#ffffff;
 @button_color: #28a745;
+@border: #6c757d;
+@light_gray: #cccccc;
 
 body{
     background-color: @main_background;
@@ -101,8 +103,6 @@ body{
   display: block;
 }
 
-
-
 .dealer {
   width: 40vw;
   height: 25vh;
@@ -130,6 +130,139 @@ body{
   align-items: center;
   gap: 1em;
   justify-content: center;
+}
+
+.player {
+  display: flex;
+  flex-direction: column;
+  width: 25vw;
+  height: 35vh;
+  gap: 0.5vh;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  align-items: center;
+  justify-content: center;
+  border: 0.15vw solid @border;
+  border-radius: 1em;
+  box-shadow: 0 0.4vh 0.6vh rgba(0,0,0,0);
+  background-color: transparent;
+
+  &.current-player {
+    border-color: @button_color;
+    box-shadow: 0 0.4vh 0.6vh rgba(0,0,0,0.1);
+  }
+
+  .player-name {
+    margin: 0;
+    font-weight: bold;
+    color: @light_gray;
+  }
+
+  .cards-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1vw;
+    justify-content: center;
+  }
+
+  .hand-info {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5vw;
+
+    span {
+      color: @light_gray;
+    }
+  }
+
+  .money-bet-display {
+    display: flex;
+    flex-direction: row;
+    height: 6vh;
+    gap: 1.5vw;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1vh;
+
+    span {
+      color: @light_gray;
+    }
+
+    img {
+      &.dollars-icon {
+        height: 4vh;
+        width: 4vh;
+      }
+
+      &.chip-icon {
+        height: 3.5vh;
+        width: 3.5vh;
+      }
+    }
+  }
+
+  .player-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 1vw;
+
+    .bet-form-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      gap: 1vw;
+
+      input[type="text"] {
+        width: 7vw;
+        height: 5vh;
+        background-color: @light_gray;
+        box-sizing: border-box;
+        padding: 1vh 0.5vw;
+        border-radius: 0.5em;
+        border: 0.1vw solid #ccc;
+      }
+
+      button {
+        text-align: center;
+        width: 7vw;
+        height: 5vh;
+        padding: 1vh 1.5vw;
+        background-color: @button_color;
+        color: white;
+        border: none;
+        border-radius: 0.5em;
+        cursor: pointer;
+      }
+    }
+
+    button {
+      height: 5vh;
+      padding: 1vh 1.5vw;
+      background-color: @button_color;
+      color: white;
+      border: none;
+      border-radius: 0.5em;
+      cursor: pointer;
+
+      &.stand-button {
+        width: 5.5vw;
+      }
+
+      &.hit-button {
+        width: 5.5vw;
+      }
+
+      &.double-down-button {
+        width: 8.5vw;
+      }
+
+      &.leave-button {
+        width: 3.5vw;
+      }
+    }
+  }
 }
 
 
