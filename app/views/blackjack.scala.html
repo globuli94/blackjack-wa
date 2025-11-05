@@ -4,66 +4,37 @@
 @import helper._
 
 @main("Blackjack") {
-    <div style="text-align: center">
-        <div style ="display:flex; flex-direction: column; justify-content: center; gap: 10px;">
+        <div class="game-container">
 
-            <div style="display: flex; flex-direction: row; justify-content: center; gap: 10px">
+            <div class="game-controls">
 
                 <!-- GAME CONTROLS -->
 
                 @if(gameController.getGame.getState == Initialized && gameController.getGame.getPlayers.nonEmpty) {
                     <form action="/startGame" method="get">
-                        <button style="
-                            width: 150px;
-                            height: 40px;
-                            padding:10px 20px;
-                            background-color:#28a745;
-                            color:white; border:none;
-                            border-radius:5px;
-                            cursor:pointer;">
-                            Start
-                        </button>
+                        <button class="button">Start</button>
                     </form>
                 }
 
                 @if(gameController.getGame.getState == Initialized) {
                     <form action = "/addPlayerForm" method="get">
-                        <button style="
-                            width: 150px;
-                            height: 40px;
-                            padding:10px 20px;
-                            background-color:#28a745;
-                            color:white; border:none;
-                            border-radius:5px;
-                            cursor:pointer;">
-                            Add Player
-                        </button>
+                        <button class="button">Add Player</button>
                     </form>
                 }
 
                 <form action ="/initializeGame" method="get">
-                    <button style="
-                        width: 150px;
-                        height: 40px;
-                        padding:10px 20px;
-                        background-color:#28a745;
-                        color:white; border:none;
-                        border-radius:5px;
-                        cursor:pointer;">
-                        Reset
-                    </button>
+                    <button class="button">Reset</button>
                 </form>
             </div>
 
-            <div style="display: flex; justify-content: center; flex-direction: row">
+            <div class="dealer-section">
                 @views.html.dealer(gameController.getGame.getDealer)
             </div>
 
-            <div style="display: flex; flex-direction: row; justify-content: center; gap: 10px;">
+            <div class="player-section">
                 @for(playerIndex <- gameController.getGame.getPlayers.zipWithIndex) {
                     @views.html.player(playerIndex._1, gameController.getGame.getIndex == playerIndex._2, gameController)
                 }
             </div>
         </div>
-    </div>
 }

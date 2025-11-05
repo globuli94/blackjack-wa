@@ -1,6 +1,6 @@
 @(card: model.cardComponent.CardInterface)
 
-<div class="card" style="height: 100px; /* or any fixed width you want */">
+<div class="card">
     <img src='@routes.Assets.versioned(
         if (card.getRank == "blank") {
             "images/deck_pngs/back.png"
@@ -16,5 +16,5 @@
                 }
             s"images/deck_pngs/${card.getSuit}${rank}.png"
         }
-    )' style="width: auto; height: 100%;" alt="card">
+    )'alt="card">
 </div>
