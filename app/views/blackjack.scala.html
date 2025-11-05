@@ -9,7 +9,9 @@
                 <!-- GAME CONTROLS -->
                 @if(gameController.getGame.getState == Initialized && gameController.getGame.getPlayers.nonEmpty) {
                     <form action="/startGame" method="get">
-                        <button class="button">Start</button>
+                        <button class="button" type="submit">
+                            <i class="bi bi-play-fill"></i>
+                        </button>
                     </form>
                 }
 
