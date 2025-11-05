@@ -1,31 +1,79 @@
+/* =========================
+   THEME VARIABLES
+========================= */
+@main_background: #004d26;
+@text_color: #f5f5f5;
+@button_color: #1fa34a;
+@border: #2e4e3f;
+@light_gray: #c9d2c9;
+@highlight_gold: #e6c45c;
 
-@main_background:#006400;
-@text_color:#ffffff;
-@button_color: #28a745;
-@border: #6c757d;
-@light_gray: #cccccc;
 
-body{
-    background-color: @main_background;
-    color: @text_color;
-    margin: 0;
-    padding: 0;
-
+/* =========================
+   GLOBAL / RESET
+========================= */
+html {
+  scrollbar-gutter: stable;
 }
-.nav-buttons {
-  display: flex;
-  flex-direction: row;
-  gap: 1em;
-  margin: 2vh 0;
-  justify-content: left;
+
+body {
+  background: radial-gradient(circle at center, #005e2e 0%, #003c1d 100%);
+  color: @text_color;
+  margin: 0;
+  padding: 0;
+  overflow-y: scroll;
+  font-family: Arial, sans-serif;
+}
+
+
+/* =========================
+   NAVBAR
+========================= */
+.navbar {
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.6rem 1.2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  border-radius: 0 0 8px 8px;
+}
+
+.navbar-nav {
   align-items: center;
+  gap: 1rem;
 }
 
-.navbar-brand img {
-  height: 100px;
-  width: auto;
+.navbar-brand {
+  font-size: 1.4rem;
+  color: @text_color !important;
+
+  img {
+    height: 65px;
+    width: auto;
+  }
 }
 
+.nav-link {
+  color: fade(@text_color, 85%) !important;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.nav-link:hover {
+  color: @text_color !important;
+  text-shadow: 0 0 6px fade(@text_color, 40%);
+}
+
+.nav-button.active {
+  color: @highlight_gold !important;
+  border-bottom: 2px solid @highlight_gold;
+  text-shadow: 0 0 4px fade(@highlight_gold, 40%);
+}
+
+
+/* =========================
+   GENERIC BUTTONS
+========================= */
 .button {
   background-color: @button_color;
   color: @text_color;
@@ -38,10 +86,27 @@ body{
 }
 
 .button:hover {
-  background-color: #40f266;
-  transform: scale(1.05);
+  background-color: lighten(@button_color, 8%);
+  transform: scale(1.04);
 }
 
+
+/* =========================
+   NAV BUTTON GROUP
+========================= */
+.nav-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 1em;
+  margin: 2vh 0;
+  justify-content: left;
+  align-items: center;
+}
+
+
+/* =========================
+   GAME CONTAINER
+========================= */
 .game-container {
   text-align: center;
   display: flex;
@@ -58,6 +123,10 @@ body{
   gap: 1em;
 }
 
+
+/* =========================
+   DEALER SECTION
+========================= */
 .dealer-section {
   display: flex;
   justify-content: center;
@@ -65,6 +134,38 @@ body{
   margin-top: 2vh;
 }
 
+.dealer {
+  width: 40vw;
+  height: 25vh;
+  padding: 1.5em;
+  margin: 1em;
+  border: 2px solid @highlight_gold;
+  border-radius: 0.8em;
+  box-shadow: 0 0.5em 0.8em rgba(0,0,0,0.2);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  p {
+    color: @light_gray;
+    margin: 0.5em 0;
+  }
+
+  .card-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1em;
+    justify-content: center;
+  }
+}
+
+
+/* =========================
+   PLAYER SECTION
+========================= */
 .player-section {
   display: flex;
   flex-direction: row;
@@ -74,70 +175,6 @@ body{
   margin-top: 2vh;
 }
 
-.add-player-form {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  gap: 3em;
-  margin-top: 2vh;
-}
-
-.input-field{
-  width: 15em;
-  height: 3em;
-  background-color: #cccccc;
-  box-sizing: border-box;
-  padding: 0.5em;
-  border-radius: 0.5em;
-  border: 1px solid #ccc;
-  font-size: 1em;
-}
-
-
-.card {
-  height: 15vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-
-.card img {
-  width: auto;
-  height: 100%;
-  display: block;
-}
-
-.dealer {
-  width: 40vw;
-  height: 25vh;
-  padding: 1.5em;
-  margin: 1em;
-  border: 2px solid #28a745;
-  border-radius: 0.8em;
-  box-shadow: 0 0.5em 0.8em rgba(0,0,0,0.1);
-  text-align: center;
-  font-family: Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.dealer p {
-  color: #cccccc;
-  margin: 0.5em 0;
-}
-
-.dealer .card-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 1em;
-  justify-content: center;
-}
-
 .player {
   display: flex;
   flex-direction: column;
@@ -145,17 +182,15 @@ body{
   height: 35vh;
   gap: 0.5vh;
   text-align: center;
-  font-family: Arial, sans-serif;
   align-items: center;
   justify-content: center;
   border: 0.15vw solid @border;
   border-radius: 1em;
-  box-shadow: 0 0.4vh 0.6vh rgba(0,0,0,0);
-  background-color: transparent;
+  background-color: rgba(0,0,0,0.15);
 
   &.current-player {
-    border-color: @button_color;
-    box-shadow: 0 0.4vh 0.6vh rgba(0,0,0,0.1);
+    border-color: @highlight_gold;
+    box-shadow: 0 0.4vh 0.6vh fade(@highlight_gold, 25%);
   }
 
   .player-name {
@@ -223,11 +258,12 @@ body{
       input[type="text"] {
         width: 7vw;
         height: 5vh;
-        background-color: @light_gray;
+        background-color: #b9c5b9;
         box-sizing: border-box;
         padding: 1vh 0.5vw;
         border-radius: 0.5em;
-        border: 0.1vw solid #ccc;
+        border: 0.1vw solid @border;
+        color: #1a1a1a;
       }
 
       button {
@@ -252,23 +288,51 @@ body{
       border-radius: 0.5em;
       cursor: pointer;
 
-      &.stand-button {
-        width: 5.5vw;
-      }
-
-      &.hit-button {
-        width: 5.5vw;
-      }
-
-      &.double-down-button {
-        width: 8.5vw;
-      }
-
-      &.leave-button {
-        width: 3.5vw;
-      }
+      &.stand-button { width: 5.5vw; }
+      &.hit-button { width: 5.5vw; }
+      &.double-down-button { width: 8.5vw; }
+      &.leave-button { width: 3.5vw; }
     }
   }
 }
 
 
+/* =========================
+   FORM SECTION
+========================= */
+.add-player-form form {
+  justify-content: center;
+  gap: 0.5em;
+}
+
+.input-field {
+  width: 15ch; /* fixed width, fits a short name */
+  height: 3em;
+  padding: 0.5em;
+  border-radius: 0.5em;
+  border: 1px solid #ccc;
+  font-size: 1em;
+  box-sizing: border-box;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #ffd966; /* matches your navbar highlight */
+  box-shadow: 0 0 5px rgba(255, 217, 102, 0.5);
+}
+
+/* =========================
+   CARDS
+========================= */
+.card {
+  height: 15vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    width: auto;
+    height: 100%;
+    display: block;
+  }
+}

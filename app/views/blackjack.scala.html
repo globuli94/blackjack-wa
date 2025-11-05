@@ -3,27 +3,86 @@
 @(gameController: controller.controllerComponent.ControllerInterface)(implicit request: RequestHeader)
 @import helper._
 
-@main("Blackjack") {
+@main("Blackjack", "home") {
         <div class="game-container">
-
             <div class="game-controls">
-
                 <!-- GAME CONTROLS -->
-
                 @if(gameController.getGame.getState == Initialized && gameController.getGame.getPlayers.nonEmpty) {
                     <form action="/startGame" method="get">
                         <button class="button">Start</button>
                     </form>
                 }
 
+
                 @if(gameController.getGame.getState == Initialized) {
-                    <form action = "/addPlayerForm" method="get">
-                        <button class="button">Add Player</button>
-                    </form>
+                    <button type="button" class="button" data-bs-toggle="modal" data-bs-target="#addPlayerModal">
+                        <i class="bi bi-person-plus-fill"></i>
+                    </button>
+
+                    <div class="modal fade" id="addPlayerModal" tabindex="-1" aria-labelledby="addPlayerModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addPlayerModalLabel">Add Player</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+
+                                <form id="addPlayerForm">
+                                    <div class="modal-body">
+                                        @CSRF.formField
+                                        <input type="text" id="playerName" name="PlayerForm" class="form-control" placeholder="Enter player name" required>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-primary">Add</button>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        const addPlayerModalEl = document.getElementById('addPlayerModal');
+                        const playerNameInput = document.getElementById('playerName');
+
+                        addPlayerModalEl.addEventListener('show.bs.modal', () => {
+                            // Clear the input when modal opens
+                            playerNameInput.value = '';
+                        });
+
+                        document.getElementById('addPlayerForm').addEventListener('submit', async (e) => {
+                            e.preventDefault();
+                            const name = document.getElementById('playerName').value.trim();
+                            if (!name) return;
+
+                            const csrfToken = document.querySelector('#addPlayerForm input[name="csrfToken"]').value;
+
+                            await fetch('/addPlayer', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                body: new URLSearchParams({
+                                    PlayerForm: name,
+                                    csrfToken: csrfToken
+                                })
+                            });
+
+                            // Close modal
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('addPlayerModal'));
+                            modal.hide();
+
+                            // Reload or update UI
+                            location.reload();
+                        });
+                    </script>
                 }
 
                 <form action ="/initializeGame" method="get">
-                    <button class="button">Reset</button>
+                    <button class="button" type="submit">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                    </button>
                 </form>
             </div>
 
