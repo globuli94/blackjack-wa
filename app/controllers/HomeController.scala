@@ -41,7 +41,7 @@ class HomeController @Inject()(
 
   def initializeGame(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     blackjackController.initializeGame()
-    Ok(views.html.blackjack.apply(blackjackController))
+    Redirect(routes.HomeController.toGame())
   }
 
   def startGame(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
