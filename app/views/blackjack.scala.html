@@ -88,14 +88,20 @@
                 </form>
             </div>
 
-            <div class="dealer-section">
-                @views.html.dealer(gameController.getGame.getDealer)
-            </div>
+            @if(gameController.getGame.getPlayers.nonEmpty) {
+                <div class="dealer-section">
+                    @views.html.dealer(gameController.getGame.getDealer)
+                </div>
+            }
 
-            <div class="player-section">
-                @for(playerIndex <- gameController.getGame.getPlayers.zipWithIndex) {
-                    @views.html.player(playerIndex._1, gameController.getGame.getIndex == playerIndex._2, gameController)
-                }
+            <div class="container-fluid">
+                <div class="row player-section justify-content-center gx-3 gy-3">
+                    @for(playerIndex <- gameController.getGame.getPlayers.zipWithIndex) {
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+                            @views.html.player(playerIndex._1, gameController.getGame.getIndex == playerIndex._2, gameController)
+                        </div>
+                    }
+                </div>
             </div>
         </div>
 }

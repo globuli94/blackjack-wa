@@ -27,7 +27,7 @@ case class Game @Inject() (
   override def getDealer: DealerInterface = dealer
   
   override def createPlayer(name: String): GameInterface = {
-    if (players.length < 4) {
+    if (players.length < 16) {
       this.copy(players = Player(name) :: players).evaluate
     } else {
       this
