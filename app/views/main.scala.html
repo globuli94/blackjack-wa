@@ -7,7 +7,7 @@
 @(title: String)(content: Html)
 
 <!DOCTYPE html>
-<html lang="en"; style="background-color: #006400">
+<html lang="en">
     <head>
         @* Here's where we render the page title `String`. *@
         <title>@title</title>
@@ -16,45 +16,19 @@
 
     </head>
     <body>
-        <div style="display: flex; flex-direction: row; gap: 10px; text-align: left; justify-content: left; align-items: center">
+        <div class = "nav-buttons">
             <a href="/toGame">
                 <img src="@routes.Assets.versioned("images/logo/blackjack_logo.png")" alt="Blackjack" style="height: 100px">
             </a>
             <form action ="/toHistory" method="get">
-                <button style="
-                    width: 150px;
-                    height: 40px;
-                    padding:10px 20px;
-                    background-color:#28a745;
-                    color:white; border:none;
-                    border-radius:5px;
-                    cursor:pointer;">
-                    History
-                </button>
+                <button class="button">History </button>
             </form>
             <form action ="/toRule" method="get">
-                <button style="
-                    width: 150px;
-                    height: 40px;
-                    padding:10px 20px;
-                    background-color:#28a745;
-                    color:white; border:none;
-                    border-radius:5px;
-                    cursor:pointer;">
-                    Rules
-                </button>
+                <button class="button">Rules</button>
+                    
             </form>
             <form action ="/toIndex" method="get">
-                <button style="
-                    width: 150px;
-                    height: 40px;
-                    padding:10px 20px;
-                    background-color:#28a745;
-                    color:white; border:none;
-                    border-radius:5px;
-                    cursor:pointer;">
-                    TUI
-                </button>
+                <button class="button">TUI</button>
             </form>
         </div>
         @* And here's where we render the `Html` object containing
