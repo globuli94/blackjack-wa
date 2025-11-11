@@ -1,30 +1,27 @@
 $(document).ready(function() {
     
-    // Modal Input clearen beim Öffnen
+// removed js from addplayer
     $('#addPlayerModal').on('show.bs.modal', function() {
         $('#playerName').val('');
     });
     
     $('#addPlayerForm').on('submit', async function(e) {
-        e.preventDefault(); // ← MUSS GANZ OBEN STEHEN!
+        e.preventDefault();
         
         const playerName = $('#playerName').val().trim();
         
-        // Check if empty
         if (playerName === '') {
             alert('⚠️ Bitte gib einen Spielernamen ein!');
             $('#playerName').focus();
             return false;
         }
         
-        // Check minimum length
         if (playerName.length < 2) {
             alert('⚠️ Der Name muss mindestens 2 Zeichen lang sein!');
             $('#playerName').focus();
             return false;
         }
         
-        // Check for special characters (optional)
         if (!/^[a-zA-ZäöüÄÖÜß0-9\s]+$/.test(playerName)) {
             alert('⚠️ Der Name darf nur Buchstaben, Zahlen und Leerzeichen enthalten!');
             return false;
@@ -45,6 +42,8 @@ $(document).ready(function() {
         modal.hide();
         location.reload();
     });
+
+    
 
     console.log('🎰 Blackjack jQuery loaded successfully!');
     console.log('📊 Current players:', $('.player').length);
