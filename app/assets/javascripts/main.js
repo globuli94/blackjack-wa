@@ -117,6 +117,13 @@ $(document).ready(function() {
         'Double Down': '💰 Verdopple deinen Einsatz (nur 1 Karte)',
         'Bet': '💵 Setze deinen Einsatz für diese Runde'
     };
+
+    $('.player-actions button, .game-controls button').each(function(){
+        const btnText = $(this).text().trim();
+        if(tooltips[btnText]){
+            $(this).attr('title', tooltips[btnText]);
+        }
+    })
     
     console.log('🎰 Blackjack jQuery loaded successfully!');
     console.log('📊 Current players:', $('.player').length);
