@@ -1,18 +1,19 @@
 @(implicit request: RequestHeader)
 @import helper._
 
-@main("Blackjack") {
-        <div class="add-player-form">
-            <form action = "/addPlayer" method="post">
-                @CSRF.formField
-                <label class="input-field">
-                    <input
-                        type ="text"
-                        name="PlayerForm"
-                        placeholder="Enter player name"
-                    >
-                </label>
-                <button class="button">Add Player</button>
-            </form>
-        </div>
+@main("Blackjack", "game") {
+    <div class="add-player-form">
+        <form action="/addPlayer" method="post" class="d-flex align-items-center gap-2">
+            @CSRF.formField
+            <input
+            type="text"
+            name="PlayerForm"
+            class="input-field"
+            placeholder="Player name"
+            >
+            <button class="button" title="Add Player">
+                <i class="bi bi-person-plus-fill"></i>
+            </button>
+        </form>
+    </div>
 }

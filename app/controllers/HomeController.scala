@@ -41,12 +41,12 @@ class HomeController @Inject()(
 
   def initializeGame(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     blackjackController.initializeGame()
-    Ok(views.html.blackjack.apply(blackjackController))
+    Redirect(routes.HomeController.toGame())
   }
 
   def startGame(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     blackjackController.startGame()
-    Ok(views.html.blackjack.apply(blackjackController))
+    Redirect(routes.HomeController.toGame())
   }
 
   def addPlayerForm(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
@@ -60,7 +60,7 @@ class HomeController @Inject()(
       .getOrElse("")
 
     blackjackController.addPlayer(player_name_input)
-    Ok(views.html.blackjack.apply(blackjackController))
+    Redirect(routes.HomeController.toGame())
   }
 
   def bet(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
@@ -70,7 +70,7 @@ class HomeController @Inject()(
       .getOrElse("")
 
     blackjackController.bet(player_bet_input)
-    Ok(views.html.blackjack.apply(blackjackController))
+    Redirect(routes.HomeController.toGame())
   }
 
   def hitNextPlayer(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
@@ -91,6 +91,7 @@ class HomeController @Inject()(
   def leavePlayer(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     blackjackController.leavePlayer()
     Ok(views.html.blackjack.apply(blackjackController))
+    Redirect(routes.HomeController.toGame())
   }
 
   def command(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
