@@ -11,84 +11,74 @@
 
     <p class="player-name">@player.getName</p>
 
-    <div class="cards-container">
-        @for(card <- player.getHand.getCards) {
-            @views.html.card(card)
-        }
+    <div class="cards-container d-flex justify-content-center flex-wrap gap-2">
+    @for(card <- player.getHand.getCards) {
+        @views.html.card(card)
+    }
     </div>
 
-    <div class="hand-info">
-        @if(player.getHand.getCards.nonEmpty){
-            <span>@player.getHand.getHandValue</span>
-            @{player.getState match {
-                case Blackjack => <span>- Blackjack</span>
-                case Standing => <span>- Standing</span>
-                case Busted => <span>- Busted</span>
-                case WON => <span>- you won</span>
-                case LOST => <span>- you lost</span>
-                case DoubledDown => <span>Doubled Down</span>
-                case _ =>
-            }}
-        }
+    <div class="hand-info d-flex justify-content-center gap-2">
+    @if(player.getHand.getCards.nonEmpty){
+        <span>@player.getHand.getHandValue</span>
+        @{player.getState match {
+            case Blackjack => <span>- Blackjack</span>
+            case Standing => <span>- Standing</span>
+            case Busted => <span>- Busted</span>
+            case WON => <span>- you won</span>
+            case LOST => <span>- you lost</span>
+            case DoubledDown => <span>- Doubled Down</span>
+            case _ =>
+        }}
+    }
     </div>
 
-    <div class="money-bet-display">
+    <div class="money-bet-display d-flex justify-content-center align-items-center gap-2 mt-1">
         <span>@player.getMoney</span>
-        <img
-            class="dollars-icon"
-            src="@routes.Assets.versioned("images/icons/dollars.png")"
-            alt="Dollars"
-        >
+        <img class="dollars-icon" src="@routes.Assets.versioned("images/icons/dollars.png")" alt="Dollars">
         <span>@player.getBet</span>
-        <img
-            class="chip-icon"
-            src="@routes.Assets.versioned("images/icons/casino-chip.png")"
-            alt="Casino Chip"
-        >
+        <img class="chip-icon" src="@routes.Assets.versioned("images/icons/casino-chip.png")" alt="Chip">
     </div>
 
-    <div class="player-actions">
-        <!--BETTING-->
+    <div class="player-actions d-flex flex-wrap justify-content-center gap-2 mt-2">
+            <!-- BETTING FORM -->
         @defining(gameController.getGame.getState == Betting && currentPlayer) { showBetForm =>
             @if(showBetForm) {
-                <div class="bet-form-container">
-                    <form action="/bet" method="post">
+                <div class="bet-form-container d-flex gap-2 flex-grow-1">
+                    <form action="/bet" method="post" class="d-flex gap-2 flex-grow-1">
                         @CSRF.formField
-                        <label>
-                            <input
-                                type="text"
-                                name="BetForm"
-                                placeholder="Enter bet"
-                            >
-                        </label>
-                        <button type="submit">Bet</button>
+                        <input type="text" name="BetForm" placeholder="Enter bet" class="form-control flex-grow-1" style="min-width:80px; max-width:150px;">
+                        <button type="submit" class="btn btn-success flex-shrink-0">Bet</button>
                     </form>
                 </div>
             }
         }
 
+            <!-- GAME ACTIONS -->
         @defining(gameController.getGame.getState == Started && currentPlayer) { started =>
             @if(started) {
                 <form action="/standNextPlayer" method="get">
-                    <button type="submit" class="stand-button">Stand</button>
+                    <button type="submit" class="btn btn-primary">Stand</button>
                 </form>
 
                 @if(player.getHand.canHit) {
                     <form action="/hitNextPlayer" method="get">
-                        <button type="submit" class="hit-button">Hit</button>
+                        <button type="submit" class="btn btn-warning">Hit</button>
                     </form>
                 }
 
                 @if(player.getHand.canDoubleDown) {
                     <form action="/doubleDown" method="get">
-                        <button type="submit" class="double-down-button">Double Down</button>
+                        <button type="submit" class="btn btn-danger">Double Down</button>
                     </form>
                 }
             }
         }
 
+            <!-- LEAVE BUTTON -->
         <form action="/leavePlayer" method="get">
-            <button type="submit" class="leave-button">X</button>
+            <button type="submit" class="btn btn-secondary">
+                <i class="bi bi-box-arrow-left"></i>
+            </button>
         </form>
     </div>
 </div>
