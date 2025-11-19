@@ -150,6 +150,10 @@ class HomeController @Inject()(
     Json.toJson(blackjackController.getGame)
   }
 
+  def getGameStateJson(): Action[AnyContent] = Action {
+  Ok(gameToJson())
+}
+
   def addPlayerJson(): Action[AnyContent]  = Action{ implicit request =>
     request.body.asFormUrlEncoded.flatMap(_.get("PlayerForm").flatMap(_.headOption)) match {
       case Some(name) if name.trim.nonEmpty =>
