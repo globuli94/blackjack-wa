@@ -6,6 +6,13 @@ import javax.inject.*
 import play.api.*
 import play.api.mvc.*
 import view.TUI
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.actor.{Actor, ActorRef, Props}
+import play.api.libs.streams.ActorFlow
+import util.{Event, Observer}
+
+import scala.concurrent.ExecutionContextExecutor
+import scala.concurrent.duration.*
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -15,9 +22,9 @@ import view.TUI
 class HomeController @Inject()(
                                 val controllerComponents: ControllerComponents,
                                 blackjackController: ControllerInterface
-                              ) extends BaseController {
+                              ) (implicit system: ActorSystem) extends BaseController {
 
-
+  /*
   private val tui: TUI = TUI(blackjackController)
   private val tuiThread = new Thread(() => {
     var input: String = ""
@@ -30,6 +37,68 @@ class HomeController @Inject()(
   })
   tuiThread.setDaemon(true)
   tuiThread.start()
+  */
+
+  /*
+  sets up websocket endpoint where client sends string and server replies string messages
+  creates new BlackjackActor when client connects to handle client
+  actorRef is the connection to the client -> everything sent via out is sent to the client
+  */
+  def socket: WebSocket = WebSocket.accept[String, String] { request =>
+    ActorFlow.actorRef { out =>
+      println("Connect received")
+      BlackjackWebSocketActorFactory.create(out, this.blackjackController)
+    }
+  }
+
+  // factory that creates the actor
+  private object BlackjackWebSocketActorFactory {
+    def create(out: ActorRef, controller: ControllerInterface): Props = {
+      println("Creating actor")
+      Props(new BlackjackWebSocketActor(out, controller))
+    }
+  }
+
+  /*
+  this class handles messages for one web socket client
+  parameter out represents the endpoint to the client
+
+  func receive always runs when actor receives message from the client
+    -> currently ignores message from client and returns game json back to client
+
+  func sendJsonToClient
+    -> pushes current game state to client
+  */
+  private class BlackjackWebSocketActor(out: ActorRef, controller: ControllerInterface) extends Actor with Observer {
+    implicit val ec: ExecutionContextExecutor = context.dispatcher
+    context.system.scheduler.scheduleWithFixedDelay(30.seconds, 30.seconds, self, "heartbeat")
+
+    // Register this actor as observer
+    override def preStart(): Unit = {
+      controller.add(this)
+    }
+
+    def receive: Receive = {
+      case "heartbeat" =>
+        out ! "ping"
+      case msg: String =>
+        out ! blackjackController.serialize
+        println("Sent JSON to client: " + msg)
+    }
+
+    private def sendJsonToClient(): Unit = {
+      println("Received event from Controller")
+      out ! (blackjackController.serialize)
+    }
+
+    override def update(e: Event): Unit = {
+      sendJsonToClient()
+    }
+  }
+
+  def openClient(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    Ok(views.html.blackjackClient.apply("Client"))
+  }
 
   def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.blackjack.apply(blackjackController))

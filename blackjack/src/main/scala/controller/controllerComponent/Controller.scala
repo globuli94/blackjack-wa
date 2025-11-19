@@ -4,8 +4,7 @@ import com.google.inject.Inject
 import model.gameComponent.{GameInterface, GameState}
 import util.Event.*
 import util.fileIOComponent.FileIOInterface
-import util.{Event, Observable, Observer}
-import util.fileIOComponent.JSON.FileIOJSON
+import util.{Event, Observable}
 
 case class Controller @Inject (var game: GameInterface, fileIO: FileIOInterface) extends ControllerInterface with Observable {
 
