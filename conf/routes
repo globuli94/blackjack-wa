@@ -6,6 +6,9 @@
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index()
 
+GET     /websocket                  controllers.HomeController.socket
+GET     /client                     controllers.HomeController.openClient()
+
 # Game control
 #POST    /loadGame                   controllers.HomeController.loadGame()
 #POST    /saveGame                   controllers.HomeController.saveGame()
