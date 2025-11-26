@@ -1,4 +1,7 @@
 class GameStateManager {
+    players;
+    current_idx;
+
     constructor() {
         this.currentGameState = null;
     }
@@ -26,9 +29,5 @@ class GameStateManager {
 
     getPlayers() {
         return this.currentGameState?.players || [];
-    }
-
-    getDealer() {
-        return this.currentGameState?.dealer || null;
     }
 }

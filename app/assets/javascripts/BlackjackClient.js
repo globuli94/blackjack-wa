@@ -1,13 +1,12 @@
 $(document).ready(function() {
     // Prüfe ob wir auf der Game-Seite sind
     const isGamePage = $('.game-container').length > 0;
-
     if (!isGamePage) {
         console.log('Not on game page, skipping game initialization');
         return;
+    } else {
+        console.log('blackjack game page detected - initializing...');
     }
-
-    console.log('🎰 Blackjack Game Page detected - initializing...');
 
     // Initialize managers and services
     const gameStateManager = new GameStateManager();
@@ -27,17 +26,6 @@ $(document).ready(function() {
         uiRenderer.updateGameUI();
     });
     wsManager.connect();
-
-    // Load initial game state via AJAX
-    apiService.loadGameState()
-        .done((gameState) => {
-            console.log('Game state loaded via AJAX:', gameState);
-            gameStateManager.setState(gameState);
-            uiRenderer.updateGameUI();
-        })
-        .fail((xhr) => {
-            console.error('Error loading game state:', xhr);
-        });
 
     // Attach event listeners
     eventHandlers.attachModalEventListeners();

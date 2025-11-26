@@ -3,7 +3,6 @@ class WebSocketManager {
     constructor(onMessageCallback) {
         this.socket = null;
         this.onMessageCallback = onMessageCallback;
-        this.reconnectDelay = 3000;
     }
 
     connect() {
@@ -12,6 +11,7 @@ class WebSocketManager {
 
         this.socket.onopen = () => {
             console.log("✅ WebSocket connection opened!");
+            this.requestInitialState()
         }
 
         this.socket.onmessage = (event) => {
@@ -32,6 +32,12 @@ class WebSocketManager {
 
         this.socket.onclose = (event) => {
             console.log("⚠️ WebSocket closed:", event);
+        }
+    }
+
+    requestInitialState() {
+        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+            this.socket.send("getState");
         }
     }
 }
