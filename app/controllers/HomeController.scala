@@ -82,8 +82,7 @@ class HomeController @Inject()(
       case "heartbeat" =>
         out ! "ping"
       case msg: String =>
-        out ! blackjackController.serialize
-        println("Sent JSON to client: " + msg)
+        println("Client message: " + msg)
     }
 
     private def sendJsonToClient(): Unit = {
@@ -193,19 +192,19 @@ class HomeController @Inject()(
     Ok(views.html.index(blackjackController.toString, blackjackController.serialize))
   }
 
-  def toIndex(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+  def toIndex: Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index(blackjackController.toString, blackjackController.serialize))
   }
 
-  def toGame(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+  def toGame: Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.blackjack.apply(blackjackController))
   }
 
-  def toHistory(): Action[AnyContent] = Action {implicit request: Request[AnyContent] =>
+  def toHistory: Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.history.apply())
   }
   
-  def toRule(): Action[AnyContent] = Action {implicit request: Request[AnyContent] =>
+  def toRule: Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.rule.apply())
   }
 }
