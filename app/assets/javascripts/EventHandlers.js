@@ -104,8 +104,19 @@ class EventHandlers {
     }
 
     attachModalEventListeners() {
+        // Clear input when modal opens
         $('#addPlayerModal').on('show.bs.modal', () => {
             $('#playerName').val('');
+        });
+
+        // Clean up backdrop after modal is fully hidden
+        $('#addPlayerModal').on('hidden.bs.modal', () => {
+            // Ensure backdrop is removed
+            $('.modal-backdrop').remove();
+            $('body').removeClass('modal-open');
+            $('body').css('padding-right', '');
+            // Reset modal display
+            $('#addPlayerModal').css('display', 'none');
         });
 
         $('#addPlayerForm').on('submit', (e) => {
@@ -123,8 +134,8 @@ class EventHandlers {
             this.apiService.addPlayer(playerName)
                 .done((response) => {
                     console.log('Player added successfully:', response);
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('addPlayerModal'));
-                    modal.hide();
+                    // Hide modal - cleanup will happen in hidden.bs.modal event
+                    $('#addPlayerModal').modal('hide');
                     $('#playerName').val('');
                 })
                 .fail((xhr) => {

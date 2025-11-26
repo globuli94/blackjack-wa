@@ -3,10 +3,6 @@ class APIService {
         this.gameUtils = gameUtils;
     }
 
-    loadGameState() {
-        return $.get('/api/gameState');
-    }
-
     startGame() {
         return $.get('/api/startGame');
     }

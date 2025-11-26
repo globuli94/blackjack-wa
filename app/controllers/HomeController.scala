@@ -91,6 +91,9 @@ class HomeController @Inject()(
       case "heartbeat" =>
         out ! "ping"
       case msg: String =>
+        if(msg == "getState") {
+          out ! blackjackController.serialize
+        }
         println("Client message: " + msg)
     }
 
