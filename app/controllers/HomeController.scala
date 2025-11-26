@@ -5,7 +5,10 @@ import controller.controllerComponent.ControllerInterface
 import javax.inject.*
 import play.api.*
 import play.api.mvc.*
+import play.api.libs.json._
 import view.TUI
+import _root_.util.fileIOComponent.JSON.FileIOJSON
+
 import org.apache.pekko.actor.ActorSystem
 import org.apache.pekko.actor.{Actor, ActorRef, Props}
 import play.api.libs.streams.ActorFlow
@@ -26,6 +29,8 @@ class HomeController @Inject()(
 
   /*
   private val tui: TUI = TUI(blackjackController)
+  private val fileIO = new FileIOJSON()
+  import fileIO._
   private val tuiThread = new Thread(() => {
     var input: String = ""
     val tui = TUI(blackjackController)  // pass injected controller
@@ -208,4 +213,102 @@ class HomeController @Inject()(
   def toRule(): Action[AnyContent] = Action {implicit request: Request[AnyContent] =>
     Ok(views.html.rule.apply())
   }
+
+    private def gameToJson(): JsValue = {
+    Json.toJson(blackjackController.getGame)
+  }
+
+  def getGameStateJson(): Action[AnyContent] = Action {
+  Ok(gameToJson())
+}
+
+  def addPlayerJson(): Action[AnyContent]  = Action{ implicit request =>
+    request.body.asFormUrlEncoded.flatMap(_.get("PlayerForm").flatMap(_.headOption)) match {
+      case Some(name) if name.trim.nonEmpty =>
+        blackjackController.addPlayer(name.trim)
+        Ok(Json.obj(
+          "success" -> true,
+          "message" -> s"Player $name added",
+          "gameState" -> gameToJson()
+        ))
+      case _ =>
+        BadRequest(Json.obj(
+          "success" -> false, 
+          "message" -> "Invalid player name"
+        ))
+    }
+  }
+
+  def betJson(): Action[AnyContent] = Action { implicit request =>
+  request.body.asFormUrlEncoded.flatMap(_.get("BetForm").flatMap(_.headOption)) match {
+    case Some(betStr) =>
+      try {
+        blackjackController.bet(betStr)
+        Ok(Json.obj(
+          "success" -> true,
+          "gameState" -> gameToJson()
+        ))
+      } catch {
+        case _: NumberFormatException =>
+          BadRequest(Json.obj(
+            "success" -> false, 
+            "message" -> "Invalid bet amount"
+          ))
+      }
+    case _ =>
+      BadRequest(Json.obj(
+        "success" -> false, 
+        "message" -> "Bet amount required"
+      ))
+  }
+}
+
+  def hitJson(): Action[AnyContent] = Action {
+    blackjackController.hitNextPlayer()
+    Ok(Json.obj(
+      "success" -> true,
+      "gameState" -> gameToJson()
+    ))
+  }
+
+  def standJson(): Action[AnyContent] = Action {
+    blackjackController.standNextPlayer()
+    Ok(Json.obj(
+      "success" -> true,
+      "gameState" -> gameToJson()
+    ))
+  }
+
+  def doubleDownJson(): Action[AnyContent] = Action {
+    blackjackController.doubleDown()
+    Ok(Json.obj(
+      "success" -> true,
+      "gameState" -> gameToJson()
+    ))
+  }
+
+  def leavePlayerJson(): Action[AnyContent] = Action {
+    blackjackController.leavePlayer()
+    Ok(Json.obj(
+      "success" -> true,
+      "gameState" -> gameToJson()
+    ))
+  }
+
+  def initializeGameJson(): Action[AnyContent] = Action {
+    blackjackController.initializeGame()
+    Ok(Json.obj(
+      "success" -> true,
+      "gameState" -> gameToJson()
+    ))
+  }
+
+  def startGameJson(): Action[AnyContent] = Action {
+    blackjackController.startGame()
+    Ok(Json.obj(
+      "success" -> true,
+      "gameState" -> gameToJson()
+    ))
+  }
+
 }
