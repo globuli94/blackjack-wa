@@ -1,3 +1,5 @@
+import play.core.PlayVersion
+
 name := """blackjack-wa"""
 organization := "glob"
 version := "1.0-SNAPSHOT"
@@ -27,6 +29,8 @@ lazy val playserver = (project in file("."))
     name := "playserver",
     libraryDependencies ++= Seq(
       guice,
-      "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.2" % Test
+      "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.2" % Test,
+      "com.typesafe.akka" %% "akka-actor-typed" % "2.6.20",
+      "com.typesafe.akka" %% "akka-stream" % "2.6.20"
     ),
   )
