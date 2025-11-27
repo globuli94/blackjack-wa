@@ -12,7 +12,8 @@ case class Controller @Inject (var game: GameInterface, fileIO: FileIOInterface)
 
   override def saveGame(): Unit = {
     fileIO.save(game)
-    notifyObservers(Event.save)
+    // Remove this line: notifyObservers(Event.save)
+    // The action methods already notify observers about the actual game state change
   }
 
   override def loadGame(): Unit = {

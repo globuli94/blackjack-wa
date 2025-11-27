@@ -12,7 +12,7 @@ import _root_.util.fileIOComponent.JSON.FileIOJSON
 import org.apache.pekko.actor.ActorSystem
 import org.apache.pekko.actor.{Actor, ActorRef, Props}
 import play.api.libs.streams.ActorFlow
-import util.{Event, Observer}
+import _root_.util.{Event, Observer}
 
 import scala.concurrent.ExecutionContextExecutor
 import scala.concurrent.duration.*
@@ -26,6 +26,10 @@ class HomeController @Inject()(
                                 val controllerComponents: ControllerComponents,
                                 blackjackController: ControllerInterface
                               ) (implicit system: ActorSystem) extends BaseController {
+
+  // Create FileIOJSON instance to access its implicit JSON formatters
+  private val fileIO = new FileIOJSON()
+  import fileIO._  // This imports all the implicit JSON formatters (gameWrites, playerWrites, etc.)
 
   /*
   private val tui: TUI = TUI(blackjackController)
@@ -87,8 +91,10 @@ class HomeController @Inject()(
       case "heartbeat" =>
         out ! "ping"
       case msg: String =>
-        out ! blackjackController.serialize
-        println("Sent JSON to client: " + msg)
+        if(msg == "getState") {
+          out ! blackjackController.serialize
+        }
+        println("Client message: " + msg)
     }
 
     private def sendJsonToClient(): Unit = {
@@ -198,29 +204,29 @@ class HomeController @Inject()(
     Ok(views.html.index(blackjackController.toString, blackjackController.serialize))
   }
 
-  def toIndex(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+  def toIndex: Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index(blackjackController.toString, blackjackController.serialize))
   }
 
-  def toGame(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+  def toGame: Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.blackjack.apply(blackjackController))
   }
 
-  def toHistory(): Action[AnyContent] = Action {implicit request: Request[AnyContent] =>
+  def toHistory: Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.history.apply())
   }
   
-  def toRule(): Action[AnyContent] = Action {implicit request: Request[AnyContent] =>
+  def toRule: Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.rule.apply())
   }
 
-    private def gameToJson(): JsValue = {
+  private def gameToJson(): JsValue = {
     Json.toJson(blackjackController.getGame)
   }
 
   def getGameStateJson(): Action[AnyContent] = Action {
-  Ok(gameToJson())
-}
+    Ok(gameToJson())
+  }
 
   def addPlayerJson(): Action[AnyContent]  = Action{ implicit request =>
     request.body.asFormUrlEncoded.flatMap(_.get("PlayerForm").flatMap(_.headOption)) match {
@@ -310,5 +316,4 @@ class HomeController @Inject()(
       "gameState" -> gameToJson()
     ))
   }
-
 }
