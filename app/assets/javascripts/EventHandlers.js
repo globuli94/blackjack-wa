@@ -7,26 +7,29 @@ class EventHandlers {
     }
 
     attachControlEventListeners() {
-        $('.control-start').off('click').on('click', () => {
-            console.log('Start game clicked');
+        const controls = $('.game-controls');
+
+        // Remove old delegated handlers
+        controls.off('click', '.control-start');
+        controls.off('click', '.control-reset');
+        controls.off('click', '.control-add-player');
+
+        controls.on('click', '.control-start', () => {
             this.apiService.startGame()
                 .done(() => console.log('Start game request sent'))
-                .fail((xhr) => {
-                    console.error('Start game error:', xhr);
-                    alert('❌ Fehler beim Starten: ' + (xhr.responseJSON?.message || 'Unbekannter Fehler'));
-                });
+                .fail(xhr => alert('❌ Fehler beim Starten'));
         });
 
-        $('.control-reset').off('click').on('click', () => {
-            if (confirm('🔄 Möchtest du das Spiel wirklich neu starten?')) {
-                console.log('Reset game clicked');
+        controls.on('click', '.control-reset', () => {
+            if (confirm('Reset game?')) {
                 this.apiService.initializeGame()
                     .done(() => console.log('Reset game request sent'))
-                    .fail((xhr) => {
-                        console.error('Reset game error:', xhr);
-                        alert('❌ Fehler beim Zurücksetzen: ' + (xhr.responseJSON?.message || 'Unbekannter Fehler'));
-                    });
+                    .fail(xhr => alert('❌ Fehler beim Zurücksetzen'));
             }
+        });
+
+        controls.on('click', '.control-add-player', () => {
+            // optional extra logic; Bootstrap’s data attributes still fire
         });
     }
 
