@@ -15,11 +15,6 @@ $(document).ready(function() {
     const uiRenderer = new UIRenderer(gameStateManager, gameUtils);
     const eventHandlers = new EventHandlers(apiService, uiRenderer, gameUtils, gameStateManager);
 
-    // Set up UI renderer callback for event listeners
-    uiRenderer.onPlayerEventListenersAttached = () => {
-        eventHandlers.attachPlayerEventListeners();
-    };
-
     // Initialize WebSocket
     const wsManager = new WebSocketManager((gameData) => {
         gameStateManager.setState(gameData);
@@ -27,8 +22,9 @@ $(document).ready(function() {
     });
     wsManager.connect();
 
-    // Attach event listeners
+    // Attach event listeners ONCE (they use delegation, so they persist)
     eventHandlers.attachModalEventListeners();
+    eventHandlers.attachPlayerEventListeners(); // Attach once, not in callback
 
     // Attach control listeners after initial render
     $(document).on('DOMNodeInserted', '.game-controls', () => {

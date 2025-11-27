@@ -31,8 +31,19 @@ class EventHandlers {
     }
 
     attachPlayerEventListeners() {
-        // Bet Input
-        $('.bet-input').off('keypress').on('keypress', (e) => {
+        // Use event delegation on the player-section container
+        // This way listeners work even when DOM is replaced
+        
+        // Remove old listeners first to avoid duplicates
+        $('.player-section').off('keypress', '.bet-input');
+        $('.player-section').off('keydown', '.bet-input');
+        $('.player-section').off('click', '.action-stand');
+        $('.player-section').off('click', '.action-hit');
+        $('.player-section').off('click', '.action-double');
+        $('.player-section').off('click', '.action-leave');
+
+        // Bet Input - Event delegation
+        $('.player-section').on('keypress', '.bet-input', (e) => {
             if (e.which === 13) {
                 e.preventDefault();
                 const bet = $(e.target).val().trim();
@@ -51,14 +62,14 @@ class EventHandlers {
             }
         });
 
-        $('.bet-input').off('keydown').on('keydown', (e) => {
+        $('.player-section').on('keydown', '.bet-input', (e) => {
             if (e.which != 8 && e.which != 0 && e.which != 13 && (e.which < 48 || e.which > 57)) {
                 return false;
             }
         });
 
-        // Stand
-        $('.action-stand').off('click').on('click', () => {
+        // Stand - Event delegation
+        $('.player-section').on('click', '.action-stand', () => {
             this.apiService.stand()
                 .done(() => console.log('Stand request sent'))
                 .fail((xhr) => {
@@ -66,8 +77,8 @@ class EventHandlers {
                 });
         });
 
-        // Hit
-        $('.action-hit').off('click').on('click', () => {
+        // Hit - Event delegation
+        $('.player-section').on('click', '.action-hit', () => {
             this.apiService.hit()
                 .done(() => console.log('Hit request sent'))
                 .fail((xhr) => {
@@ -75,12 +86,12 @@ class EventHandlers {
                 });
         });
 
-        // Double Down
-        $('.action-double').off('click').on('click', () => {
-            const player = $('.action-double').closest('.player');
+        // Double Down - Event delegation
+        $('.player-section').on('click', '.action-double', (e) => {
+            const player = $(e.target).closest('.player');
             const currentBet = parseInt(player.find('.money-bet-display span:last').text());
 
-            if (confirm(`🎲 Möchtest du deinen Einsatz verdoppeln?\n\nAktueller Einsatz: ${currentBet}$\nNeuer Einsatz: ${currentBet * 2}$\n\nDu bekommst danach nur noch EINE Karte!`)) {
+            if (confirm(`�� Möchtest du deinen Einsatz verdoppeln?\n\nAktueller Einsatz: ${currentBet}$\nNeuer Einsatz: ${currentBet * 2}$\n\nDu bekommst danach nur noch EINE Karte!`)) {
                 this.apiService.doubleDown()
                     .done(() => console.log('Double down request sent'))
                     .fail((xhr) => {
@@ -89,8 +100,8 @@ class EventHandlers {
             }
         });
 
-        // Leave Player
-        $('.action-leave').off('click').on('click', (e) => {
+        // Leave Player - Event delegation
+        $('.player-section').on('click', '.action-leave', (e) => {
             const playerName = $(e.target).closest('.player').find('.player-name').text();
 
             if (confirm(`👋 Möchtest du das Spiel wirklich verlassen, ${playerName}?`)) {
