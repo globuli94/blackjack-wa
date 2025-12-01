@@ -1,4 +1,5 @@
 import play.core.PlayVersion
+import com.typesafe.sbt.packager.docker._
 
 name := """blackjack-wa"""
 organization := "glob"
@@ -29,8 +30,19 @@ lazy val playserver = (project in file("."))
     name := "playserver",
     libraryDependencies ++= Seq(
       guice,
-      "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.2" % Test,
-      "com.typesafe.akka" %% "akka-actor-typed" % "2.6.20",
-      "com.typesafe.akka" %% "akka-stream" % "2.6.20"
+      "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.2" % Test
     ),
+    // Docker settings
+    dockerChmodType := DockerChmodType.UserGroupWriteExecute,
+    dockerPermissionStrategy := DockerPermissionStrategy.CopyChown,
+    dockerUpdateLatest := true,
+    // Use modern Java base image
+    dockerBaseImage := "eclipse-temurin:17-jre",
+    // Expose port 9000
+    dockerExposedPorts := Seq(9000),
+    // Create directories for files and logs
+    dockerCommands ++= Seq(
+      ExecCmd("RUN", "mkdir", "-p", "/opt/docker/blackjack-wa_files"),
+      ExecCmd("RUN", "mkdir", "-p", "/opt/docker/logs")
+    )
   )
