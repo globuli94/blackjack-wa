@@ -6,8 +6,13 @@ class WebSocketManager {
     }
 
     connect() {
-        console.log("connecting to websocket...")
-        this.socket = new WebSocket('ws://localhost:9000/websocket');
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${protocol}//${window.location.host}/websocket`;
+        console.log("connecting to websocket...", wsUrl);
+        this.socket = new WebSocket(wsUrl);
+
+
+        //this.socket = new WebSocket('ws://localhost:9000/websocket');
 
         this.socket.onopen = () => {
             console.log("✅ WebSocket connection opened!");
