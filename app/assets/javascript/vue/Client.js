@@ -3,6 +3,7 @@ const { createApp } = Vue;
 const Client = {
     components: {
         Player,
+        Dealer,
         PlayerControls,
         GameControls
     },
@@ -72,6 +73,14 @@ const Client = {
                         :players="players"
                     />
                 </div>
+            </div>
+            
+            <!-- Dealer Section -->
+            <div v-if="dealer" class="mt-1 row justify-content-center">
+                <Dealer
+                    :dealer="dealer"
+                    :gameUtils="gameUtils"
+                />
             </div>
 
             <!-- Players Section -->
