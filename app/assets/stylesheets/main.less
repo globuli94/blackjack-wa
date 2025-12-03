@@ -25,6 +25,17 @@ body {
   font-family: Arial, sans-serif;
 }
 
+.text-won {
+  color: green;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.text-lost {
+  color: red;
+  font-size: 16px;
+  font-weight: bold;
+}
 
 /* =========================
    NAVBAR
@@ -147,8 +158,10 @@ body {
 
 .dealer p {
   color: @light_gray;
-  margin: 0.5em 0;
+  margin: 0 0 1em 0; /* match player-name spacing */
   font-size: 1rem;
+  position: relative;
+  z-index: 1;
 }
 
 .dealer .card-container {
@@ -157,6 +170,66 @@ body {
   justify-content: center;
   align-items: center;
   gap: 1em;
+}
+
+/* Dealer hand styles - same as player */
+.dealer .hand-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5vw;
+  margin-top: 0.5em;
+  margin-bottom: 1em;
+  min-height: 140px; /* ensure enough space for cards */
+  width: 100%;
+  position: relative;
+  padding: 0 1em; /* add horizontal padding to accommodate card overlap */
+}
+
+.dealer .hand {
+  position: relative;
+  display: inline-block;
+  max-width: 100%; /* prevent overflow */
+  margin: 0; /* ensure no negative margins */
+}
+
+.dealer .cards-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  position: relative;
+  height: 140px; /* adjust to card height */
+  width: 100%;
+  overflow: visible; /* allow cards to overlap */
+  padding: 0 2em; /* add padding to accommodate negative margins on overlapping cards */
+}
+
+.dealer .hand-value-wrapper {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+}
+
+.dealer .overlap-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Dealer hand value overlay */
+.dealer .hand-value {
+  position: absolute;
+  bottom: 0.5em;
+  left: 0.5em;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  font-weight: bold;
+  padding: 0.3em 0.6em;
+  border-radius: 0.5em 0.5em 0.5em 0.5em;
+  pointer-events: none;
+  font-size: clamp(0.75rem, 2vw, 1rem);
+  z-index: 1000;
+  white-space: nowrap;
 }
 
 /* =========================
@@ -169,9 +242,8 @@ body {
 /* Individual player card */
 .player {
   width: auto;
-  min-width: 200px;
-  max-width: 400px;
-  min-height: 35vh;
+  min-width: 400px;
+  min-height: 200px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -184,6 +256,7 @@ body {
   background-color: rgba(0, 0, 0, 0.15);
   box-sizing: border-box;
   transition: all 0.3s ease;
+  /* Remove overflow settings - cards will be constrained by max-height */
 
   &.current-player {
     border-color: @highlight_gold;
@@ -191,31 +264,100 @@ body {
   }
 
   .player-name {
-    margin: 0 0 0.5em 0;
+    margin: 0 0 1em 0; /* increased bottom margin from 0.5em to 1em */
     font-weight: bold;
     color: @light_gray;
     font-size: 1rem;
+    position: relative; /* ensure it stays in normal flow */
+    z-index: 1; /* above hand if needed */
   }
 
   .cards-container {
     display: flex;
     justify-content: center;
-    align-items: center;
-    gap: 1vw;
-    flex-wrap: wrap;
-    margin-bottom: 0.5em;
+    align-items: flex-start;
+    position: relative;
+    height: 140px; /* adjust to card height */
+  }
+
+  .overlap-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+
+  /* Hand value overlay */
+  .hand-value {
+    position: absolute;
+    bottom: 10px;      /* slightly above bottom of container/cards */
+    left: 10px;        /* offset from left edge */
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 0 8px 8px 0; /* top-left, top-right, bottom-right, bottom-left */
+    pointer-events: none;       /* so it doesn't block card clicks */
+    font-size: 14px;
+    z-index: 1000;              /* above all cards */
+  }
+
+  .hand {
+    position: relative;       /* ensures overlay is positioned relative to this container */
+    display: inline-block;    /* shrinkwrap to stacked cards */
+    max-width: 100%; /* prevent overflow */
+    margin: 0; /* ensure no negative margins */
+  }
+
+  .cards-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    position: relative;
+    height: 140px; /* adjust to card height */
+    width: 100%;
+    overflow: visible; /* allow cards to overlap */
+    padding: 0 2em; /* add padding to accommodate negative margins on overlapping cards */
+  }
+
+  .hand-value-wrapper {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    height: 100%;
+  }
+
+  .overlap-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+
+  /* Hand value overlay */
+  .hand-value {
+    position: absolute;
+    bottom: 0.5em;
+    left: 0.5em;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-weight: bold;
+    padding: 0.3em 0.6em;
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+    pointer-events: none;
+    font-size: clamp(0.75rem, 2vw, 1rem);
+    z-index: 1000;
+    white-space: nowrap;
   }
 
   .hand-info {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 0.5vw;
-    margin-bottom: 0.5em;
-
-    span {
-      color: @light_gray;
-      font-size: 0.9rem;
-    }
+    margin-top: 0.5em; /* add top margin to create space from name */
+    margin-bottom: 1em; /* increased from 0.5em to create more space */
+    min-height: 140px; /* ensure enough space for cards */
+    width: 100%;
+    position: relative; /* ensure it stays in normal flow */
+    /* Remove overflow settings - cards will be constrained by max-height */
+    padding: 0 1em; /* add horizontal padding to accommodate card overlap */
   }
 
   .money-bet-display {
@@ -340,6 +482,7 @@ body {
 ========================= */
 .card {
   height: 15vh;
+  max-height: 140px; /* constrain card height to prevent overflow */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -351,10 +494,12 @@ body {
 .card img {
   width: auto;
   height: 100%;
+  max-height: 140px; /* ensure image doesn't exceed max height */
   display: block;
   border: none;
   outline: none;
   box-shadow: none;   /* remove any unexpected shadows */
+  object-fit: contain; /* maintain aspect ratio */
 }
 
 /* =======================
