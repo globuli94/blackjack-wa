@@ -2,10 +2,11 @@ const { createApp } = Vue;
 
 const Client = {
     components: {
+        Navbar,
         Player,
         Dealer,
         PlayerControls,
-        GameControls
+        GameControls,
     },
     data() {
         return {
@@ -64,8 +65,13 @@ const Client = {
     },
     template: `
         <div class="p-4 bg-green-700 min-h-screen text-white d-flex flex-column">
+            <!-- Navbar -->
+            <Navbar v-if="apiService"
+                :apiService="apiService"
+            />
+        
             <!-- Game Controls -->
-            <div class="mb-4 game-controls justify-content-center">
+            <div class="mt-4 game-controls justify-content-center">
                 <div class="col-auto">
                     <GameControls v-if="apiService"
                         :apiService="apiService"
