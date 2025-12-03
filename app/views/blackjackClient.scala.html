@@ -9,8 +9,13 @@
     <title>@title</title>
     <link rel="shortcut icon" type="image/png" href='@routes.Assets.versioned("images/favicon.png")'>
 
-    <!-- websocket manager import -->
+    <!-- jquery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+    <!-- helper classes import -->
     <script src="@routes.Assets.versioned("javascript/WebSocketManager.js")"></script>
+    <script src="@routes.Assets.versioned("javascript/GameUtils.js")"></script>
+    <script src="@routes.Assets.versioned("javascript/APIService.js")"></script>
 
     <!-- bootstrap -->
     @Html("""
@@ -23,10 +28,21 @@
     <link rel="stylesheet" media="screen" href='@routes.Assets.versioned("stylesheets/main.css")'>
 </head>
 <body>
+    <!-- Add CSRF token here (outside Vue app, but in DOM) -->
+    @CSRF.formField
+    
     <div id="app"></div>
 
     <!-- Vue.js 3 from CDN -->
     @Html("""<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>""")
+
+    <!-- components -->
+    <script src="@routes.Assets.versioned("javascript/vue/Card.js")"></script>
+    <script src="@routes.Assets.versioned("javascript/vue/Hand.js")"></script>
+    <script src="@routes.Assets.versioned("javascript/vue/Player.js")"></script>
+    <script src="@routes.Assets.versioned("javascript/vue/PlayerControls.js")"></script>
+    <script src="@routes.Assets.versioned("javascript/vue/GameControls.js")"></script>
+
 
     <!-- Your Vue app -->
     <script src="@routes.Assets.versioned("javascript/vue/Client.js")"></script>
