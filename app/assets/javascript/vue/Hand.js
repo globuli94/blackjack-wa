@@ -1,40 +1,40 @@
 const Hand = {
-    components: {
-        Card
-    },
+    components: { Card },
     props: {
-        hand: {
-            type:Object,
-            required: true
-        },
-        gameUtils: {
-            type: Object,
-            required: true
-        }
+        hand: { type: Object, required: true, default: () => ({ cards: [] }) },
+        gameUtils: { type: Object, required: true }
     },
     computed: {
         handValue() {
             return this.gameUtils.getHandValue(this.hand)
         },
         paddedCards() {
-            if(this.hand.cards.length === 1) {
-                return [...this.hand.cards ,{rank: "blank", suit: "blank"}]
+            if (!this.hand || !this.hand.cards) return []
+            if (this.hand.cards.length === 1) {
+                return [...this.hand.cards, {rank: "blank", suit: "blank" }]
             }
             return this.hand.cards
-        },
+        }
     },
     template: `
-    <div class="hand">
-        <div class="cards-container d-flex justify-content-center flex-wrap gap-2">
-            <Card 
-                    v-for="(card, index) in paddedCards" 
-                    :key="index"
-                    :card="card"    
-            />
+    <div class="hand" style="position: relative; display: inline-block;">
+      <div class="cards-container d-flex justify-content-center flex-wrap">
+        <div class="hand-value-wrapper" style="position: relative; display: flex; align-items: flex-end;">
+          <div v-if="handValue > 0" class="hand-value">
+            {{ handValue }}
+          </div>
+          <Card
+            v-for="(card, index) in paddedCards"
+            :key="index"
+            :card="card"
+            class="overlap-card"
+            :style="{ 
+              zIndex: index, 
+              marginLeft: index === 0 ? '0' : 'clamp(-40px, -3vw, -20px)' 
+            }"
+          />
         </div>
-        <div v-if="handValue > 0" class="hand-info d-flex justify-content-center gap-2">
-            <span>{{handValue}}</span>
-        </div>
+      </div>
     </div>
-    `
+  `
 }
