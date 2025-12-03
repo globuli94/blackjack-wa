@@ -47,13 +47,52 @@ $(document).ready(function() {
         } else {
             currentGameState = response;
         }
-        
+
         console.log('Updating UI with state:', currentGameState.state);
-        
+
         updatePlayers(currentGameState.players);
         updateDealer(currentGameState.dealer);
         updateGameControls(currentGameState.state);
-        
+
+        // ANIMATION: Spezielle Animationen für Spielerzustände
+        if (typeof CardAnimations !== 'undefined') {
+            setTimeout(() => {
+                currentGameState.players.forEach(player => {
+                    const $playerCards = $(`.player[data-player-name="${player.name}"] .card`);
+
+                    if (player.state === 'Blackjack') {
+                        // Blackjack: Goldener Glow + Bounce
+                        $playerCards.each(function(index) {
+                            setTimeout(() => {
+                                CardAnimations.glow($(this), 'gold', 3000);
+                                CardAnimations.bounce($(this));
+                            }, index * 150);
+                        });
+                    } else if (player.state === 'Busted') {
+                        // Bust: Shake + Roter Glow
+                        $playerCards.each(function() {
+                            CardAnimations.shake($(this));
+                            CardAnimations.glow($(this), 'red', 2000);
+                        });
+                    } else if (player.state === 'WON') {
+                        // Gewonnen: Celebration-Effekt
+                        $playerCards.each(function(index) {
+                            setTimeout(() => {
+                                CardAnimations.celebrate($(this));
+                            }, index * 150);
+                        });
+                    }
+                });
+
+                // Highlight aktuellen Spieler mit Pulse
+                if (currentGameState.state === 'Started' || currentGameState.state === 'Betting') {
+                    $('.current-player .card').each(function() {
+                        CardAnimations.pulse($(this));
+                    });
+                }
+            }, 500);
+        }
+
         console.log('✅ Game state updated');
         console.log('📊 Players:', currentGameState.players.length);
         console.log('🎴 Total cards:', currentGameState.deck?.cards?.length || 'unknown');
@@ -62,20 +101,27 @@ $(document).ready(function() {
     function updatePlayers(players) {
         const playerSection = $('.player-section');
         playerSection.empty();
-        
+
         if (!players || players.length === 0) {
             console.log('No players to display');
             return;
         }
-        
+
         players.forEach((player, index) => {
             const isCurrentPlayer = index === currentGameState.current_idx;
             const playerHtml = createPlayerCard(player, isCurrentPlayer);
             playerSection.append(playerHtml);
         });
-        
+
+        // ANIMATION: Karten ausgeben mit Deal-Effekt
+        if (typeof CardAnimations !== 'undefined') {
+            $('.player .card').each(function(index) {
+                CardAnimations.dealCard($(this), index * 200);
+            });
+        }
+
         attachPlayerEventListeners();
-        
+
         // Focus bet input for current player
         if ($('.current-player input.bet-input').length > 0) {
             $('.current-player input.bet-input').focus();
@@ -231,18 +277,18 @@ $(document).ready(function() {
 
     function updateDealer(dealer) {
         const dealerSection = $('.dealer-section');
-        
+
         if (!dealer || dealer.hand.cards.length === 0) {
             dealerSection.empty();
             return;
         }
-        
+
         const cards = dealer.hand.cards.map(card => createCardHtml(card)).join('');
-        
-        const blankCard = dealer.hand.cards.length === 1 
-            ? createCardHtml({rank: 'blank', suit: 'blank'}) 
+
+        const blankCard = dealer.hand.cards.length === 1
+            ? createCardHtml({rank: 'blank', suit: 'blank'})
             : '';
-        
+
         dealerSection.html(`
             <div class="dealer">
                 <p>Dealer</p>
@@ -253,6 +299,13 @@ $(document).ready(function() {
                 ${dealer.hand.cards.length > 0 ? `<p>Value: ${getHandValue(dealer.hand)}</p>` : ''}
             </div>
         `);
+
+        // ANIMATION: Dealer-Karten von rechts eingleiten lassen
+        if (typeof CardAnimations !== 'undefined') {
+            $('.dealer .card').each(function(index) {
+                CardAnimations.slideIn($(this), 'right', index * 250);
+            });
+        }
     }
 
     function updateGameControls(gameState) {
@@ -299,16 +352,24 @@ $(document).ready(function() {
     function attachControlEventListeners() {
         $('.control-start').off('click').on('click', function() {
             console.log('Start game clicked');
-            $.get('/api/startGame')
-                .done(function(response) {
-                    if (response.success) {
-                        updateGameUI(response);
-                    }
-                })
-                .fail(function(xhr) {
-                    console.error('Start game error:', xhr);
-                    alert('❌ Fehler beim Starten: ' + (xhr.responseJSON?.message || 'Unbekannter Fehler'));
-                });
+
+            // ANIMATION: Shuffle-Effekt beim Spielstart
+            if (typeof CardAnimations !== 'undefined' && $('.player .card').length > 0) {
+                CardAnimations.shuffleEffect($('.player-section'));
+            }
+
+            setTimeout(() => {
+                $.get('/api/startGame')
+                    .done(function(response) {
+                        if (response.success) {
+                            updateGameUI(response);
+                        }
+                    })
+                    .fail(function(xhr) {
+                        console.error('Start game error:', xhr);
+                        alert('❌ Fehler beim Starten: ' + (xhr.responseJSON?.message || 'Unbekannter Fehler'));
+                    });
+            }, 200);
         });
         
         $('.control-reset').off('click').on('click', function() {
@@ -386,6 +447,14 @@ $(document).ready(function() {
                 .done(function(response) {
                     if (response.success) {
                         updateGameUI(response);
+
+                        // ANIMATION: Bounce-Effekt für die neue Karte
+                        if (typeof CardAnimations !== 'undefined') {
+                            setTimeout(() => {
+                                const $newCard = $('.current-player .card').last();
+                                CardAnimations.bounce($newCard);
+                            }, 600);
+                        }
                     }
                 })
                 .fail(function(xhr) {
