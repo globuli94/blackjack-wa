@@ -7,6 +7,8 @@ const Client = {
         Dealer,
         PlayerControls,
         GameControls,
+        History,
+        Rules
     },
     data() {
         return {
@@ -21,6 +23,8 @@ const Client = {
             apiService: null,
 
             newPlayerName: "",
+
+            currentPage: 'home'
         }
     },
     mounted() {
@@ -56,6 +60,9 @@ const Client = {
                 document.getElementById("addPlayerModal")
             );
             modal.hide();
+        },
+        handlePageChange(page) {
+            this.currentPage = page;
         }
     },
     computed: {
@@ -66,52 +73,64 @@ const Client = {
     template: `
         <div class="p-4 bg-green-700 min-h-screen text-white d-flex flex-column">
             <!-- Navbar -->
-            <Navbar v-if="apiService"
+            <Navbar v-if="apiService" @page_change="handlePageChange"
                 :apiService="apiService"
             />
-        
-            <!-- Game Controls -->
-            <div class="mt-4 game-controls justify-content-center">
-                <div class="col-auto">
-                    <GameControls v-if="apiService"
-                        :apiService="apiService"
-                        :gameState="gameState"
-                        :players="players"
+            
+            <!-- home page -->
+            <div v-if="currentPage === 'home'">
+    
+                <!-- Game Controls -->
+                <div class="mt-4 game-controls justify-content-center">
+                    <div class="col-auto">
+                        <GameControls v-if="apiService"
+                            :apiService="apiService"
+                            :gameState="gameState"
+                            :players="players"
+                        />
+                    </div>
+                </div>
+                
+                <!-- Dealer Section -->
+                <div v-if="dealer" class="mt-1 row justify-content-center">
+                    <Dealer
+                        :dealer="dealer"
+                        :gameUtils="gameUtils"
                     />
                 </div>
-            </div>
+    
+                <!-- Players Section -->
+                <div v-if="players.length > 0">
+                    <div class="row player-section justify-content-center gx-3 gy-3">
+                        <div v-for="player in players" :key="player.name" class="col-auto">
+                            <Player
+                                :player="player"
+                                :gameUtils="gameUtils"
+                                :currentPlayer="player == currentPlayer"
+                            />
+                        </div>
+                    </div>
+                </div>
             
-            <!-- Dealer Section -->
-            <div v-if="dealer" class="mt-1 row justify-content-center">
-                <Dealer
-                    :dealer="dealer"
-                    :gameUtils="gameUtils"
-                />
-            </div>
-
-            <!-- Players Section -->
-            <div v-if="players.length > 0">
-                <div class="row player-section justify-content-center gx-3 gy-3">
-                    <div v-for="player in players" :key="player.name" class="col-auto">
-                        <Player
-                            :player="player"
+                <!-- Gap between players and controls -->
+                <div class="mt-4 row player-actions justify-content-center">
+                    <div class="col-auto">
+                        <PlayerControls v-if="currentPlayer && gameState && gameUtils && apiService"
+                            :player="currentPlayer"
+                            :gameState="gameState"
                             :gameUtils="gameUtils"
-                            :currentPlayer="player == currentPlayer"
+                            :apiService="apiService"
                         />
                     </div>
                 </div>
             </div>
-        
-            <!-- Gap between players and controls -->
-            <div class="mt-4 row player-actions justify-content-center">
-                <div class="col-auto">
-                    <PlayerControls v-if="currentPlayer && gameState && gameUtils && apiService"
-                        :player="currentPlayer"
-                        :gameState="gameState"
-                        :gameUtils="gameUtils"
-                        :apiService="apiService"
-                    />
-                </div>
+            
+            <div v-if="currentPage === 'history'">
+                <History class="mt-4"/>
+            </div>
+            
+            <div v-if="currentPage === 'rules'">
+                <Rules class="mt-4"/>
             </div>
         </div>
         

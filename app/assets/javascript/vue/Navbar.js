@@ -8,6 +8,7 @@ const Navbar = {
             required: true,
         }
     },
+    emits: ['page_change'],
     data() {
         return {
             currentPage: 'home',
@@ -15,13 +16,20 @@ const Navbar = {
                 { name: 'Home', key: 'home' },
                 { name: 'History', key: 'history' },
                 { name: 'Rules', key: 'rules' },
-                { name: 'TUI', key: 'tui' }
+                //{ name: 'TUI', key: 'tui' }
             ]
         }
     },
     methods: {
-        goto(link) {
+        goto(page) {
+            this.currentPage = page;
+            this.$emit('page_change', page);
 
+            const nav = document.getElementById('navbarNav');
+            const bsCollapse = bootstrap.Collapse.getInstance(nav);
+            if(bsCollapse) {
+                bsCollapse.hide();
+            }
         }
     },
     template: `
@@ -46,7 +54,7 @@ const Navbar = {
                     <ul class="navbar-nav gap-3">
                     
                         <li v-for="page in pages" class="nav-item">
-                            <a class="nav-link nav-button" @click="goto(link)">{{page.name}}</a>
+                            <a class="nav-link nav-button" @click="goto(page.key)">{{page.name}}</a>
                         </li>
                       
                     </ul>

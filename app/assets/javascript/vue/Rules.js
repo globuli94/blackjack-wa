@@ -1,0 +1,62 @@
+const Rules = {
+    template: `
+    <div style="color: white;">
+        <h1>Blackjack – Spielregeln</h1>
+        <hr>
+        <h2>Ziel des Spiels</h2>
+        <p>
+            Ziel des Spiels ist es, mit zwei oder mehr Karten näher an 21 Punkte heranzukommen als der Dealer, ohne dabei den Wert von 21 Punkten zu überschreiten.
+        </p>
+        <ul>
+            <li>Wenn der Gesamtkartenwert > 21 → bist du sofort raus <strong>„Bust“</strong>.</li>
+            <li>Wenn der Gesamtkartenwert > Dealerkarten -> Gewinn</li>
+        </ul>
+        <hr>
+        <h2>Die Werte der einzelnen Karten</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Karte</th>
+                    <th>Wert</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>2–10</td>
+                    <td>Entspricht der aufgedruckten Zahl (z.B. 2 zählt 2 Punkte)</td>
+                </tr>
+                <tr>
+                    <td>Bube (J), Dame (Q), König (K)</td>
+                    <td>10 Punkte</td>
+                </tr>
+                <tr>
+                    <td>Ass (A)</td>
+                    <td>1 Punkt oder 11 Punkte</td>
+                </tr>
+            </tbody>
+        </table>
+        <hr>
+        <h2>Spielablauf</h2>
+        <ol>
+            <li><strong>Einsatz setzen: </strong> Jeder Spieler platziert seinen Einsatz im Einsatzfeld.</li>
+            <li><strong>Austeilen: </strong> Spieler und Dealer erhalten je zwei Karten. Beide Spielerkarten liegen offen, beim Dealer eine offen, eine verdeckt (Hole Card).</li>
+            <li><strong>Spielerzüge:</strong> Spieler muss jetzt selber überlegen, wie er seine Hand verbessern will:
+                <ul>
+                    <li><strong>Hit</strong>: weitere Karte nehmen.</li>
+                    <li><strong>Stand</strong>: Keine weitere Karte nehmen.</li>
+                    <li><strong>Double Down</strong>: Einsatz verdoppeln und nur eine weitere Karte ziehen.</li>
+                    <li><strong>Split</strong>: Bei zwei gleichwertigen Startkarten diese in zwei separate Hände teilen und einen zweiten Einsatz tätigen.</li>
+                </ul>
+            </li>
+            <li><strong>Dealerzüge</strong>: Der Dealer deckt die Hole Card auf und zieht nach festen Regeln:
+            <ul>
+                <li><strong>Wenn Kartenwert <= 16:</strong> Eine weitere Karte ziehen. </li>
+                <li><strong>Wenn Kartenwert >= 17:</strong> stehenbleiben. </li>
+            </ul>
+            </li>
+            <li><strong>Gewinn/Verlust:</strong> Die Handwerte werden verglichen. Wer näher an 21 liegt, gewinnt. Bei Gleichstand erhält der Spieler seinen Einsatz zurück.</li>
+        </ol>
+        <hr>
+    </div>
+    `
+}
