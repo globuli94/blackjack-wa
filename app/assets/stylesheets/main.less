@@ -145,13 +145,13 @@ body {
   align-items: center;
   padding: 1.5em;
   margin: 1em;
-  //border: 2px solid @highlight_gold;
+  border: 2px solid @highlight_gold;
   border-radius: 0.8em;
   box-shadow: 0 0.5em 0.8em rgba(0,0,0,0.2);
   text-align: center;
   background-color: rgba(0,0,0,0.15);
-  min-width: clamp(280px, 30vw, 400px);  /* responsive min-width */
-  max-width: clamp(300px, 85vw, 600px);  /* responsive max-width */
+  min-width: 300px;               /* optional minimum width */
+  max-width: 80vw;                /* optional maximum width */
   width: auto;                     /* auto width based on content */
   height: auto;                    /* auto height based on content */
 }
@@ -257,7 +257,6 @@ body {
   background-color: rgba(0, 0, 0, 0.15);
   box-sizing: border-box;
   transition: all 0.3s ease;
-  /* Remove overflow settings - cards will be constrained by max-height */
 
   &.current-player {
     border-color: @highlight_gold;
@@ -709,7 +708,7 @@ body {
 
     thead {
       background: rgba(230, 196, 92, 0.2);
-      
+
       th {
         color: @highlight_gold;
         padding: 1em;
@@ -722,11 +721,11 @@ body {
     tbody {
       tr {
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        
+
         &:last-child {
           border-bottom: none;
         }
-        
+
         &:hover {
           background: rgba(255, 255, 255, 0.05);
         }
@@ -756,7 +755,7 @@ body {
 
     table {
       font-size: 0.9rem;
-      
+
       thead th,
       tbody td {
         padding: 0.6em 0.8em;
