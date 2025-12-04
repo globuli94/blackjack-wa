@@ -20,6 +20,12 @@ const Card = {
             return `/assets/images/deck_pngs/${card.suit}${rank}.png`;
         }
     },
+    mounted() {
+        // Animate card when it is inserted into the DOM
+        if (typeof CardAnimations !== 'undefined' && typeof $ !== 'undefined') {
+            CardAnimations.dealCard($(this.$el));
+        }
+    },
     template:
     `
       <div class="card">

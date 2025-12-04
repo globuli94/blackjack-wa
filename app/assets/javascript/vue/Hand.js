@@ -25,6 +25,22 @@ const Hand = {
             return this.hand.cards
         }
     },
+    watch: {
+        handValue(newVal, oldVal) {
+            if (typeof CardAnimations === 'undefined' || typeof $ === 'undefined') return
+
+            this.$nextTick(() => {
+                const $firstCard = $(this.$el).find('.card').first()
+                if (!$firstCard.length) return
+
+                if (newVal === 'Blackjack') {
+                    CardAnimations.celebrate($firstCard)
+                } else if (newVal === 'Bust') {
+                    CardAnimations.shake($firstCard)
+                }
+            })
+        }
+    },
     template: `
     <div class="hand" style="position: relative; display: inline-block;">
       <div class="cards-container d-flex justify-content-center flex-wrap">
