@@ -145,13 +145,13 @@ body {
   align-items: center;
   padding: 1.5em;
   margin: 1em;
-  border: 2px solid @highlight_gold;
+  //border: 2px solid @highlight_gold;
   border-radius: 0.8em;
   box-shadow: 0 0.5em 0.8em rgba(0,0,0,0.2);
   text-align: center;
   background-color: rgba(0,0,0,0.15);
-  min-width: 300px;               /* optional minimum width */
-  max-width: 80vw;                /* optional maximum width */
+  min-width: clamp(280px, 30vw, 400px);  /* responsive min-width */
+  max-width: clamp(300px, 85vw, 600px);  /* responsive max-width */
   width: auto;                     /* auto width based on content */
   height: auto;                    /* auto height based on content */
 }
@@ -180,7 +180,7 @@ body {
   gap: 0.5vw;
   margin-top: 0.5em;
   margin-bottom: 1em;
-  min-height: 140px; /* ensure enough space for cards */
+  min-height: clamp(120px, 20vh, 200px); /* responsive min-height */
   width: 100%;
   position: relative;
   padding: 0 1em; /* add horizontal padding to accommodate card overlap */
@@ -198,7 +198,7 @@ body {
   justify-content: center;
   align-items: flex-start;
   position: relative;
-  height: 140px; /* adjust to card height */
+  height: clamp(120px, 20vh, 200px); /* responsive height */
   width: 100%;
   overflow: visible; /* allow cards to overlap */
   padding: 0 2em; /* add padding to accommodate negative margins on overlapping cards */
@@ -242,13 +242,14 @@ body {
 /* Individual player card */
 .player {
   width: auto;
-  min-width: 400px;
-  min-height: 200px;
+  min-width: clamp(280px, 30vw, 400px);  /* responsive min-width */
+  max-width: clamp(300px, 85vw, 500px);  /* responsive max-width */
+  min-height: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start; /* align to top for consistent spacing */
-  padding: 1em;               /* internal spacing */
+  padding: clamp(0.75em, 2vw, 1em);  /* responsive padding */
   gap: 0.5em;                  /* spacing between child elements */
   text-align: center;
   border: 0.15vw solid @border;
@@ -267,7 +268,7 @@ body {
     margin: 0 0 1em 0; /* increased bottom margin from 0.5em to 1em */
     font-weight: bold;
     color: @light_gray;
-    font-size: 1rem;
+    font-size: clamp(0.9rem, 2vw, 1rem);  /* responsive font size */
     position: relative; /* ensure it stays in normal flow */
     z-index: 1; /* above hand if needed */
   }
@@ -277,7 +278,7 @@ body {
     justify-content: center;
     align-items: flex-start;
     position: relative;
-    height: 140px; /* adjust to card height */
+    height: clamp(120px, 20vh, 200px); /* responsive height */
   }
 
   .overlap-card {
@@ -312,7 +313,7 @@ body {
     justify-content: center;
     align-items: flex-start;
     position: relative;
-    height: 140px; /* adjust to card height */
+    height: clamp(120px, 20vh, 200px); /* responsive height */
     width: 100%;
     overflow: visible; /* allow cards to overlap */
     padding: 0 2em; /* add padding to accommodate negative margins on overlapping cards */
@@ -353,7 +354,7 @@ body {
     gap: 0.5vw;
     margin-top: 0.5em; /* add top margin to create space from name */
     margin-bottom: 1em; /* increased from 0.5em to create more space */
-    min-height: 140px; /* ensure enough space for cards */
+    min-height: clamp(120px, 20vh, 200px); /* responsive min-height */
     width: 100%;
     position: relative; /* ensure it stays in normal flow */
     /* Remove overflow settings - cards will be constrained by max-height */
@@ -430,6 +431,8 @@ body {
 @media (max-width: 768px) {
   .player {
     min-height: 30vh;
+    min-width: clamp(250px, 40vw, 350px);  /* smaller min-width on tablets */
+    max-width: clamp(300px, 90vw, 450px);  /* larger max-width percentage */
 
     .money-bet-display {
       gap: 1vw;
@@ -441,15 +444,38 @@ body {
       align-items: stretch; /* make buttons expand full width */
     }
   }
+
+  .dealer {
+    min-width: clamp(250px, 40vw, 350px);
+    max-width: clamp(300px, 90vw, 500px);
+  }
 }
 
 @media (max-width: 576px) {
   .player {
     min-height: 28vh;
+    min-width: clamp(200px, 45vw, 300px);  /* even smaller on mobile */
+    max-width: clamp(250px, 95vw, 400px);  /* almost full width on mobile */
+    padding: 0.75em;  /* reduce padding on small screens */
+  }
 
-    .cards-container {
-      gap: 0.5em;
-    }
+  .dealer {
+    min-width: clamp(200px, 45vw, 300px);
+    max-width: clamp(250px, 95vw, 400px);
+    padding: 1em;  /* reduce padding on small screens */
+  }
+
+  .card {
+    height: clamp(100px, 18vh, 160px);  /* slightly smaller on mobile but still visible */
+    max-height: 160px;
+  }
+
+  .dealer .cards-container,
+  .player .cards-container,
+  .dealer .hand-info,
+  .player .hand-info {
+    height: clamp(100px, 18vh, 160px);
+    min-height: clamp(100px, 18vh, 160px);
   }
 }
 
@@ -481,8 +507,8 @@ body {
    CARDS
 ========================= */
 .card {
-  height: 15vh;
-  max-height: 140px; /* constrain card height to prevent overflow */
+  height: clamp(120px, 20vh, 200px);  /* responsive height: min 120px, preferred 20vh, max 200px */
+  max-height: 200px;  /* allow larger cards on big screens */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -494,7 +520,7 @@ body {
 .card img {
   width: auto;
   height: 100%;
-  max-height: 140px; /* ensure image doesn't exceed max height */
+  max-height: 200px; /* match card max-height */
   display: block;
   border: none;
   outline: none;
@@ -602,4 +628,139 @@ body {
   transform: scale(0.85) rotateY(15deg);
   opacity: 0.7;
   z-index: 5;
+}
+
+/* =========================
+   RULES & HISTORY PAGES
+========================= */
+.rules-container,
+.history-container {
+  max-width: 900px;
+  margin: 2em auto;
+  padding: 2em;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1em;
+  box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.3);
+  color: @text_color;
+
+  h1 {
+    color: @highlight_gold;
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    margin-bottom: 0.5em;
+    text-shadow: 0 0 8px fade(@highlight_gold, 40%);
+    border-bottom: 2px solid @highlight_gold;
+    padding-bottom: 0.5em;
+  }
+
+  h2 {
+    color: @highlight_gold;
+    font-size: clamp(1.4rem, 3vw, 1.8rem);
+    margin-top: 1.5em;
+    margin-bottom: 0.8em;
+    text-shadow: 0 0 6px fade(@highlight_gold, 30%);
+  }
+
+  h3 {
+    color: @light_gray;
+    font-size: clamp(1.2rem, 2.5vw, 1.4rem);
+    margin-top: 1.2em;
+    margin-bottom: 0.6em;
+  }
+
+  p {
+    line-height: 1.7;
+    margin-bottom: 1em;
+    color: @light_gray;
+    font-size: clamp(0.95rem, 2vw, 1.1rem);
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin: 2em 0;
+  }
+
+  ul, ol {
+    margin: 1em 0;
+    padding-left: 2em;
+    color: @light_gray;
+    line-height: 1.8;
+
+    li {
+      margin-bottom: 0.6em;
+      font-size: clamp(0.95rem, 2vw, 1.1rem);
+    }
+  }
+
+  strong {
+    color: @highlight_gold;
+    font-weight: 600;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5em 0;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 0.5em;
+    overflow: hidden;
+
+    thead {
+      background: rgba(230, 196, 92, 0.2);
+      
+      th {
+        color: @highlight_gold;
+        padding: 1em;
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 2px solid @highlight_gold;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        
+        &:last-child {
+          border-bottom: none;
+        }
+        
+        &:hover {
+          background: rgba(255, 255, 255, 0.05);
+        }
+      }
+
+      td {
+        padding: 0.8em 1em;
+        color: @light_gray;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .rules-container,
+  .history-container {
+    padding: 1.5em;
+    margin: 1em;
+
+    h1 {
+      font-size: 1.6rem;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+    }
+
+    table {
+      font-size: 0.9rem;
+      
+      thead th,
+      tbody td {
+        padding: 0.6em 0.8em;
+      }
+    }
+  }
 }

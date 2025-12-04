@@ -52,7 +52,7 @@ const Player = {
             <!-- Bet -->
             <div class="mt-1 d-flex align-items-center gap-1">
                 <i class="bi bi-coin"></i>
-                <p v-if="player.state === 'Playing' || player.state === 'Blackjack'" class="mb-0">{{ player.bet }}</p>
+                <p v-if="player.state === 'Playing' || player.state === 'Blackjack' || player.state === 'Standing'" class="mb-0">{{ player.bet }}</p>
                 <p v-if="player.state === 'WON'" class="mb-0 text-won">
                   +{{ lastBet }}
                 </p>

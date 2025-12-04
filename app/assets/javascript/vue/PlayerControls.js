@@ -45,6 +45,8 @@ const PlayerControls = {
         bet(amount) {
             const result = this.gameUtils.validateBet(amount, this.player.money);
 
+            this.message = '';
+
             if(!result.valid) {
                 this.message = result.message;
                 return

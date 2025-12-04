@@ -6,6 +6,15 @@ const Hand = {
     },
     computed: {
         handValue() {
+            const value = this.gameUtils.getHandValue(this.hand)
+            if(value === 21) {
+                return "Blackjack"
+            }
+
+            if(value > 21) {
+                return "Bust"
+            }
+
             return this.gameUtils.getHandValue(this.hand)
         },
         paddedCards() {
@@ -20,7 +29,7 @@ const Hand = {
     <div class="hand" style="position: relative; display: inline-block;">
       <div class="cards-container d-flex justify-content-center flex-wrap">
         <div class="hand-value-wrapper" style="position: relative; display: flex; align-items: flex-end;">
-          <div v-if="handValue > 0" class="hand-value">
+          <div v-if="handValue > 0 || handValue === 'Blackjack' || handValue === 'Bust'" class="hand-value">
             {{ handValue }}
           </div>
           <Card
