@@ -1,6 +1,6 @@
 const Rules = {
     template: `
-    <div style="color: white;">
+    <div class="rules-container">
         <h1>Blackjack – Spielregeln</h1>
         <hr>
         <h2>Ziel des Spiels</h2>
@@ -8,7 +8,7 @@ const Rules = {
             Ziel des Spiels ist es, mit zwei oder mehr Karten näher an 21 Punkte heranzukommen als der Dealer, ohne dabei den Wert von 21 Punkten zu überschreiten.
         </p>
         <ul>
-            <li>Wenn der Gesamtkartenwert > 21 → bist du sofort raus <strong>„Bust“</strong>.</li>
+            <li>Wenn der Gesamtkartenwert > 21 → bist du sofort raus <strong>„Bust"</strong>.</li>
             <li>Wenn der Gesamtkartenwert > Dealerkarten -> Gewinn</li>
         </ul>
         <hr>

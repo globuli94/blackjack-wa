@@ -66,7 +66,7 @@ case class Game @Inject() (
 
         val updatedHand =
           if(player.getName == "Marko") {
-            player.getHand.addCard(Card("A", "Spades")).addCard(Card("K", "Spades"))
+            player.getHand.addCard(Card("K", "Clubs")).addCard(Card("K", "Spades"))
           } else {
             player.getHand.addCard(first_card).addCard(second_card)
           }
