@@ -57,6 +57,9 @@ export default [
 
       // allow debugger during development only
       'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+
+      // disable multi-word component name rule for clearer component names
+      'vue/multi-word-component-names': 'off',
     },
   },
 
