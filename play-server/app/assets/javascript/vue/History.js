@@ -1,0 +1,57 @@
+const History = {
+    template: `
+    <div class="history-container">
+        <h1>Die Geschichte des Blackjack: Von Vingt-et-un zum Casino-Klassiker</h1>
+        <hr>
+        <h2>Woher kommt der Name „Blackjack"?</h2>
+        <p>
+            Nachdem im frühen 18. Jahrhundert das Kartenspiel mit nach Amerika gebracht wurde und 1931 diese Art des Zeitvertreibs in Nevada legalisiert worden ist, steigerte sich die Popularität rasend schnell.
+        </p>
+        <p>
+            Vor allem, weil die Casinobetreiber eine besonders hohe Auszahlung von 10:1 angeboten haben, wenn der Spieler seine 21 Punkte mit dem Pik Ass und <strong>einem schwarzen Buben </strong> (egal ob Kreuz oder Pik) erzielte.
+        </p>
+        <p>
+            Dies führte letztlich auch zur Entstehung des Namens <strong>„Blackjack"</strong>.
+        </p>
+        <hr>
+        <h2>Die Ursprünge im 18. Jahrhundert</h2>
+        <p>
+            Die Geschichte des Blackjack reicht bis ins 18. Jahrhundert zurück. Es gibt Vermutungen, dass das Spiel von verschiedenen älteren Kartenspielen wie dem spanischen „Trente-un", dem italienischen „Sette de Mezzo" und dem französischen „Quinze" beeinflusst wurde.
+            Doch das Vingt-et-un setzte sich aufgrund des erforderlichen Geschicks gegenüber reinem Glück durch.
+        </p>
+        <hr>
+        <h2>Der Weg nach Amerika und die Entwicklung zu "21"</h2>
+        <p>
+            Im 19. Jahrhundert brachten französische Einwanderer das Spiel nach Amerika, wo es den Namen „21" erhielt. Obwohl die Regeln in den Händen des Dealers lagen, fand das Spiel schnell Anklang, da es lediglich ein Kartendeck erforderte und somit einfach zu verbreiten war.
+        </p>
+        <p>Als das Glücksspiel in Nevada legalisiert wurde, suchten Casinos nach Wegen, die Spieler anzulocken. Zu diesem Zweck wurden oft spezielle Bonusauszahlungen eingeführt. Eine dieser Boni war eine 10:1-Auszahlung, wenn ein Spieler mit den ersten beiden Karten ein Ass und einen schwarzen Buben (engl. <strong>Jack</strong>) – also Pik Bube oder Kreuz Bube – erhielt. </p>
+        <p>Diese spezielle Kombination wurde als <strong>"Blackjack"</strong> bekannt und der Name blieb hängen, auch nachdem die ursprüngliche 10:1-Bonusauszahlung wieder abgeschafft oder modifiziert wurde.</p>
+        <hr>
+        <h2>Blackjack heute</h2>
+        <p>Heute ist Blackjack das meistgespielte Karten-Glücksspiel in Casinos weltweit. Es ist bekannt für sein einfaches Regelwerk (Ziel ist 21) und die Möglichkeit für Spieler, durch Entscheidungen den Spielausgang zu beeinflussen – ein entscheidender Unterschied zu reinen Glücksspielen wie Roulette.</p>
+        <hr>
+        <h2>Beliebte Varianten des Blackjack</h2>
+        <p>
+            Bis heute haben sich verschiedene Varianten des Spiels etabliert, die in vielen Casinos zu finden sind. Dabei unterscheidet sich das Regelwerk meistens nur in einigen Kleinigkeiten. Wir stellen Ihnen die verbreitetsten Varianten im kurzen Überblick vor:
+        </p>
+        <h3>Klassisches Blackjack</h3>
+        <p>
+            Die klassische Version des Kartenspiels is in Casinos am häufigsten zu finden. Hierbei wird das Spiel mit zwei bis vier Decks gespielt. Den Spielern ist es bei dieser Version erlaubt, zu Verdoppeln und zu Splitten. Für den Dealer gilt die Regel, eine weitere Karte aufzunehmen, wenn dieser eine Soft 17 hält.
+        </p>
+        <h3>Europäisches Blackjack</h3>
+        <p>
+            Diese Variante wird in vielen Fällen lediglich mit zwei Decks gespielt. Bei einer Soft 17 nimmt der Dealer keine weitere Karte auf. Spieler dürfen nur bei einem Handwert von insgesamt 9, 10 oder 11 verdoppeln. Treffen sowohl der Dealer als auch der Spieler einen Blackjack, wird dies als unentschieden gewertet.
+        </p>
+        <h3>Pantoon</h3>
+        <p>
+            Pantoon, oder auch Spanische 21 genannt, ist eine Blackjack-Version, bei der die ersten beiden Karten des Dealers nicht offen aufgedeckt werden. Um diesen Nachteil auszuhebeln, fallen die Gewinnquoten für den Spieler deutlich höher aus. Wenn ein Handwert von 15 noch nicht erreicht ist, muss der Spieler eine weitere Karte ziehen.
+        </p>
+        <h2>Zusammenfassung:</h2>
+        <ul>
+            <li><strong>Ursprung:</strong> Französisches "Vingt-et-un" (18. Jh.)</li>
+            <li><strong>USA:</strong> Verbreitung als "Blackjack" </li>
+            <li><strong>Namensgebung:</strong> Entstand durch eine spezielle Bonuszahlung für ein Ass und einen schwarzen Buben.</li>
+        </ul>
+    </div>
+    `
+}
