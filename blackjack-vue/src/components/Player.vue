@@ -26,11 +26,11 @@
 
     <div class="player-info">
       <div class="info-item">
-        <q-icon name="account_balance_wallet" size="xs" />
+        <img src="/icons/util-icons/dollar_tiny.png" alt="Money" class="info-icon" />
         <span>${{ player.money }}</span>
       </div>
       <div v-if="player.bet" class="info-item">
-        <q-icon name="paid" size="xs" />
+        <img src="/icons/util-icons/casino-chip.png" alt="Bet" class="info-icon" />
         <span>${{ player.bet }}</span>
       </div>
     </div>
@@ -137,5 +137,11 @@ const getStatusColor = (state) => {
   align-items: center;
   gap: 0.3rem;
   font-size: 0.9rem;
+}
+
+.info-icon {
+  height: 16px;
+  width: auto;
+  vertical-align: middle;
 }
 </style>
