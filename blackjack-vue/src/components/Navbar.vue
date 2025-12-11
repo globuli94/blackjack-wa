@@ -1,7 +1,7 @@
 <template>
   <q-toolbar class="navbar-toolbar shadow-2">
     <q-toolbar-title class="text-h5 text-weight-bold">
-      <q-icon name="casino" size="sm" class="q-mr-sm" />
+      <img src="/icons/logo/blackjack_logo.png" alt="Blackjack Logo" class="logo-img q-mr-sm" />
       Blackjack
     </q-toolbar-title>
 
@@ -51,5 +51,11 @@ const changePage = (page) => {
   backdrop-filter: blur(10px);
   border-radius: 12px;
   margin-bottom: 1rem;
+}
+
+.logo-img {
+  height: 32px;
+  width: auto;
+  vertical-align: middle;
 }
 </style>
