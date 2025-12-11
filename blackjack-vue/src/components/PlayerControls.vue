@@ -3,12 +3,16 @@
     <div v-if="gameState === 'Betting'" class="betting-controls">
       <q-btn
         color="amber"
-        icon="paid"
         label="Place Bet"
         @click="emit('bet')"
         size="lg"
         unelevated
-      />
+      >
+        <template v-slot:default>
+          <img src="/icons/util-icons/bet.png" alt="Bet" class="btn-icon" />
+          <span class="q-ml-sm">Place Bet</span>
+        </template>
+      </q-btn>
     </div>
 
     <div v-if="gameState === 'Started' && player" class="action-controls">
@@ -51,21 +55,21 @@
         {{ player.name }}
       </q-chip>
       <q-chip
-        icon="account_balance_wallet"
         color="green"
         text-color="white"
         size="md"
       >
-        Money: ${{ player.money }}
+        <img src="/icons/util-icons/dollars.png" alt="Money" class="chip-icon" />
+        <span class="q-ml-xs">Money: ${{ player.money }}</span>
       </q-chip>
       <q-chip
         v-if="player.bet"
-        icon="paid"
         color="amber"
         text-color="black"
         size="md"
       >
-        Bet: ${{ player.bet }}
+        <img src="/icons/util-icons/casino-chip.png" alt="Bet" class="chip-icon" />
+        <span class="q-ml-xs">Bet: ${{ player.bet }}</span>
       </q-chip>
     </div>
   </div>
@@ -115,5 +119,17 @@ const canDoubleDown = computed(() => {
   gap: 0.5rem;
   flex-wrap: wrap;
   justify-content: center;
+}
+
+.btn-icon {
+  height: 24px;
+  width: auto;
+  vertical-align: middle;
+}
+
+.chip-icon {
+  height: 20px;
+  width: auto;
+  vertical-align: middle;
 }
 </style>
