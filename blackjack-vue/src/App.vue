@@ -14,6 +14,7 @@
             @initialize="initializeGame"
             @start="startGame"
             @add-player="showAddPlayerDialog = true"
+            @reset="initializeGame"
           />
         </div>
 

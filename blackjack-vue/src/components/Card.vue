@@ -1,6 +1,10 @@
 <template>
-  <div class="playing-card" :class="{ 'hidden-card': hidden }">
-    <div v-if="hidden" class="card-back">
+  <div
+    ref="cardElement"
+    class="playing-card"
+    :class="{ 'hidden-card': hidden || isBlank }"
+  >
+    <div v-if="hidden || isBlank" class="card-back">
       <q-img
         src="/icons/deck_pngs/back.png"
         :ratio="0.714"
@@ -20,7 +24,8 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
+import { useCardAnimations } from '../composables/useCardAnimations'
 
 const props = defineProps({
   rank: {
@@ -35,9 +40,38 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  animateOnMount: {
+    type: Boolean,
+    default: true,
+  },
+  animationDelay: {
+    type: Number,
+    default: 0,
+  },
+})
+
+const emit = defineEmits(['animation-complete'])
+
+const cardElement = ref(null)
+const { dealCard, flipCard } = useCardAnimations()
+
+// Check if card is blank
+const isBlank = computed(() => {
+  // Card is blank only if both rank and suit are explicitly 'blank'
+  return props.rank === 'blank' && props.suit === 'blank'
 })
 
 const cardImagePath = computed(() => {
+  // Check if card is blank
+  if (isBlank.value) {
+    return '/icons/deck_pngs/back.png'
+  }
+
+  // Validate that we have valid rank and suit
+  if (!props.rank || !props.suit || props.rank === 'blank' || props.suit === 'blank') {
+    return '/icons/deck_pngs/back.png'
+  }
+
   // Map rank abbreviations to full names
   const rankMap = {
     'A': 'Ace',
@@ -51,6 +85,38 @@ const cardImagePath = computed(() => {
   // Format: {Suit}{Rank}.png (e.g., SpadesAce.png, Hearts10.png)
   return `/icons/deck_pngs/${props.suit}${rankName}.png`
 })
+
+// Animate card when it appears
+onMounted(() => {
+  if (props.animateOnMount && cardElement.value) {
+    dealCard(cardElement.value, props.animationDelay, () => {
+      emit('animation-complete')
+    })
+  }
+})
+
+// Watch for card flip (when hidden state changes)
+watch(
+  () => props.hidden,
+  (newVal, oldVal) => {
+    if (cardElement.value && oldVal !== undefined && oldVal !== newVal) {
+      // Card is being flipped
+      const newImageSrc = newVal
+        ? '/icons/deck_pngs/back.png'
+        : cardImagePath.value
+      flipCard(cardElement.value, newImageSrc)
+    }
+  }
+)
+
+// Expose methods and element for parent components
+defineExpose({
+  element: cardElement,
+  dealCard: () => cardElement.value && dealCard(cardElement.value),
+  flipCard: () =>
+    cardElement.value &&
+    flipCard(cardElement.value, cardImagePath.value),
+})
 </script>
 
 <style scoped>
@@ -59,7 +125,6 @@ const cardImagePath = computed(() => {
   height: 140px;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s ease;
 }
 
@@ -71,7 +136,7 @@ const cardImagePath = computed(() => {
 .card-back {
   width: 100%;
   height: 100%;
-  background: white;
+  background: transparent;
   border-radius: 8px;
 }
 

@@ -1,5 +1,9 @@
 <template>
-  <div class="player-card" :class="{ 'current-player': isCurrent }">
+  <div
+    ref="playerCardElement"
+    class="player-card"
+    :class="{ 'current-player': isCurrent }"
+  >
     <div class="player-header">
       <q-icon
         :name="isCurrent ? 'person' : 'person_outline'"
@@ -19,8 +23,10 @@
 
     <div class="player-hand">
       <Hand
+        ref="handRef"
         :cards="player.hand?.cards || []"
         :show-value="true"
+        :animate-cards="true"
       />
     </div>
 
@@ -38,9 +44,11 @@
 </template>
 
 <script setup>
+import { ref, watch, nextTick } from 'vue'
 import Hand from './Hand.vue'
+import { useCardAnimations } from '../composables/useCardAnimations'
 
-defineProps({
+const props = defineProps({
   player: {
     type: Object,
     required: true,
@@ -50,6 +58,26 @@ defineProps({
     default: false,
   },
 })
+
+const playerCardElement = ref(null)
+const handRef = ref(null)
+const { glow } = useCardAnimations()
+
+// Add glow effect when player becomes current
+watch(
+  () => props.isCurrent,
+  (newVal) => {
+    if (newVal && playerCardElement.value) {
+      nextTick(() => {
+        glow(playerCardElement.value, 'gold', 0) // Continuous glow
+      })
+    } else if (playerCardElement.value) {
+      // Remove glow
+      playerCardElement.value.style.boxShadow = ''
+    }
+  },
+  { immediate: true }
+)
 
 const getStatusColor = (state) => {
   switch (state) {
