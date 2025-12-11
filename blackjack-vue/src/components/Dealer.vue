@@ -16,7 +16,6 @@
     <div class="dealer-hand">
       <Hand
         :cards="dealer.hand?.cards || []"
-        :hide-first-card="shouldHideFirstCard"
         :show-value="true"
       />
     </div>
@@ -24,19 +23,13 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import Hand from './Hand.vue'
 
-const props = defineProps({
+defineProps({
   dealer: {
     type: Object,
     required: true,
   },
-})
-
-const shouldHideFirstCard = computed(() => {
-  // Hide first card when dealer is in Idle state (game ongoing)
-  return props.dealer.state === 'Idle'
 })
 
 const getStatusColor = (state) => {

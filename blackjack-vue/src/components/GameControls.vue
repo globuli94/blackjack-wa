@@ -33,6 +33,16 @@
       unelevated
     />
 
+    <q-btn
+      color="negative"
+      icon="refresh"
+      label="Reset"
+      @click="emit('reset')"
+      size="md"
+      class="q-ml-sm"
+      unelevated
+    />
+
     <div v-if="gameState" class="game-state-badge q-ml-md">
       <q-badge
         :color="getStateBadgeColor(gameState)"
@@ -56,7 +66,7 @@ defineProps({
   },
 })
 
-const emit = defineEmits(['initialize', 'start', 'add-player'])
+const emit = defineEmits(['initialize', 'start', 'add-player', 'reset'])
 
 const getStateBadgeColor = (state) => {
   switch (state) {
