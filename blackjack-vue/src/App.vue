@@ -1,13 +1,14 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <div class="blackjack-app">
+
       <!-- Offline Banner -->
       <div v-if="showOfflineBanner" class="offline-banner">
         <q-banner class="bg-warning text-white">
           <template v-slot:avatar>
             <q-icon name="wifi_off" />
           </template>
-          Connection is offline! API calls won't work!
+          Connection offline! API calls only work with an active connection!
         </q-banner>
       </div>
 
@@ -326,9 +327,9 @@ onMounted(() => {
     showOfflineBanner.value = true;
     Notify.create({
       type: 'negative',
-      message: 'Connection offline, game controls require active connection',
+      message: 'Connection offline',
       position: 'top',
-      timeout: 0,
+      timeout: 3000,
       actions: [{icon: 'close', color: 'white'}]
     })
   })
@@ -388,5 +389,17 @@ onUnmounted(() => {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+.offline-banner {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  margin: -1rem -1rem 1rem -1rem; /* Negative margin to extend to edges */
+}
+
+.offline-banner .q-banner {
+  background: #f59e0b !important; /* Orange/warning color */
+  border-radius: 0; /* Remove rounded corners */
 }
 </style>
