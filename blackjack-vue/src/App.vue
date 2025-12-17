@@ -307,7 +307,7 @@ onMounted(() => {
   wsManager = new WebSocketManager(updateGameState)
   wsManager.connect()
 
-  // event fired by browser for connection changes
+  // events fired by browser for connection changes
   window.addEventListener('online', () => {
     online.value = true;
     showOfflineBanner.value = false;
@@ -317,11 +317,6 @@ onMounted(() => {
         position: 'top',
         timeout: 3000
     })
-
-    // try to reconnect
-    if(wsManager) {
-      wsManager.connect();
-    }
   })
 
   window.addEventListener('offline', () => {
@@ -339,8 +334,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   wsManager?.disconnect();
-  window.removeEventListener('online', () => {});
-  window.removeEventListener('offline', () => {});
 })
 </script>
 

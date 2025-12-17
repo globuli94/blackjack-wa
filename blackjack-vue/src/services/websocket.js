@@ -2,25 +2,19 @@ export class WebSocketManager {
   constructor(onMessageCallback) {
     this.socket = null
     this.onMessageCallback = onMessageCallback
+    this.setupOnlineListener();
   }
 
   setupOnlineListener() {
     window.addEventListener('online', () => {
-      if(this.socket) {
-        if (!this.socket || this.socket.readyState === WebSocket.CLOSED) {
-          this.connect();
-        }
+      if (!this.socket || this.socket.readyState === WebSocket.CLOSED) {
+        this.connect();
       }
     })
 
     window.addEventListener('offline', () => {
       this.socket?.close();
     })
-
-    return () => {
-      window.removeEventListener('online', () => {});
-      window.removeEventListener('offline', () => {});
-    }
   }
 
   connect() {
@@ -40,7 +34,7 @@ export class WebSocketManager {
 
     this.socket.onmessage = (event) => {
       if (event.data === 'ping') return
-      
+
       try {
         const gameData = JSON.parse(event.data)
         console.log('📨 Game update:', gameData)
@@ -56,6 +50,10 @@ export class WebSocketManager {
 
     this.socket.onclose = () => {
       console.log('⚠️ WebSocket closed')
+
+      if (navigator.onLine) {
+        setTimeout(() => this.connect(), 1000)
+      }
     }
   }
 
