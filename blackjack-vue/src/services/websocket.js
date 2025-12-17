@@ -4,7 +4,30 @@ export class WebSocketManager {
     this.onMessageCallback = onMessageCallback
   }
 
+  setupOnlineListener() {
+    window.addEventListener('online', () => {
+      if(this.socket) {
+        if (!this.socket || this.socket.readyState === WebSocket.CLOSED) {
+          this.connect();
+        }
+      }
+    })
+
+    window.addEventListener('offline', () => {
+      this.socket?.close();
+    })
+
+    return () => {
+      window.removeEventListener('online', () => {});
+      window.removeEventListener('offline', () => {});
+    }
+  }
+
   connect() {
+    if(!navigator.onLine) {
+      return;
+    }
+
     const wsUrl = `ws://localhost:9000/websocket`
 
     console.log('Connecting to WebSocket...', wsUrl)
