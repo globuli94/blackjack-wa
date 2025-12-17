@@ -41,3 +41,15 @@ quasar build
 ### Customize the configuration
 
 See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
+
+### QUASAR PWA
+
+build the app
+```
+quasar build -m pwa 
+```
+
+serve app
+```
+quasar serve dist/pwa
+```
