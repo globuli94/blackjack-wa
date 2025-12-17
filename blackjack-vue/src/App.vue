@@ -2,12 +2,14 @@
   <q-layout view="lHh Lpr lFf">
     <div class="blackjack-app">
       <!-- Offline Banner -->
-      <q-banner v-if="showOfflineBanner" class="alert-warning text-white">
-        <template v-slot:avatar>
-          <q-icon name="wifi_off" />
-        </template>
-        Connection is offline! API calls won't work!
-      </q-banner>
+      <div v-if="showOfflineBanner" class="offline-banner">
+        <q-banner class="bg-warning text-white">
+          <template v-slot:avatar>
+            <q-icon name="wifi_off" />
+          </template>
+          Connection is offline! API calls won't work!
+        </q-banner>
+      </div>
 
       <!-- Navbar -->
       <Navbar @page-change="handlePageChange" />
