@@ -1,6 +1,14 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <div class="blackjack-app">
+      <!-- Offline Banner -->
+      <q-banner v-if="showOfflineBanner" class="alert-warning text-white">
+        <template v-slot:avatar>
+          <q-icon name="wifi_off" />
+        </template>
+        Connection is offline! API calls won't work!
+      </q-banner>
+
       <!-- Navbar -->
       <Navbar @page-change="handlePageChange" />
 
@@ -136,6 +144,9 @@ const betAmount = ref(100)
 const showAddPlayerDialog = ref(false)
 const showBetDialog = ref(false)
 
+// for offline management
+const online = ref(navigator.onLine)
+const showOfflineBanner = ref(false)
 let wsManager = null
 
 // Computed
@@ -295,10 +306,41 @@ const placeBet = async () => {
 onMounted(() => {
   wsManager = new WebSocketManager(updateGameState)
   wsManager.connect()
+
+  // event fired by browser for connection changes
+  window.addEventListener('online', () => {
+    online.value = true;
+    showOfflineBanner.value = false;
+    Notify.create({
+        type: 'positive',
+        message: 'Connection online',
+        position: 'top',
+        timeout: 3000
+    })
+
+    // try to reconnect
+    if(wsManager) {
+      wsManager.connect();
+    }
+  })
+
+  window.addEventListener('offline', () => {
+    online.value = false;
+    showOfflineBanner.value = true;
+    Notify.create({
+      type: 'negative',
+      message: 'Connection offline, game controls require active connection',
+      position: 'top',
+      timeout: 0,
+      actions: [{icon: 'close', color: 'white'}]
+    })
+  })
 })
 
 onUnmounted(() => {
-  wsManager?.disconnect()
+  wsManager?.disconnect();
+  window.removeEventListener('online', () => {});
+  window.removeEventListener('offline', () => {});
 })
 </script>
 
