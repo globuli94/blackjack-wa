@@ -3,42 +3,10 @@
 # https://www.playframework.com/documentation/latest/ScalaRouting
 # ~~~~
 
-# An example controller showing a sample home page
-GET     /                           controllers.HomeController.index()
-
+# WebSocket
 GET     /websocket                  controllers.HomeController.socket
-GET     /client                     controllers.HomeController.openClient()
 
-# Game control
-#POST    /loadGame                   controllers.HomeController.loadGame()
-#POST    /saveGame                   controllers.HomeController.saveGame()
-GET    /initializeGame             controllers.HomeController.initializeGame()
-GET    /startGame                  controllers.HomeController.startGame()
-#POST    /exit                       controllers.HomeController.exit()
-
-# Player management
-POST    /addPlayer                  controllers.HomeController.addPlayer()
-GET     /addPlayerForm              controllers.HomeController.addPlayerForm()
-GET     /leavePlayer                controllers.HomeController.leavePlayer()
-
-# Game actions
-GET    /hitNextPlayer              controllers.HomeController.hitNextPlayer()
-GET    /standNextPlayer            controllers.HomeController.standNextPlayer()
-GET    /doubleDown                 controllers.HomeController.doubleDown()
-POST    /bet                        controllers.HomeController.bet()
-
-# General command (for text input)
-GET     /command                    controllers.HomeController.command()
-
-# Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
-
-GET     /toHistory                    controllers.HomeController.toHistory()
-GET     /toRule                       controllers.HomeController.toRule()
-GET     /toIndex                      controllers.HomeController.toIndex()
-GET     /toGame                       controllers.HomeController.toGame()
-
-# JSON
+# JSON API endpoints
 POST    /api/addPlayer              controllers.HomeController.addPlayerJson()
 POST    /api/bet                    controllers.HomeController.betJson()
 GET     /api/hit                    controllers.HomeController.hitJson()
@@ -48,3 +16,6 @@ GET     /api/leavePlayer            controllers.HomeController.leavePlayerJson()
 GET     /api/gameState              controllers.HomeController.getGameStateJson()
 GET     /api/initializeGame         controllers.HomeController.initializeGameJson()
 GET     /api/startGame              controllers.HomeController.startGameJson()
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
