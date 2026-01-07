@@ -141,12 +141,80 @@ export default defineConfig((/* ctx */) => {
       workboxMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       // swFilename: 'sw.js',
       // manifestFilename: 'manifest.json',
-      // extendManifestJson (json) {},
+      extendManifestJson (json) {
+        json.name = 'Blackjack App';
+        json.short_name = 'Blackjack';
+        json.description = 'Blackjack App';
+        json.start_url = '/';
+        json.display = 'standalone';
+        json.orientation = 'portrait';
+        json.background_color = '#ffffff';
+        json.theme_color = '#027be3';
+        json.icons = [
+          {
+            src: 'icons/icon-128x128.png',
+            sizes: '128x128',
+            type: 'image/png',
+          },
+        ];
+
+        return json;
+      },
       // useCredentialsForManifestTag: true,
       // injectPwaMetaTags: false,
       // extendPWACustomSWConf (esbuildConf) {},
-      // extendGenerateSWOptions (cfg) {},
-      // extendInjectManifestOptions (cfg) {}
+      extendGenerateSWOptions (cfg) {
+        cfg.runtimeCaching = [
+
+          // api calls - network only, responses ignored, request queued for retry if offline
+          {
+            urlPattern: /^https?:\/\/.*\/api\//,
+            handler: 'NetworkOnly',
+            options: {
+              backgroundSync: {
+                name: 'api-queue',
+                options: {
+                  maxRetentionTime: 24 * 60
+                },
+              },
+            },
+          },
+
+          // websocket - network only, dont cache since it's a realtime connection
+          {
+            urlPattern: /^wss?:\/\/localhost:9000\/websocket/,
+            handler: 'NetworkOnly' // Don't cache WebSocket
+          },
+
+          // images - cache first -> check cache -> then network
+          {
+            urlPattern: /\.(png|jpg|jpeg)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 // cache for 1 hour
+              },
+            },
+          },
+
+          // static assests (compiled vue files, js, css)
+          {
+            urlPattern: /^https?:\/\/.*\.(js|css|html)$/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'static-assets',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 // cache for 1 hour
+              },
+            },
+          }
+        ];
+      },
+      // extendInjectManifestOptions (cfg) {
+      // },
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-cordova-apps/configuring-cordova

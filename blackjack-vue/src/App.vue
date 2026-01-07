@@ -1,6 +1,17 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <div class="blackjack-app">
+
+      <!-- Offline Banner -->
+      <div v-if="showOfflineBanner" class="offline-banner">
+        <q-banner class="bg-warning text-white">
+          <template v-slot:avatar>
+            <q-icon name="wifi_off" />
+          </template>
+          Connection offline! API calls only work with an active connection!
+        </q-banner>
+      </div>
+
       <!-- Navbar -->
       <Navbar @page-change="handlePageChange" />
 
@@ -136,6 +147,9 @@ const betAmount = ref(100)
 const showAddPlayerDialog = ref(false)
 const showBetDialog = ref(false)
 
+// for offline management
+const online = ref(navigator.onLine)
+const showOfflineBanner = ref(false)
 let wsManager = null
 
 // Computed
@@ -295,10 +309,34 @@ const placeBet = async () => {
 onMounted(() => {
   wsManager = new WebSocketManager(updateGameState)
   wsManager.connect()
+
+  // events fired by browser for connection changes
+  window.addEventListener('online', () => {
+    online.value = true;
+    showOfflineBanner.value = false;
+    Notify.create({
+        type: 'positive',
+        message: 'Connection online',
+        position: 'top',
+        timeout: 3000
+    })
+  })
+
+  window.addEventListener('offline', () => {
+    online.value = false;
+    showOfflineBanner.value = true;
+    Notify.create({
+      type: 'negative',
+      message: 'Connection offline',
+      position: 'top',
+      timeout: 3000,
+      actions: [{icon: 'close', color: 'white'}]
+    })
+  })
 })
 
 onUnmounted(() => {
-  wsManager?.disconnect()
+  wsManager?.disconnect();
 })
 </script>
 
@@ -351,5 +389,17 @@ onUnmounted(() => {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+.offline-banner {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  margin: -1rem -1rem 1rem -1rem; /* Negative margin to extend to edges */
+}
+
+.offline-banner .q-banner {
+  background: #f59e0b !important; /* Orange/warning color */
+  border-radius: 0; /* Remove rounded corners */
 }
 </style>
