@@ -38,6 +38,9 @@ export default defineConfig((/* ctx */) => {
       },
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
+
+      publicPath: process.env.NODE_ENV === 'production' ? '/blackjack-wa/' : '/',
+
       // vueRouterBase,
       // vueDevtools,
       // vueOptionsAPI: false,
