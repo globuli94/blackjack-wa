@@ -40,15 +40,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Heroku CLI
-        run: curl https://cli-assets.heroku.com/install.sh | sh
-
       - name: Deploy to Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
-          cd play-server
-          git config --global user.email "gallusjonathan@gmail.com"
-          git config --global user.name "GitHub Actions"
-          heroku git:remote -a playserver-eu
-          git push heroku main:main -f
+          # Deploy the play-server subdirectory to Heroku
+          git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/playserver-eu.git
+          git push heroku `git subtree split --prefix play-server main`:main --force
