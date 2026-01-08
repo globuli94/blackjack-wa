@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-deploy:
+  deploy-frontend:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,10 +24,24 @@ jobs:
       - name: Build
         run: |
           cd blackjack-vue
-          quasar build -m pwa
+          npx quasar build -m pwa
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./blackjack-vue/dist/pwa
+
+  deploy-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.13.15
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: "playserver-eu"
+          heroku_email: "gallusjonathan@gmail.com"
+          appdir: "play-server"
