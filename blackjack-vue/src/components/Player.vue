@@ -32,11 +32,11 @@
 
     <div class="player-info">
       <div class="info-item">
-        <img src="/icons/util-icons/dollar_tiny.png" alt="Money" class="info-icon" />
+        <img src="icons/util-icons/dollar_tiny.png" alt="Money" class="info-icon" />
         <span>${{ player.money }}</span>
       </div>
       <div v-if="player.bet" class="info-item">
-        <img src="/icons/util-icons/casino-chip.png" alt="Bet" class="info-icon" />
+        <img src="icons/util-icons/casino-chip.png" alt="Bet" class="info-icon" />
         <span>${{ player.bet }}</span>
       </div>
     </div>

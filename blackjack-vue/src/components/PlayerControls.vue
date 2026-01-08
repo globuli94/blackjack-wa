@@ -9,7 +9,7 @@
         unelevated
       >
         <template v-slot:default>
-          <img src="/icons/util-icons/bet.png" alt="Bet" class="btn-icon" />
+          <img src="icons/util-icons/bet.png" alt="Bet" class="btn-icon" />
           <span class="q-ml-sm">Place Bet</span>
         </template>
       </q-btn>
@@ -59,7 +59,7 @@
         text-color="white"
         size="md"
       >
-        <img src="/icons/util-icons/dollars.png" alt="Money" class="chip-icon" />
+        <img src="icons/util-icons/dollars.png" alt="Money" class="chip-icon" />
         <span class="q-ml-xs">Money: ${{ player.money }}</span>
       </q-chip>
       <q-chip
@@ -68,7 +68,7 @@
         text-color="black"
         size="md"
       >
-        <img src="/icons/util-icons/casino-chip.png" alt="Bet" class="chip-icon" />
+        <img src="icons/util-icons/casino-chip.png" alt="Bet" class="chip-icon" />
         <span class="q-ml-xs">Bet: ${{ player.bet }}</span>
       </q-chip>
     </div>

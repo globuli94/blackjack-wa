@@ -6,7 +6,7 @@
   >
     <div v-if="hidden || isBlank" class="card-back">
       <q-img
-        src="/icons/deck_pngs/back.png"
+        src="icons/deck_pngs/back.png"
         :ratio="0.714"
         fit="contain"
         class="card-image"
@@ -64,12 +64,12 @@ const isBlank = computed(() => {
 const cardImagePath = computed(() => {
   // Check if card is blank
   if (isBlank.value) {
-    return '/icons/deck_pngs/back.png'
+    return 'icons/deck_pngs/back.png'
   }
 
   // Validate that we have valid rank and suit
   if (!props.rank || !props.suit || props.rank === 'blank' || props.suit === 'blank') {
-    return '/icons/deck_pngs/back.png'
+    return 'icons/deck_pngs/back.png'
   }
 
   // Map rank abbreviations to full names
@@ -83,7 +83,7 @@ const cardImagePath = computed(() => {
   const rankName = rankMap[props.rank] || props.rank
 
   // Format: {Suit}{Rank}.png (e.g., SpadesAce.png, Hearts10.png)
-  return `/icons/deck_pngs/${props.suit}${rankName}.png`
+  return `icons/deck_pngs/${props.suit}${rankName}.png`
 })
 
 // Animate card when it appears
@@ -102,7 +102,7 @@ watch(
     if (cardElement.value && oldVal !== undefined && oldVal !== newVal) {
       // Card is being flipped
       const newImageSrc = newVal
-        ? '/icons/deck_pngs/back.png'
+        ? 'icons/deck_pngs/back.png'
         : cardImagePath.value
       flipCard(cardElement.value, newImageSrc)
     }
