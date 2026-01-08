@@ -37,13 +37,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install Heroku CLI
+        run: curl https://cli-assets.heroku.com/install.sh | sh
 
       - name: Deploy to Heroku
-        uses: akhileshns/heroku-deploy@v3.13.15
-        with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: "playserver-eu"
-          heroku_email: "gallusjonathan@gmail.com"
-          appdir: "play-server"
-          usedocker: false
-          buildpack: "https://github.com/heroku/heroku-buildpack-scala.git"
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          cd play-server
+          git config --global user.email "gallusjonathan@gmail.com"
+          git config --global user.name "GitHub Actions"
+          heroku git:remote -a playserver-eu
+          git push heroku main:main -f
