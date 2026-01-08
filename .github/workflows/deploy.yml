@@ -45,3 +45,5 @@ jobs:
           heroku_app_name: "playserver-eu"
           heroku_email: "gallusjonathan@gmail.com"
           appdir: "play-server"
+          usedocker: false
+          buildpack: "https://github.com/heroku/heroku-buildpack-scala.git"
