@@ -1,7 +1,7 @@
 <template>
   <q-toolbar class="navbar-toolbar shadow-2">
     <q-toolbar-title class="text-h5 text-weight-bold">
-      <img src="/icons/logo/blackjack_logo.png" alt="Blackjack Logo" class="logo-img q-mr-sm" />
+      <img src="icons/logo/blackjack_logo.png" alt="Blackjack Logo" class="logo-img q-mr-sm" />
       Blackjack
     </q-toolbar-title>
 
