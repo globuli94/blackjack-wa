@@ -22,7 +22,7 @@ export class WebSocketManager {
       return;
     }
 
-    const wsUrl = `ws://localhost:9000/websocket`
+    const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:9000/websocket'
 
     console.log('Connecting to WebSocket...', wsUrl)
     this.socket = new WebSocket(wsUrl)

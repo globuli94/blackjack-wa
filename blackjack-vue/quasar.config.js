@@ -38,6 +38,9 @@ export default defineConfig((/* ctx */) => {
       },
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
+
+      publicPath: process.env.NODE_ENV === 'production' ? '/blackjack-wa/' : '/',
+
       // vueRouterBase,
       // vueDevtools,
       // vueOptionsAPI: false,
@@ -182,7 +185,7 @@ export default defineConfig((/* ctx */) => {
 
           // websocket - network only, dont cache since it's a realtime connection
           {
-            urlPattern: /^wss?:\/\/localhost:9000\/websocket/,
+            urlPattern: /^wss?:\/\/.*\/websocket/,
             handler: 'NetworkOnly' // Don't cache WebSocket
           },
 
@@ -194,7 +197,7 @@ export default defineConfig((/* ctx */) => {
               cacheName: 'images',
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 60 // cache for 1 hour
+                maxAgeSeconds: 60 // cache for 1 hour
               },
             },
           },
@@ -207,7 +210,7 @@ export default defineConfig((/* ctx */) => {
               cacheName: 'static-assets',
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 60 // cache for 1 hour
+                maxAgeSeconds: 60 // cache for 1 hour
               },
             },
           }
