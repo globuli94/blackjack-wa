@@ -16,18 +16,28 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
   const loading = ref(true)
   const error = ref(null)
+  const idToken = ref(null)
 
   const isAuthenticated = computed(() => !!user.value)
   const userEmail = computed(() => user.value?.email || null)
   const userName = computed(() => user.value?.displayName || user.value?.email || 'User')
+  const hasValidToken = computed(() => !!idToken.value)
 
   // Initialize auth state listener
   const init = () => {
     try {
       onAuthStateChanged(
         auth,
-        (firebaseUser) => {
+        async (firebaseUser) => {
           user.value = firebaseUser
+
+          // Get token if user is logged in
+          if (firebaseUser) {
+            await getIdToken()
+          } else {
+            idToken.value = null
+          }
+
           loading.value = false
           error.value = null
           console.log('[Auth Store] Auth state changed:', firebaseUser ? 'User logged in' : 'User logged out')
@@ -52,6 +62,7 @@ export const useAuthStore = defineStore('auth', () => {
       error.value = null
       const userCredential = await signInWithEmailAndPassword(auth, email, password)
       user.value = userCredential.user
+      await getIdToken()
       return { success: true }
     } catch (err) {
       error.value = err.message
@@ -68,12 +79,13 @@ export const useAuthStore = defineStore('auth', () => {
       error.value = null
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       user.value = userCredential.user
-      
+
       // Update display name if provided
       if (displayName && user.value) {
         await user.value.updateProfile({ displayName })
       }
-      
+
+      await getIdToken()
       return { success: true }
     } catch (err) {
       error.value = err.message
@@ -91,6 +103,7 @@ export const useAuthStore = defineStore('auth', () => {
       const provider = new GoogleAuthProvider()
       const userCredential = await signInWithPopup(auth, provider)
       user.value = userCredential.user
+      await getIdToken()
       return { success: true }
     } catch (err) {
       error.value = err.message
@@ -108,6 +121,7 @@ export const useAuthStore = defineStore('auth', () => {
       const provider = new FacebookAuthProvider()
       const userCredential = await signInWithPopup(auth, provider)
       user.value = userCredential.user
+      await getIdToken()
       return { success: true }
     } catch (err) {
       error.value = err.message
@@ -125,6 +139,7 @@ export const useAuthStore = defineStore('auth', () => {
       const provider = new TwitterAuthProvider()
       const userCredential = await signInWithPopup(auth, provider)
       user.value = userCredential.user
+      await getIdToken()
       return { success: true }
     } catch (err) {
       error.value = err.message
@@ -141,6 +156,7 @@ export const useAuthStore = defineStore('auth', () => {
       error.value = null
       await signOut(auth)
       user.value = null
+      idToken.value = null
       return { success: true }
     } catch (err) {
       error.value = err.message
@@ -155,13 +171,34 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null
   }
 
+  // Get Firebase ID Token
+  const getIdToken = async (forceRefresh = false) => {
+    if (!user.value) {
+      console.warn('[Auth Store] Cannot get ID token: No user logged in')
+      return null
+    }
+
+    try {
+      const token = await user.value.getIdToken(forceRefresh)
+      idToken.value = token
+      console.log('[Auth Store] ID token retrieved successfully')
+      return token
+    } catch (err) {
+      console.error('[Auth Store] Failed to get ID token:', err)
+      error.value = err.message
+      return null
+    }
+  }
+
   return {
     user,
     loading,
     error,
+    idToken,
     isAuthenticated,
     userEmail,
     userName,
+    hasValidToken,
     init,
     signIn,
     signUp,
@@ -170,5 +207,6 @@ export const useAuthStore = defineStore('auth', () => {
     signInWithTwitter,
     logout,
     clearError,
+    getIdToken,
   }
 })
