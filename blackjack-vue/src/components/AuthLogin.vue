@@ -49,26 +49,6 @@
           :disable="authStore.loading"
           @click="handleGoogleSignIn"
         />
-
-        <q-btn
-          outline
-          color="primary"
-          icon="fab fa-facebook"
-          label="Sign in with Facebook"
-          class="full-width"
-          :disable="authStore.loading"
-          @click="handleFacebookSignIn"
-        />
-
-        <q-btn
-          outline
-          color="primary"
-          icon="fab fa-twitter"
-          label="Sign in with Twitter"
-          class="full-width"
-          :disable="authStore.loading"
-          @click="handleTwitterSignIn"
-        />
       </q-form>
     </q-card-section>
 
@@ -118,30 +98,6 @@ const handleGoogleSignIn = async () => {
     Notify.create({
       type: 'positive',
       message: 'Signed in with Google successfully!',
-      position: 'top',
-    })
-    emit('authenticated')
-  }
-}
-
-const handleFacebookSignIn = async () => {
-  const result = await authStore.signInWithFacebook()
-  if (result.success) {
-    Notify.create({
-      type: 'positive',
-      message: 'Signed in with Facebook successfully!',
-      position: 'top',
-    })
-    emit('authenticated')
-  }
-}
-
-const handleTwitterSignIn = async () => {
-  const result = await authStore.signInWithTwitter()
-  if (result.success) {
-    Notify.create({
-      type: 'positive',
-      message: 'Signed in with Twitter successfully!',
       position: 'top',
     })
     emit('authenticated')
