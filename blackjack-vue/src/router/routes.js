@@ -6,7 +6,8 @@ const routes = [
       {
         path: '',
         component: () => import('pages/GamePage.vue'),
-        meta: { requiresAuth: true },
+        // No requiresAuth - History and Rules are public
+        // Game actions are protected by backend Firebase authentication
       },
     ],
   },

@@ -15,44 +15,68 @@
 
     <!-- HOME (Game) Section -->
     <div v-if="currentPage === 'home'" class="game-section">
-      <!-- Game Controls -->
-      <div class="controls-wrapper">
-        <GameControls
-          :game-state="gameState"
-          :players="players"
-          @initialize="initializeGame"
-          @start="startGame"
-          @add-player="showAddPlayerDialog = true"
-          @reset="initializeGame"
-        />
+      <!-- Show game only if authenticated -->
+      <div v-if="authStore.isAuthenticated">
+        <!-- Game Controls -->
+        <div class="controls-wrapper">
+          <GameControls
+            :game-state="gameState"
+            :players="players"
+            @initialize="initializeGame"
+            @start="startGame"
+            @add-player="showAddPlayerDialog = true"
+            @reset="initializeGame"
+          />
+        </div>
+
+        <!-- Dealer -->
+        <div v-if="dealer" class="dealer-wrapper">
+          <Dealer :dealer="dealer" />
+        </div>
+
+        <!-- Players -->
+        <div v-if="players.length > 0" class="players-wrapper">
+          <Player
+            v-for="player in players"
+            :key="player.name"
+            :player="player"
+            :is-current="player === currentPlayer"
+          />
+        </div>
+
+        <!-- Player Controls -->
+        <div class="player-controls-wrapper">
+          <PlayerControls
+            v-if="currentPlayer"
+            :player="currentPlayer"
+            :game-state="gameState"
+            @hit="hit"
+            @stand="stand"
+            @double-down="doubleDown"
+            @bet="showBetDialog = true"
+          />
+        </div>
       </div>
 
-      <!-- Dealer -->
-      <div v-if="dealer" class="dealer-wrapper">
-        <Dealer :dealer="dealer" />
-      </div>
-
-      <!-- Players -->
-      <div v-if="players.length > 0" class="players-wrapper">
-        <Player
-          v-for="player in players"
-          :key="player.name"
-          :player="player"
-          :is-current="player === currentPlayer"
-        />
-      </div>
-
-      <!-- Player Controls -->
-      <div class="player-controls-wrapper">
-        <PlayerControls
-          v-if="currentPlayer"
-          :player="currentPlayer"
-          :game-state="gameState"
-          @hit="hit"
-          @stand="stand"
-          @double-down="doubleDown"
-          @bet="showBetDialog = true"
-        />
+      <div v-else class="login-prompt">
+        <q-card class="prompt-card">
+          <q-card-section class="text-center">
+            <q-icon name="casino" size="64px" color="primary" />
+            <div class="text-h5 q-mt-md">Welcome to Blackjack</div>
+            <div class="text-body1 q-mt-sm text-grey-6">
+              Please sign in to start playing
+            </div>
+          </q-card-section>
+          <q-card-actions align="center">
+            <q-btn
+              color="primary"
+              label="Sign In"
+              icon="login"
+              size="lg"
+              @click="$router.push('/auth')"
+            />
+          </q-card-actions>
+        </q-card>
       </div>
     </div>
 
@@ -308,8 +332,11 @@ const placeBet = async () => {
 
 // Lifecycle
 onMounted(() => {
-  wsManager = new WebSocketManager(updateGameState, authStore)
-  wsManager.connect()
+  // Only connect WebSocket if user is authenticated
+  if (authStore.isAuthenticated) {
+    wsManager = new WebSocketManager(updateGameState, authStore)
+    wsManager.connect()
+  }
 
   // events fired by browser for connection changes
   window.addEventListener('online', () => {
@@ -402,5 +429,20 @@ onUnmounted(() => {
 .offline-banner .q-banner {
   background: #f59e0b !important; /* Orange/warning color */
   border-radius: 0; /* Remove rounded corners */
+}
+
+.login-prompt {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  padding: 2rem;
+}
+
+.prompt-card {
+  max-width: 500px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
 }
 </style>
