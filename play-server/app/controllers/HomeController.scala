@@ -1,6 +1,7 @@
 package controllers
 
 import controller.controllerComponent.ControllerInterface
+import auth.{AuthenticatedAction, AuthenticatedRequest}
 import javax.inject.*
 import play.api.*
 import play.api.mvc.*
@@ -12,17 +13,18 @@ import org.apache.pekko.actor.{Actor, ActorRef, Props}
 import play.api.libs.streams.ActorFlow
 import _root_.util.{Event, Observer}
 
-import scala.concurrent.ExecutionContextExecutor
+import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.concurrent.duration.*
 
 /**
  * This controller handles WebSocket connections and JSON API endpoints
- * for the Blackjack game backend.
+ * for the Blackjack game backend with Firebase authentication.
  */
 @Singleton
 class HomeController @Inject()(
   val controllerComponents: ControllerComponents,
-  blackjackController: ControllerInterface
+  blackjackController: ControllerInterface,
+  authenticatedAction: AuthenticatedAction
 ) (implicit system: ActorSystem) extends BaseController {
 
   // Create FileIOJSON instance to access its implicit JSON formatters
@@ -92,96 +94,104 @@ class HomeController @Inject()(
     Json.toJson(blackjackController.getGame)
   }
 
-  def getGameStateJson(): Action[AnyContent] = Action {
-    Ok(gameToJson())
+  def getGameStateJson(): Action[AnyContent] = authenticatedAction.async { implicit request =>
+    Future.successful(Ok(gameToJson()))
   }
 
-  def addPlayerJson(): Action[AnyContent] = Action { implicit request =>
+  def addPlayerJson(): Action[AnyContent] = authenticatedAction.async { implicit request =>
     request.body.asFormUrlEncoded.flatMap(_.get("PlayerForm").flatMap(_.headOption)) match {
       case Some(name) if name.trim.nonEmpty =>
         blackjackController.addPlayer(name.trim)
-        Ok(Json.obj(
+        Future.successful(Ok(Json.obj(
           "success" -> true,
           "message" -> s"Player $name added",
+          "userId" -> request.userId,
           "gameState" -> gameToJson()
-        ))
+        )))
       case _ =>
-        BadRequest(Json.obj(
-          "success" -> false, 
+        Future.successful(BadRequest(Json.obj(
+          "success" -> false,
           "message" -> "Invalid player name"
-        ))
+        )))
     }
   }
 
-  def betJson(): Action[AnyContent] = Action { implicit request =>
+  def betJson(): Action[AnyContent] = authenticatedAction.async { implicit request =>
     request.body.asFormUrlEncoded.flatMap(_.get("BetForm").flatMap(_.headOption)) match {
       case Some(betStr) =>
         try {
           blackjackController.bet(betStr)
-          Ok(Json.obj(
+          Future.successful(Ok(Json.obj(
             "success" -> true,
+            "userId" -> request.userId,
             "gameState" -> gameToJson()
-          ))
+          )))
         } catch {
           case _: NumberFormatException =>
-            BadRequest(Json.obj(
-              "success" -> false, 
+            Future.successful(BadRequest(Json.obj(
+              "success" -> false,
               "message" -> "Invalid bet amount"
-            ))
+            )))
         }
       case _ =>
-        BadRequest(Json.obj(
-          "success" -> false, 
+        Future.successful(BadRequest(Json.obj(
+          "success" -> false,
           "message" -> "Bet amount required"
-        ))
+        )))
     }
   }
 
-  def hitJson(): Action[AnyContent] = Action {
+  def hitJson(): Action[AnyContent] = authenticatedAction.async { implicit request =>
     blackjackController.hitNextPlayer()
-    Ok(Json.obj(
+    Future.successful(Ok(Json.obj(
       "success" -> true,
+      "userId" -> request.userId,
       "gameState" -> gameToJson()
-    ))
+    )))
   }
 
-  def standJson(): Action[AnyContent] = Action {
+  def standJson(): Action[AnyContent] = authenticatedAction.async { implicit request =>
     blackjackController.standNextPlayer()
-    Ok(Json.obj(
+    Future.successful(Ok(Json.obj(
       "success" -> true,
+      "userId" -> request.userId,
       "gameState" -> gameToJson()
-    ))
+    )))
   }
 
-  def doubleDownJson(): Action[AnyContent] = Action {
+  def doubleDownJson(): Action[AnyContent] = authenticatedAction.async { implicit request =>
     blackjackController.doubleDown()
-    Ok(Json.obj(
+    Future.successful(Ok(Json.obj(
       "success" -> true,
+      "userId" -> request.userId,
       "gameState" -> gameToJson()
-    ))
+    )))
   }
 
-  def leavePlayerJson(): Action[AnyContent] = Action {
+  def leavePlayerJson(): Action[AnyContent] = authenticatedAction.async { implicit request =>
     blackjackController.leavePlayer()
-    Ok(Json.obj(
+    Future.successful(Ok(Json.obj(
       "success" -> true,
+      "userId" -> request.userId,
       "gameState" -> gameToJson()
-    ))
+    )))
   }
 
-  def initializeGameJson(): Action[AnyContent] = Action {
+  def initializeGameJson(): Action[AnyContent] = authenticatedAction.async { implicit request =>
     blackjackController.initializeGame()
-    Ok(Json.obj(
+    Future.successful(Ok(Json.obj(
       "success" -> true,
+      "userId" -> request.userId,
       "gameState" -> gameToJson()
-    ))
+    )))
   }
 
-  def startGameJson(): Action[AnyContent] = Action {
+  def startGameJson(): Action[AnyContent] = authenticatedAction.async { implicit request =>
     blackjackController.startGame()
-    Ok(Json.obj(
+    Future.successful(Ok(Json.obj(
       "success" -> true,
+      "userId" -> request.userId,
       "gameState" -> gameToJson()
-    ))
+    )))
   }
 }
