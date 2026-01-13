@@ -36,6 +36,7 @@
     <q-separator vertical class="q-mx-md" style="height: 30px" />
 
     <q-btn-dropdown
+      v-if="authStore.isAuthenticated"
       flat
       :label="authStore.userName"
       icon="account_circle"
@@ -65,6 +66,17 @@
         </q-item>
       </q-list>
     </q-btn-dropdown>
+
+    <!-- Show login button if not authenticated -->
+    <q-btn
+      v-else
+      flat
+      label="Login"
+      icon="login"
+      color="white"
+      @click="router.push('/auth')"
+      class="q-mr-sm"
+    />
   </q-toolbar>
 </template>
 

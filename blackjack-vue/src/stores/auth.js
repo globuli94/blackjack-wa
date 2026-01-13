@@ -7,8 +7,6 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
-  FacebookAuthProvider,
-  TwitterAuthProvider,
 } from 'firebase/auth'
 import { auth } from 'src/config/firebase'
 
@@ -113,42 +111,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // Facebook Sign In
-  const signInWithFacebook = async () => {
-    try {
-      loading.value = true
-      error.value = null
-      const provider = new FacebookAuthProvider()
-      const userCredential = await signInWithPopup(auth, provider)
-      user.value = userCredential.user
-      await getIdToken()
-      return { success: true }
-    } catch (err) {
-      error.value = err.message
-      return { success: false, error: err.message }
-    } finally {
-      loading.value = false
-    }
-  }
-
-  // Twitter Sign In
-  const signInWithTwitter = async () => {
-    try {
-      loading.value = true
-      error.value = null
-      const provider = new TwitterAuthProvider()
-      const userCredential = await signInWithPopup(auth, provider)
-      user.value = userCredential.user
-      await getIdToken()
-      return { success: true }
-    } catch (err) {
-      error.value = err.message
-      return { success: false, error: err.message }
-    } finally {
-      loading.value = false
-    }
-  }
-
   // Sign Out
   const logout = async () => {
     try {
@@ -203,8 +165,6 @@ export const useAuthStore = defineStore('auth', () => {
     signIn,
     signUp,
     signInWithGoogle,
-    signInWithFacebook,
-    signInWithTwitter,
     logout,
     clearError,
     getIdToken,
