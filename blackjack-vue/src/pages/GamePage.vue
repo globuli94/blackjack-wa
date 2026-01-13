@@ -122,6 +122,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { WebSocketManager } from '../services/websocket'
 import { gameApi } from '../services/api'
 import { Notify } from 'quasar'
+import { useAuthStore } from '../stores/auth'
 
 // Import components
 import Navbar from '../components/Navbar.vue'
@@ -131,6 +132,9 @@ import Dealer from '../components/Dealer.vue'
 import Player from '../components/Player.vue'
 import History from '../components/History.vue'
 import Rules from '../components/Rules.vue'
+
+// Auth Store
+const authStore = useAuthStore()
 
 // State
 const currentPage = ref('home')
@@ -304,7 +308,7 @@ const placeBet = async () => {
 
 // Lifecycle
 onMounted(() => {
-  wsManager = new WebSocketManager(updateGameState)
+  wsManager = new WebSocketManager(updateGameState, authStore)
   wsManager.connect()
 
   // events fired by browser for connection changes
