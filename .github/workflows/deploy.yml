@@ -20,6 +20,8 @@ jobs:
         run: |
           cd blackjack-vue
           npm install
+        env:
+          VITE_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
 
       - name: Build
         run: |
