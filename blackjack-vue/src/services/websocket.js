@@ -1,7 +1,8 @@
 export class WebSocketManager {
-  constructor(onMessageCallback) {
+  constructor(onMessageCallback, authStore) {
     this.socket = null
     this.onMessageCallback = onMessageCallback
+    this.authStore = authStore
     this.setupOnlineListener();
   }
 
@@ -17,15 +18,26 @@ export class WebSocketManager {
     })
   }
 
-  connect() {
+  async connect() {
     if(!navigator.onLine) {
       return;
     }
 
+    // Get Firebase token if user is authenticated
+    let token = null
+    if (this.authStore?.isAuthenticated) {
+      token = await this.authStore.getIdToken()
+    }
+
     const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:9000/websocket'
 
-    console.log('Connecting to WebSocket...', wsUrl)
-    this.socket = new WebSocket(wsUrl)
+    // Append token as query parameter if available
+    const wsUrlWithToken = token
+      ? `${wsUrl}?token=${encodeURIComponent(token)}`
+      : wsUrl
+
+    console.log('Connecting to WebSocket...', wsUrl, token ? 'with auth' : 'without auth')
+    this.socket = new WebSocket(wsUrlWithToken)
 
     this.socket.onopen = () => {
       console.log('✅ WebSocket connected')
