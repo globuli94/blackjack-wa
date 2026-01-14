@@ -8,6 +8,7 @@ import play.api.{Configuration, Logger}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Try, Success, Failure}
 import java.io.FileInputStream
+import java.io.ByteArrayInputStream
 
 @Singleton
 class FirebaseAuthService @Inject()(config: Configuration)(implicit ec: ExecutionContext) {
