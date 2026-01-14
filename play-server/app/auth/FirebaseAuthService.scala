@@ -14,39 +14,39 @@ import java.io.ByteArrayInputStream
 class FirebaseAuthService @Inject()(config: Configuration)(implicit ec: ExecutionContext) {
   private val logger = Logger(this.getClass)
 
-private val firebaseApp: FirebaseApp = {
-  try {
-    // 1. Versuche, den JSON-Inhalt aus der Umgebungsvariable zu lesen (Heroku-Weg)
-    val firebaseJson = System.getenv("FIREBASE_JSON")
+  private val firebaseApp: FirebaseApp = {
+    try {
+      // 1. Versuche, den JSON-Inhalt aus der Umgebungsvariable zu lesen (Heroku-Weg)
+      val firebaseJson = System.getenv("FIREBASE_JSON")
 
-    val options = if (firebaseJson != null && firebaseJson.nonEmpty) {
-      // Wenn die Variable existiert, nutze ByteArrayInputStream
-      val serviceStream = new ByteArrayInputStream(firebaseJson.getBytes("UTF-8"))
-      FirebaseOptions.builder()
-        .setCredentials(GoogleCredentials.fromStream(serviceStream))
-        .build()
-    } else {
-      // 2. Fallback: Lokale Datei nutzen (dein bisheriger Weg für sbt run)
-      val serviceAccountPath = config.get[String]("firebase.serviceAccountKey")
-      val serviceAccount = new FileInputStream(serviceAccountPath)
-      FirebaseOptions.builder()
-        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-        .build()
-    }
+      val options = if (firebaseJson != null && firebaseJson.nonEmpty) {
+        // Wenn die Variable existiert, nutze ByteArrayInputStream
+        val serviceStream = new ByteArrayInputStream(firebaseJson.getBytes("UTF-8"))
+        FirebaseOptions.builder()
+          .setCredentials(GoogleCredentials.fromStream(serviceStream))
+          .build()
+      } else {
+        // 2. Fallback: Lokale Datei nutzen (dein bisheriger Weg für sbt run)
+        val serviceAccountPath = config.get[String]("firebase.serviceAccountKey")
+        val serviceAccount = new FileInputStream(serviceAccountPath)
+        FirebaseOptions.builder()
+          .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+          .build()
+      }
 
-    // Wichtig: Prüfen, ob schon eine Instanz läuft (verhindert Fehler beim Hot-Reload)
-    if (FirebaseApp.getApps.isEmpty) {
-      FirebaseApp.initializeApp(options)
-    } else {
-      FirebaseApp.getInstance()
+      // Wichtig: Prüfen, ob schon eine Instanz läuft (verhindert Fehler beim Hot-Reload)
+      if (FirebaseApp.getApps.isEmpty) {
+        FirebaseApp.initializeApp(options)
+      } else {
+        FirebaseApp.getInstance()
+      }
+      
+    } catch {
+      case e: Exception =>
+        logger.error("Failed to initialize Firebase Admin SDK", e)
+        throw e
     }
-    
-  } catch {
-    case e: Exception =>
-      logger.error("Failed to initialize Firebase Admin SDK", e)
-      throw e
   }
-}
 
 
   private val auth: FirebaseAuth = FirebaseAuth.getInstance(firebaseApp)
