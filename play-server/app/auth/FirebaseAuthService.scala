@@ -13,22 +13,35 @@ import java.io.FileInputStream
 class FirebaseAuthService @Inject()(config: Configuration)(implicit ec: ExecutionContext) {
   private val logger = Logger(this.getClass)
 
-  private val firebaseApp: FirebaseApp = {
-    try {
+private val firebaseApp: FirebaseApp = {
+  try {
+    val firebaseJson = System.getenv("FIREBASE_JSON")
+
+    val options = if (firebaseJson != null && firebaseJson.nonEmpty) {
+      val serviceStream = new ByteArrayInputStream(firebaseJson.getBytes("UTF-8"))
+      FirebaseOptions.builder()
+        .setCredentials(GoogleCredentials.fromStream(serviceStream))
+        .build()
+    } else {
       val serviceAccountPath = config.get[String]("firebase.serviceAccountKey")
       val serviceAccount = new FileInputStream(serviceAccountPath)
-
-      val options = FirebaseOptions.builder()
+      FirebaseOptions.builder()
         .setCredentials(GoogleCredentials.fromStream(serviceAccount))
         .build()
-
-      FirebaseApp.initializeApp(options)
-    } catch {
-      case e: Exception =>
-        logger.error("Failed to initialize Firebase Admin SDK", e)
-        throw e
     }
+
+    if (FirebaseApp.getApps.isEmpty) {
+      FirebaseApp.initializeApp(options)
+    } else {
+      FirebaseApp.getInstance()
+    }
+    
+  } catch {
+    case e: Exception =>
+      logger.error("Failed to initialize Firebase Admin SDK", e)
+      throw e
   }
+}
 
   private val auth: FirebaseAuth = FirebaseAuth.getInstance(firebaseApp)
 
