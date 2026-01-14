@@ -30,7 +30,9 @@ lazy val playserver = (project in file("."))
     name := "playserver",
     libraryDependencies ++= Seq(
       guice,
-      "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.2" % Test
+      "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.2" % Test,
+      "com.google.firebase" % "firebase-admin" % "9.4.2",
+      filters
     ),
     // Docker settings
     dockerChmodType := DockerChmodType.UserGroupWriteExecute,
