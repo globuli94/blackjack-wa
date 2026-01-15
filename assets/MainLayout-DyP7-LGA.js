@@ -1,0 +1,1 @@
+import{Q as a,a as r}from"./QLayout-DMnC3y3P.js";import{c as n,o as s,w as e,r as _,b as o}from"./index-BqT4PCDv.js";import"./scroll-BjmuKrC-.js";const f={__name:"MainLayout",setup(c){return(p,u)=>{const t=_("router-view");return s(),n(a,{view:"lHh Lpr lFf"},{default:e(()=>[o(r,null,{default:e(()=>[o(t)]),_:1})]),_:1})}}};export{f as default};
