@@ -287,9 +287,15 @@ const addPlayer = async () => {
     })
   } catch (error) {
     console.error('Error adding player:', error)
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to add player'
+    console.error('Error details:', {
+      status: error.response?.status,
+      data: error.response?.data,
+      config: error.config
+    })
     Notify.create({
       type: 'negative',
-      message: 'Failed to add player',
+      message: errorMessage,
       position: 'top',
     })
   }

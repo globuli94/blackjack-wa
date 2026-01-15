@@ -7,6 +7,18 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:9000',
   withCredentials: true, // Enable cookies for session management
   // Don't set default Content-Type - let the interceptor set it based on data type
+  transformRequest: [
+    (data, headers) => {
+      // Handle URLSearchParams - convert to string and set Content-Type
+      if (data instanceof URLSearchParams) {
+        headers['Content-Type'] = 'application/x-www-form-urlencoded'
+        return data.toString()
+      }
+      // Let axios handle other data types (JSON, FormData, etc.)
+      return data
+    },
+    ...axios.defaults.transformRequest
+  ]
 })
 
 export default defineBoot(({ app }) => {
@@ -38,7 +50,10 @@ export default defineBoot(({ app }) => {
       // Set Content-Type based on data type
       // If data is URLSearchParams, use form-encoded (required by Play Framework)
       if (config.data instanceof URLSearchParams) {
+        // Convert URLSearchParams to string and set correct Content-Type
+        config.data = config.data.toString()
         config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+        console.log('[Axios] Sending form-encoded data:', config.data)
       } else if (config.data && typeof config.data === 'object' && !(config.data instanceof FormData) && !(config.data instanceof URLSearchParams)) {
         // For JSON objects, use JSON content type
         if (!config.headers['Content-Type']) {
@@ -48,6 +63,11 @@ export default defineBoot(({ app }) => {
         if (typeof config.data !== 'string') {
           config.data = JSON.stringify(config.data)
         }
+      } else if (typeof config.data === 'string' && config.data.includes('=') && !config.headers['Content-Type']) {
+        // If data is already a string that looks like form data, set Content-Type
+        // This handles cases where URLSearchParams was already converted
+        config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+        console.log('[Axios] Detected form-encoded string, setting Content-Type')
       }
 
       return config
