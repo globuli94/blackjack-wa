@@ -1,2 +1,80 @@
 /* app global css */
 @import './card-animations.css';
+
+/* Global Responsive Styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Better touch targets for mobile */
+@media (max-width: 600px) {
+  .q-btn {
+    min-height: 48px !important;
+    min-width: 48px !important;
+  }
+
+  .q-item {
+    min-height: 48px;
+  }
+
+  /* Improve text readability on mobile */
+  .text-h1 { font-size: 2rem !important; }
+  .text-h2 { font-size: 1.75rem !important; }
+  .text-h3 { font-size: 1.5rem !important; }
+  .text-h4 { font-size: 1.25rem !important; }
+  .text-h5 { font-size: 1.125rem !important; }
+  .text-h6 { font-size: 1rem !important; }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Better focus states for accessibility */
+.q-btn:focus-visible,
+.q-item:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* Improve card readability */
+.q-card {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Better dialog responsiveness */
+.q-dialog__inner {
+  padding: 1rem;
+}
+
+@media (max-width: 600px) {
+  .q-dialog__inner {
+    padding: 0.5rem;
+  }
+}
+
+/* Prevent text selection on buttons for better mobile UX */
+.q-btn {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Improve chip readability */
+.q-chip {
+  font-weight: 500;
+}
+
+/* Better badge visibility */
+.q-badge {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
