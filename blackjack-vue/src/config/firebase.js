@@ -14,10 +14,28 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 }
 
+// Validate and normalize authDomain
+if (firebaseConfig.authDomain) {
+  // Remove any protocol prefix if accidentally included
+  firebaseConfig.authDomain = firebaseConfig.authDomain
+    .replace(/^https?:\/\//, '') // Remove http:// or https://
+    .replace(/\/+$/, '') // Remove trailing slashes
+    .replace(/\/+/g, '/') // Normalize multiple slashes to single slash
+  
+  // Log for debugging (remove in production if needed)
+  console.log('[Firebase Config] authDomain:', firebaseConfig.authDomain)
+}
+
 // Validate that required config values are present
 if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
   console.error('Firebase configuration is missing required values. Please check your .env files.')
   console.error('Required: VITE_FIREBASE_API_KEY, VITE_FIREBASE_PROJECT_ID')
+}
+
+// Validate authDomain format
+if (firebaseConfig.authDomain && !firebaseConfig.authDomain.match(/^[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.firebaseapp\.com$/)) {
+  console.warn('[Firebase Config] authDomain format may be incorrect:', firebaseConfig.authDomain)
+  console.warn('[Firebase Config] Expected format: {project-id}.firebaseapp.com')
 }
 
 // Initialize Firebase
