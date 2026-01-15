@@ -1,1 +1,1 @@
-web: target/universal/stage/bin/playserver -Dhttp.port=$PORT
+web: target/universal/stage/bin/blackjack-wa -Dhttp.port=$PORT
