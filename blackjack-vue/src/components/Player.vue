@@ -104,36 +104,46 @@ const getStatusColor = (state) => {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 1.5rem;
-  background: rgba(0, 0, 0, 0.3);
+  padding: 1.25rem;
+  background: rgba(0, 0, 0, 0.4);
   border-radius: 16px;
   backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  min-width: 250px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  width: 100%;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .player-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .current-player {
   border-color: #fbbf24;
-  box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
-  background: rgba(251, 191, 36, 0.1);
+  box-shadow: 0 0 24px rgba(251, 191, 36, 0.6);
+  background: rgba(251, 191, 36, 0.15);
+  transform: scale(1.02);
+}
+
+.current-player:hover {
+  transform: scale(1.02) translateY(-3px);
 }
 
 .player-header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 1.2rem;
-  font-weight: bold;
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
 .player-name {
   flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .player-status {
@@ -142,34 +152,86 @@ const getStatusColor = (state) => {
 }
 
 .status-badge {
-  padding: 4px 12px;
-  font-size: 0.8rem;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 20px;
 }
 
 .player-hand {
   display: flex;
   justify-content: center;
-  min-height: 160px;
+  min-height: 140px;
+  align-items: center;
 }
 
 .player-info {
   display: flex;
   justify-content: space-around;
-  gap: 1rem;
-  padding-top: 0.5rem;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
+  flex-wrap: wrap;
 }
 
 .info-item {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.4rem;
   font-size: 0.9rem;
+  font-weight: 500;
 }
 
 .info-icon {
-  height: 16px;
+  height: 18px;
   width: auto;
   vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+  .player-card {
+    padding: 1rem;
+    gap: 0.75rem;
+    border-radius: 12px;
+  }
+
+  .player-header {
+    font-size: 1rem;
+  }
+
+  .player-hand {
+    min-height: 120px;
+  }
+
+  .player-info {
+    gap: 0.5rem;
+    padding-top: 0.5rem;
+  }
+
+  .info-item {
+    font-size: 0.85rem;
+  }
+
+  .info-icon {
+    height: 16px;
+  }
+
+  .status-badge {
+    padding: 4px 10px;
+    font-size: 0.75rem;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .player-card {
+    padding: 1.15rem;
+  }
+
+  .player-hand {
+    min-height: 130px;
+  }
 }
 </style>
