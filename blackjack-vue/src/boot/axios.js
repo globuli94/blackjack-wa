@@ -10,7 +10,10 @@ import { useAuthStore } from 'src/stores/auth'
 // for each client)
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:9000',
-  withCredentials: true,
+  withCredentials: false, // Don't send cookies since we use Bearer tokens
+  headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+  },
 })
 
 export default defineBoot(({ app }) => {

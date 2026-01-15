@@ -9,6 +9,8 @@ target
 /RUNNING_PID
 .metals/
 
+blackjack-vue/.env.development
+
 # Scala/SBT specific
 *.class
 *.log
