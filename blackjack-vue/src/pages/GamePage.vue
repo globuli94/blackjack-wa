@@ -92,9 +92,9 @@
 
     <!-- Add Player Dialog -->
     <q-dialog v-model="showAddPlayerDialog">
-      <q-card style="min-width: 350px">
+      <q-card class="dialog-card">
         <q-card-section>
-          <div class="text-h6">Add Player</div>
+          <div class="text-h6 text-weight-bold">Add Player</div>
         </q-card-section>
 
         <q-card-section>
@@ -103,22 +103,24 @@
             label="Player Name"
             outlined
             dense
+            autofocus
             @keyup.enter="addPlayer"
+            class="q-mb-sm"
           />
         </q-card-section>
 
-        <q-card-actions align="right">
+        <q-card-actions align="right" class="dialog-actions">
           <q-btn flat label="Cancel" color="grey" v-close-popup />
-          <q-btn flat label="Add" color="primary" @click="addPlayer" />
+          <q-btn unelevated label="Add" color="primary" @click="addPlayer" />
         </q-card-actions>
       </q-card>
     </q-dialog>
 
     <!-- Bet Dialog -->
     <q-dialog v-model="showBetDialog">
-      <q-card style="min-width: 350px">
+      <q-card class="dialog-card">
         <q-card-section>
-          <div class="text-h6">Place Bet</div>
+          <div class="text-h6 text-weight-bold">Place Bet</div>
         </q-card-section>
 
         <q-card-section>
@@ -128,13 +130,43 @@
             label="Bet Amount"
             outlined
             dense
+            autofocus
+            min="1"
             @keyup.enter="placeBet"
+            class="q-mb-sm"
           />
+          <div class="text-caption text-grey-6 q-mt-xs">
+            Quick amounts:
+            <q-btn
+              flat
+              dense
+              size="sm"
+              label="50"
+              @click="betAmount = 50"
+              class="q-mx-xs"
+            />
+            <q-btn
+              flat
+              dense
+              size="sm"
+              label="100"
+              @click="betAmount = 100"
+              class="q-mx-xs"
+            />
+            <q-btn
+              flat
+              dense
+              size="sm"
+              label="200"
+              @click="betAmount = 200"
+              class="q-mx-xs"
+            />
+          </div>
         </q-card-section>
 
-        <q-card-actions align="right">
+        <q-card-actions align="right" class="dialog-actions">
           <q-btn flat label="Cancel" color="grey" v-close-popup />
-          <q-btn flat label="Place Bet" color="primary" @click="placeBet" />
+          <q-btn unelevated label="Place Bet" color="primary" @click="placeBet" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -371,72 +403,85 @@ onUnmounted(() => {
 <style scoped>
 .blackjack-app {
   background: linear-gradient(135deg, #0f766e 0%, #15803d 100%);
+  background-attachment: fixed;
   min-height: 100vh;
   color: white;
-  padding: 1rem;
+  padding: 0.5rem;
 }
 
 .game-section {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
   align-items: center;
-  padding: 1rem;
+  padding: 0.5rem;
+  width: 100%;
+  max-width: 100%;
 }
 
 .controls-wrapper {
   width: 100%;
   display: flex;
   justify-content: center;
+  padding: 0.5rem;
 }
 
 .dealer-wrapper {
   width: 100%;
   display: flex;
   justify-content: center;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
 }
 
 .players-wrapper {
-  display: flex;
-  justify-content: center;
-  gap: 1.5rem;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
   width: 100%;
   max-width: 1400px;
+  padding: 0.5rem;
 }
 
 .player-controls-wrapper {
   width: 100%;
   display: flex;
   justify-content: center;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+  background: linear-gradient(to top, rgba(15, 118, 110, 0.95) 0%, transparent 100%);
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .content-section {
-  padding: 2rem;
+  padding: 1rem;
   max-width: 1200px;
   margin: 0 auto;
+  width: 100%;
 }
 
 .offline-banner {
   position: sticky;
   top: 0;
   z-index: 1000;
-  margin: -1rem -1rem 1rem -1rem; /* Negative margin to extend to edges */
+  margin: -0.5rem -0.5rem 0.5rem -0.5rem;
 }
 
 .offline-banner .q-banner {
-  background: #f59e0b !important; /* Orange/warning color */
-  border-radius: 0; /* Remove rounded corners */
+  background: #f59e0b !important;
+  border-radius: 0;
 }
 
 .login-prompt {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 400px;
-  padding: 2rem;
+  min-height: 60vh;
+  padding: 1rem;
 }
 
 .prompt-card {
@@ -444,5 +489,74 @@ onUnmounted(() => {
   width: 100%;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 600px) {
+  .blackjack-app {
+    padding: 0.25rem;
+  }
+
+  .game-section {
+    gap: 1rem;
+    padding: 0.25rem;
+  }
+
+  .players-wrapper {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    padding: 0.25rem;
+  }
+
+  .controls-wrapper,
+  .dealer-wrapper,
+  .player-controls-wrapper {
+    padding: 0.25rem;
+  }
+
+  .content-section {
+    padding: 0.75rem;
+  }
+
+  .login-prompt {
+    padding: 0.5rem;
+    min-height: 50vh;
+  }
+}
+
+/* Tablet Styles */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .players-wrapper {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Large Screen Optimizations */
+@media (min-width: 1400px) {
+  .game-section {
+    gap: 2rem;
+  }
+
+  .players-wrapper {
+    gap: 2rem;
+  }
+}
+
+/* Dialog Styles */
+.dialog-card {
+  min-width: 90vw;
+  max-width: 500px;
+  border-radius: 16px;
+}
+
+.dialog-actions {
+  padding: 0.5rem 1rem 1rem;
+}
+
+@media (min-width: 600px) {
+  .dialog-card {
+    min-width: 350px;
+  }
 }
 </style>
