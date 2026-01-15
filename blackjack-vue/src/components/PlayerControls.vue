@@ -101,24 +101,59 @@ const canDoubleDown = computed(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1.5rem;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 12px;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
   backdrop-filter: blur(10px);
-  min-width: 400px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .betting-controls,
 .action-controls {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.player-controls :deep(.q-btn) {
+  min-height: 48px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.player-controls :deep(.q-btn:hover) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.player-controls :deep(.q-btn:active) {
+  transform: translateY(0);
 }
 
 .player-info {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.75rem;
   flex-wrap: wrap;
   justify-content: center;
+  width: 100%;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.player-info :deep(.q-chip) {
+  height: 36px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0 0.75rem;
 }
 
 .btn-icon {
@@ -131,5 +166,51 @@ const canDoubleDown = computed(() => {
   height: 20px;
   width: auto;
   vertical-align: middle;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+  .player-controls {
+    padding: 0.75rem;
+    border-radius: 12px;
+    margin: 0 0.5rem;
+  }
+
+  .betting-controls,
+  .action-controls {
+    gap: 0.5rem;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .player-controls :deep(.q-btn) {
+    width: 100%;
+    min-height: 52px;
+    font-size: 1rem;
+  }
+
+  .player-info {
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+  }
+
+  .player-info :deep(.q-chip) {
+    font-size: 0.85rem;
+    height: 32px;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .betting-controls,
+  .action-controls {
+    gap: 0.625rem;
+  }
+
+  .player-controls :deep(.q-btn) {
+    min-height: 50px;
+    padding: 0.625rem 1.25rem;
+  }
 }
 </style>

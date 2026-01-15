@@ -14,6 +14,17 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 }
 
+// Validate and normalize authDomain
+if (firebaseConfig.authDomain) {
+  // Remove any protocol prefix if accidentally included
+  firebaseConfig.authDomain = firebaseConfig.authDomain
+    .replace(/^https?:?\/?\/?/, '') // More forgiving regex to catch https// too
+    .replace(/\/+$/, '') // Remove trailing slashes
+    .trim() // Remove whitespace
+  
+  console.log('[Firebase Config] authDomain:', firebaseConfig.authDomain)
+}
+
 // Validate that required config values are present
 if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
   console.error('Firebase configuration is missing required values. Please check your .env files.')
