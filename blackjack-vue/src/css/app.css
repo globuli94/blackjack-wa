@@ -12,9 +12,25 @@ body {
   overflow-x: hidden;
 }
 
-/* Better touch targets for mobile */
+/* Ensure layout fits viewport */
+.q-layout {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.q-page-container {
+  height: 100%;
+  overflow: hidden;
+}
+
+.q-page {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Better touch targets for mobile - but allow smaller buttons in game */
 @media (max-width: 600px) {
-  .q-btn {
+  .q-btn:not(.game-controls .q-btn):not(.player-controls .q-btn) {
     min-height: 48px !important;
     min-width: 48px !important;
   }
