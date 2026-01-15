@@ -174,7 +174,7 @@ defineExpose({
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.3rem;
 }
 
 .cards-display {
@@ -193,6 +193,47 @@ defineExpose({
 }
 
 .hand-value {
-  margin-top: 0.5rem;
+  margin-top: 0.3rem;
+}
+
+.hand-value :deep(.q-chip) {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  height: 24px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+  .hand-container {
+    gap: 0.25rem;
+  }
+
+  .cards-display {
+    gap: -10px;
+  }
+
+  .card-item {
+    margin-right: -10px;
+  }
+
+  .hand-value {
+    margin-top: 0.25rem;
+  }
+
+  .hand-value :deep(.q-chip) {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    height: 24px;
+  }
+}
+
+@media (max-width: 400px) {
+  .cards-display {
+    gap: -8px;
+  }
+
+  .card-item {
+    margin-right: -8px;
+  }
 }
 </style>
