@@ -18,11 +18,10 @@ const firebaseConfig = {
 if (firebaseConfig.authDomain) {
   // Remove any protocol prefix if accidentally included
   firebaseConfig.authDomain = firebaseConfig.authDomain
-    .replace(/^https?:\/\//, '') // Remove http:// or https://
+    .replace(/^https?:?\/?\/?/, '') // More forgiving regex to catch https// too
     .replace(/\/+$/, '') // Remove trailing slashes
-    .replace(/\/+/g, '/') // Normalize multiple slashes to single slash
+    .trim() // Remove whitespace
   
-  // Log for debugging (remove in production if needed)
   console.log('[Firebase Config] authDomain:', firebaseConfig.authDomain)
 }
 
@@ -30,12 +29,6 @@ if (firebaseConfig.authDomain) {
 if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
   console.error('Firebase configuration is missing required values. Please check your .env files.')
   console.error('Required: VITE_FIREBASE_API_KEY, VITE_FIREBASE_PROJECT_ID')
-}
-
-// Validate authDomain format
-if (firebaseConfig.authDomain && !firebaseConfig.authDomain.match(/^[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.firebaseapp\.com$/)) {
-  console.warn('[Firebase Config] authDomain format may be incorrect:', firebaseConfig.authDomain)
-  console.warn('[Firebase Config] Expected format: {project-id}.firebaseapp.com')
 }
 
 // Initialize Firebase
