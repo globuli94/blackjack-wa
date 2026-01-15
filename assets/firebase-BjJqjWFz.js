@@ -1,0 +1,1 @@
+import{a as e,u as i}from"./index-BlXtyill.js";const a=()=>{console.log("[Firebase Boot] Firebase initialized",e);const o=i();console.log("[Firebase Boot] Initializing auth store..."),o.init(),console.log("[Firebase Boot] Auth store initialized, loading:",o.loading)};export{a as default};
