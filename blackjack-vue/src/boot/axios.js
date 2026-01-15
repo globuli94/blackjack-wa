@@ -5,10 +5,8 @@ import { useAuthStore } from 'src/stores/auth'
 // Create axios instance with credentials support
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:9000',
-  withCredentials: true, // FIXED: Enable cookies for session management
-  headers: {
-    'Content-Type': 'application/json', // FIXED: Changed from x-www-form-urlencoded
-  },
+  withCredentials: true, // Enable cookies for session management
+  // Don't set default Content-Type - let the interceptor set it based on data type
 })
 
 export default defineBoot(({ app }) => {
@@ -34,6 +32,21 @@ export default defineBoot(({ app }) => {
           console.log('[Axios] Added Firebase token to request:', config.url)
         } else {
           console.warn('[Axios] Failed to get token for request:', config.url)
+        }
+      }
+
+      // Set Content-Type based on data type
+      // If data is URLSearchParams, use form-encoded (required by Play Framework)
+      if (config.data instanceof URLSearchParams) {
+        config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+      } else if (config.data && typeof config.data === 'object' && !(config.data instanceof FormData) && !(config.data instanceof URLSearchParams)) {
+        // For JSON objects, use JSON content type
+        if (!config.headers['Content-Type']) {
+          config.headers['Content-Type'] = 'application/json'
+        }
+        // Only stringify if it's not already a string
+        if (typeof config.data !== 'string') {
+          config.data = JSON.stringify(config.data)
         }
       }
 
