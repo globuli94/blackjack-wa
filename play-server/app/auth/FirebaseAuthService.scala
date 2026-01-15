@@ -20,28 +20,63 @@ class FirebaseAuthService @Inject()(config: Configuration)(implicit ec: Executio
       val firebaseJson = System.getenv("FIREBASE_JSON")
 
       val options = if (firebaseJson != null && firebaseJson.nonEmpty) {
-        // Wenn die Variable existiert, nutze ByteArrayInputStream
+        // 1. Use environment variable (for Heroku/production)
+        logger.info("Using Firebase credentials from FIREBASE_JSON environment variable")
         val serviceStream = new ByteArrayInputStream(firebaseJson.getBytes("UTF-8"))
         FirebaseOptions.builder()
           .setCredentials(GoogleCredentials.fromStream(serviceStream))
           .build()
       } else {
-        // 2. Fallback: Lokale Datei nutzen (dein bisheriger Weg für sbt run)
+        // 2. Fallback: Try to read from local file (for local development)
         val serviceAccountPath = config.get[String]("firebase.serviceAccountKey")
-        val serviceAccount = new FileInputStream(serviceAccountPath)
+        val serviceAccountFile = new java.io.File(serviceAccountPath)
+        
+        if (!serviceAccountFile.exists()) {
+          val errorMsg = s"""
+            |================================================================================
+            |FIREBASE SERVICE ACCOUNT KEY NOT FOUND
+            |================================================================================
+            |The file '${serviceAccountPath}' does not exist.
+            |
+            |To fix this for LOCAL DEVELOPMENT:
+            |1. Go to Firebase Console: https://console.firebase.google.com/
+            |2. Select your project: blackjack-wa-login
+            |3. Go to Project Settings > Service Accounts
+            |4. Click "Generate new private key"
+            |5. Save the JSON file as: ${serviceAccountPath}
+            |   (The file should be in the play-server/ directory)
+            |
+            |OR set the FIREBASE_JSON environment variable with the JSON content:
+            |   export FIREBASE_JSON='{"type":"service_account",...}'
+            |
+            |For PRODUCTION (Heroku), set the FIREBASE_JSON environment variable.
+            |================================================================================
+            """.stripMargin
+          logger.error(errorMsg)
+          throw new RuntimeException(s"Firebase service account key not found at: ${serviceAccountPath}. See logs above for instructions.")
+        }
+        
+        logger.info(s"Using Firebase credentials from file: ${serviceAccountPath}")
+        val serviceAccount = new FileInputStream(serviceAccountFile)
         FirebaseOptions.builder()
           .setCredentials(GoogleCredentials.fromStream(serviceAccount))
           .build()
       }
 
-      // Wichtig: Prüfen, ob schon eine Instanz läuft (verhindert Fehler beim Hot-Reload)
+      // Important: Check if an instance is already running (prevents errors on hot-reload)
       if (FirebaseApp.getApps.isEmpty) {
-        FirebaseApp.initializeApp(options)
+        val app = FirebaseApp.initializeApp(options)
+        logger.info("Firebase Admin SDK initialized successfully")
+        app
       } else {
+        logger.info("Firebase Admin SDK already initialized, reusing existing instance")
         FirebaseApp.getInstance()
       }
       
     } catch {
+      case e: java.io.FileNotFoundException =>
+        logger.error("Firebase service account key file not found. See error message above for setup instructions.", e)
+        throw e
       case e: Exception =>
         logger.error("Failed to initialize Firebase Admin SDK", e)
         throw e
