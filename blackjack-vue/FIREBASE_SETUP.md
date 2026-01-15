@@ -53,11 +53,11 @@ For each SSO provider (Google, Facebook, Twitter), you need to configure authori
 
 - **Authorized JavaScript origins**: 
   - `http://localhost:8080` (for development)
-  - Your production domain (e.g., `https://yourdomain.com`)
+  - `globuli94.github.io` (e.g., `https://yourdomain.com`)
 
 - **Authorized redirect URIs**:
   - `http://localhost:8080` (for development)
-  - Your production domain (e.g., `https://yourdomain.com`)
+  - `globuli94.github.io` (e.g., `https://yourdomain.com`)
 
 ### 6. Facebook Setup (Optional)
 
