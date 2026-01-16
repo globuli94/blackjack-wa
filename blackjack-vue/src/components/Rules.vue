@@ -162,16 +162,82 @@
 }
 
 .rules-card {
-  background: rgba(255, 255, 255, 0.95);
-  color: #1a1a1a;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  color: white;
+}
+
+.rules-card :deep(.q-card-section) {
+  color: white;
 }
 
 h1, h2 {
-  color: #0f766e;
+  color: #fbbf24;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+  color: white;
+  font-weight: 700;
+}
+
+h2 {
+  color: #fbbf24;
+  font-weight: 600;
 }
 
 .text-body1 {
   line-height: 1.8;
   margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.rules-card :deep(.q-separator) {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.rules-card :deep(.q-list) {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.rules-card :deep(.q-item) {
+  color: white;
+}
+
+.rules-card :deep(.q-item-label strong) {
+  color: #fbbf24;
+}
+
+.rules-card :deep(.q-markup-table) {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.rules-card :deep(.q-markup-table thead) {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.rules-card :deep(.q-markup-table th) {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.rules-card :deep(.q-markup-table td) {
+  color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.rules-card :deep(.q-timeline) {
+  color: white;
+}
+
+.rules-card :deep(.q-timeline-entry .q-timeline-subtitle) {
+  color: rgba(255, 255, 255, 0.8);
 }
 </style>
