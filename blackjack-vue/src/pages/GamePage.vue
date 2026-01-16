@@ -59,27 +59,6 @@
           />
         </div>
       </div>
-
-      <div v-else class="login-prompt">
-        <q-card class="prompt-card">
-          <q-card-section class="text-center">
-            <q-icon name="casino" size="64px" color="primary" />
-            <div class="text-h5 q-mt-md">Welcome to Blackjack</div>
-            <div class="text-body1 q-mt-sm text-grey-6">
-              Please sign in to start playing
-            </div>
-          </q-card-section>
-          <q-card-actions align="center">
-            <q-btn
-              color="primary"
-              label="Sign In"
-              icon="login"
-              size="lg"
-              @click="$router.push('/auth')"
-            />
-          </q-card-actions>
-        </q-card>
-      </div>
     </div>
 
     <!-- HISTORY Section -->
@@ -581,21 +560,6 @@ onUnmounted(() => {
   border-radius: 0;
 }
 
-.login-prompt {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 60vh;
-  padding: 1rem;
-}
-
-.prompt-card {
-  max-width: 500px;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
 
 /* Scale entire layout to fit on one page - applies to all screen sizes */
 .blackjack-app {
@@ -645,10 +609,6 @@ onUnmounted(() => {
     padding: 0.75rem;
   }
 
-  .login-prompt {
-    padding: 0.5rem;
-    min-height: 50vh;
-  }
 }
 
 /* Tablet Styles */
