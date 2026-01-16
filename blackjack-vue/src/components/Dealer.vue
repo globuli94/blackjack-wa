@@ -1,6 +1,7 @@
 <template>
   <div class="dealer-card">
     <div class="dealer-header">
+      <q-icon name="support_agent" size="md" color="amber" />
       <span class="dealer-title">Dealer</span>
     </div>
 
@@ -15,25 +16,20 @@
     <div class="dealer-hand">
       <Hand
         :cards="dealer.hand?.cards || []"
-        :show-value="hasCards"
+        :show-value="true"
       />
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import Hand from './Hand.vue'
 
-const props = defineProps({
+defineProps({
   dealer: {
     type: Object,
     required: true,
   },
-})
-
-const hasCards = computed(() => {
-  return props.dealer?.hand?.cards && props.dealer.hand.cards.length > 0
 })
 
 const getStatusColor = (state) => {
@@ -81,7 +77,7 @@ const getStatusColor = (state) => {
   font-size: 1.4rem;
   font-weight: 700;
   color: #fbbf24;
-  text-shadow: none;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .dealer-title {
