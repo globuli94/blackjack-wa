@@ -112,26 +112,30 @@ const getStateBadgeColor = (state) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  padding: 0.5rem;
-  background: transparent;
-  border: none;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.1);
   width: 100%;
   max-width: 100%;
   flex-wrap: wrap;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .game-controls :deep(.q-btn) {
-  min-height: 32px;
-  padding: 0.4rem 0.8rem;
+  min-height: 44px;
+  padding: 0.625rem 1.25rem;
   font-weight: 600;
-  font-size: 0.75rem;
-  border-radius: 8px;
+  border-radius: 10px;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .game-controls :deep(.q-btn:hover) {
   transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .game-controls :deep(.q-btn:active) {
@@ -141,75 +145,54 @@ const getStateBadgeColor = (state) => {
 .game-state-badge {
   display: flex;
   align-items: center;
-  margin-left: 0.3rem;
+  margin-left: 0.5rem;
 }
 
 .game-state-badge :deep(.q-badge) {
   font-weight: 600;
-  font-size: 0.7rem;
-  padding: 4px 8px;
-  border-radius: 12px;
+  padding: 8px 16px;
+  border-radius: 20px;
 }
 
-/* Mobile Responsive - More compact */
+/* Mobile Responsive */
 @media (max-width: 600px) {
   .game-controls {
-    padding: 0.4rem;
-    gap: 0.3rem;
+    padding: 0.75rem;
+    gap: 0.5rem;
+    border-radius: 12px;
   }
 
   .game-controls :deep(.q-btn) {
-    min-height: 32px;
-    padding: 0.3rem 0.6rem;
-    font-size: 0.7rem;
+    min-height: 48px;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
     flex: 1 1 auto;
-    min-width: calc(50% - 0.15rem);
+    min-width: calc(50% - 0.25rem);
   }
 
   .game-state-badge {
     width: 100%;
     justify-content: center;
     margin-left: 0;
-    margin-top: 0.3rem;
+    margin-top: 0.5rem;
   }
 
   .game-state-badge :deep(.q-badge) {
-    font-size: 0.7rem;
-    padding: 4px 8px;
-  }
-}
-
-/* Small mobile devices */
-@media (max-width: 400px) {
-  .game-controls {
-    padding: 0.3rem;
-    gap: 0.25rem;
-  }
-
-  .game-controls :deep(.q-btn) {
-    min-height: 28px;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.65rem;
-    min-width: calc(50% - 0.125rem);
-  }
-
-  .game-state-badge :deep(.q-badge) {
-    font-size: 0.65rem;
-    padding: 3px 6px;
+    font-size: 0.85rem;
+    padding: 6px 12px;
   }
 }
 
 /* Tablet adjustments */
 @media (min-width: 601px) and (max-width: 1024px) {
   .game-controls {
-    gap: 0.4rem;
-    padding: 0.4rem;
+    gap: 0.625rem;
   }
 
   .game-controls :deep(.q-btn) {
-    min-height: 30px;
-    padding: 0.35rem 0.7rem;
-    font-size: 0.7rem;
+    min-height: 46px;
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
   }
 }
 </style>
