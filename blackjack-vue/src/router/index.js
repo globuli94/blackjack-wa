@@ -48,7 +48,11 @@ export default defineRouter(function (/* { store, ssrContext } */) {
       console.log('[Router Guard] Route requires auth:', requiresAuth)
       console.log('[Router Guard] User authenticated:', authStore.isAuthenticated)
       
-      if (requiresAuth && !authStore.isAuthenticated) {
+      // Redirect root path to auth if not authenticated
+      if (to.path === '/' && !authStore.isAuthenticated) {
+        console.log('[Router Guard] Not authenticated, redirecting root to /auth')
+        next({ path: '/auth' })
+      } else if (requiresAuth && !authStore.isAuthenticated) {
         console.log('[Router Guard] Redirecting to /auth')
         next({ path: '/auth', query: { redirect: to.fullPath } })
       } else if (!requiresAuth && to.path === '/auth' && authStore.isAuthenticated) {
