@@ -105,38 +105,51 @@
             type="number"
             label="Bet Amount"
             outlined
-            dense
             autofocus
             min="1"
             @keyup.enter="placeBet"
-            class="q-mb-sm"
+            class="q-mb-sm bet-amount-input"
           />
-          <div class="text-caption text-grey-6 q-mt-xs">
-            Quick amounts:
+          <div class="text-caption text-grey-6 q-mt-xs quick-amounts-wrapper">
             <q-btn
               flat
-              dense
-              size="sm"
-              label="50"
+              size="md"
               @click="betAmount = 50"
-              class="q-mx-xs"
-            />
+              class="quick-amount-btn"
+              :disable="!isCurrentUserTurn"
+            >
+              <template v-slot:default>
+                <img src="icons/util-icons/casino-chip.png" alt="Coin" class="coin-icon" />
+                <span class="quick-amount-value">50</span>
+              </template>
+            </q-btn>
             <q-btn
               flat
-              dense
-              size="sm"
-              label="100"
+              size="md"
               @click="betAmount = 100"
-              class="q-mx-xs"
-            />
+              class="quick-amount-btn"
+              :disable="!isCurrentUserTurn"
+            >
+              <template v-slot:default>
+                <img src="icons/util-icons/casino-chip.png" alt="Coin" class="coin-icon" />
+                <img src="icons/util-icons/casino-chip.png" alt="Coin" class="coin-icon" />
+                <span class="quick-amount-value">100</span>
+              </template>
+            </q-btn>
             <q-btn
               flat
-              dense
-              size="sm"
-              label="200"
+              size="md"
               @click="betAmount = 200"
-              class="q-mx-xs"
-            />
+              class="quick-amount-btn"
+              :disable="!isCurrentUserTurn"
+            >
+              <template v-slot:default>
+                <img src="icons/util-icons/casino-chip.png" alt="Coin" class="coin-icon" />
+                <img src="icons/util-icons/casino-chip.png" alt="Coin" class="coin-icon" />
+                <img src="icons/util-icons/casino-chip.png" alt="Coin" class="coin-icon" />
+                <span class="quick-amount-value">200</span>
+              </template>
+            </q-btn>
           </div>
         </q-card-section>
 
@@ -242,6 +255,10 @@ const currentPlayer = computed(() => {
     return players.value[current_idx.value]
   }
   return null
+})
+
+const isCurrentUserTurn = computed(() => {
+  return currentPlayer.value && currentPlayer.value.name === authStore.userName
 })
 
 // Methods
@@ -661,6 +678,83 @@ onUnmounted(() => {
 
 .dialog-actions {
   padding: 0.5rem 1rem 1rem;
+}
+
+.quick-amounts-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.quick-amounts-label {
+  margin-right: 0.5rem;
+}
+
+.quick-amount-btn {
+  padding: 0.75rem 1.25rem !important;
+  min-height: 48px !important;
+  border-radius: 8px !important;
+}
+
+.quick-amount-btn :deep(.q-btn__content) {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+.quick-amount-value {
+  font-size: 1.4rem !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  color: inherit !important;
+}
+
+.coin-icon {
+  height: 24px !important;
+  width: 24px !important;
+  object-fit: contain !important;
+  flex-shrink: 0 !important;
+}
+
+.bet-amount-input {
+  font-size: 1.1rem !important;
+}
+
+.bet-amount-input :deep(.q-field__control) {
+  min-height: 48px !important;
+  padding: 0 1rem !important;
+}
+
+.bet-amount-input :deep(.q-field__native) {
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  padding: 0.5rem 0 !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.bet-amount-input :deep(.q-field__label) {
+  font-size: 1.1rem !important;
+  font-weight: 500 !important;
+  z-index: 2 !important;
+}
+
+.bet-amount-input :deep(.q-field--float .q-field__label) {
+  transform: translateY(-50%) scale(0.85) !important;
+  top: 0 !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  padding: 0 0.5rem !important;
+  z-index: 3 !important;
+}
+
+.bet-amount-input :deep(.q-field__inner) {
+  position: relative !important;
+}
+
+.bet-amount-input :deep(.q-field__marginal) {
+  z-index: 2 !important;
 }
 
 @media (min-width: 600px) {
