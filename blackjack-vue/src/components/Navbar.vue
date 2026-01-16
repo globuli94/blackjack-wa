@@ -281,6 +281,13 @@ const handleLogout = async () => {
 .user-dropdown,
 .login-btn {
   min-width: auto;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.user-dropdown :deep(.q-btn__content),
+.login-btn :deep(.q-btn__content) {
+  font-size: 1.1rem;
 }
 
 .mobile-menu-btn {
@@ -355,7 +362,7 @@ const handleLogout = async () => {
   }
 
   .nav-btn .q-btn__content {
-    font-size: 0.875rem;
+    font-size: 1rem;
   }
 }
 </style>

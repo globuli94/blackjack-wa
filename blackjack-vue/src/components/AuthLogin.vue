@@ -1,22 +1,23 @@
 <template>
   <q-card class="auth-card">
-    <q-card-section>
-      <div class="text-h5 text-center q-mb-md">Sign In</div>
-      <div class="text-subtitle2 text-center text-grey-6 q-mb-lg">
-        Sign in to play Blackjack
-      </div>
+    <q-card-section class="auth-header">
+      <img src="icons/logo/blackjack_logo.png" alt="Blackjack Logo" class="auth-logo q-mb-md" />
+      <div class="text-h4 text-center q-mb-sm text-white">Sign In</div>
     </q-card-section>
 
-    <q-card-section>
-      <q-form @submit="handleSignIn" class="q-gutter-md">
+    <q-card-section class="auth-form-section">
+      <q-form @submit="handleSignIn" class="auth-form">
         <q-input
           v-model="email"
           type="email"
           label="Email"
           outlined
-          dense
+          dark
+          color="amber"
+          label-color="white"
           :rules="[val => !!val || 'Email is required', val => /.+@.+\..+/.test(val) || 'Email must be valid']"
           :disable="authStore.loading"
+          class="auth-input"
         />
 
         <q-input
@@ -24,38 +25,42 @@
           type="password"
           label="Password"
           outlined
-          dense
+          dark
+          color="amber"
+          label-color="white"
           :rules="[val => !!val || 'Password is required', val => val.length >= 6 || 'Password must be at least 6 characters']"
           :disable="authStore.loading"
+          class="auth-input"
         />
 
         <q-btn
           type="submit"
           label="Sign In"
-          color="primary"
-          class="full-width"
+          color="amber"
+          text-color="black"
+          class="full-width auth-submit-btn"
+          unelevated
           :loading="authStore.loading"
         />
-
-        <div class="text-center text-grey-6 q-mt-md">or</div>
 
         <!-- SSO Providers -->
         <q-btn
           outline
-          color="primary"
+          color="white"
+          text-color="white"
           icon="fab fa-google"
           label="Sign in with Google"
-          class="full-width"
+          class="full-width auth-google-btn"
           :disable="authStore.loading"
           @click="handleGoogleSignIn"
         />
       </q-form>
     </q-card-section>
 
-    <q-card-section class="text-center">
-      <div class="text-body2">
+    <q-card-section class="text-center auth-footer">
+      <div class="text-body1 text-white">
         Don't have an account?
-        <a href="#" class="text-primary" @click.prevent="$emit('switch-to-signup')">Sign up</a>
+        <a href="#" class="auth-link" @click.prevent="$emit('switch-to-signup')">Sign up</a>
       </div>
     </q-card-section>
 
@@ -110,5 +115,115 @@ const handleGoogleSignIn = async () => {
   min-width: 400px;
   max-width: 500px;
   margin: 0 auto;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  color: white;
+}
+
+.auth-header {
+  padding: 2rem 2rem 1rem;
+  text-align: center;
+}
+
+.auth-logo {
+  display: block;
+  margin: 0 auto 1rem;
+  height: 180px;
+  width: auto;
+  object-fit: contain;
+}
+
+.auth-form-section {
+  padding: 1.5rem 2rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.auth-input {
+  width: 100%;
+}
+
+.auth-input :deep(.q-field__label) {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.auth-input :deep(.q-field__control) {
+  color: white;
+}
+
+.auth-input :deep(.q-field__native) {
+  color: white;
+}
+
+.auth-input :deep(.q-field--outlined .q-field__control) {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.auth-input :deep(.q-field--outlined:hover .q-field__control) {
+  border-color: rgba(251, 191, 36, 0.6);
+}
+
+.auth-input :deep(.q-field--focused .q-field__control) {
+  border-color: #fbbf24;
+}
+
+.auth-submit-btn {
+  min-height: 56px;
+  height: 56px;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+}
+
+.auth-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(251, 191, 36, 0.5);
+}
+
+.auth-google-btn {
+  min-height: 56px;
+  height: 56px;
+  border-color: rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.auth-google-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.auth-footer {
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.auth-link {
+  color: #fbbf24;
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  transition: color 0.2s ease;
+}
+
+.auth-link:hover {
+  color: #fcd34d;
+  text-decoration: underline;
+}
+
+.auth-card :deep(.q-banner) {
+  background: rgba(239, 68, 68, 0.9) !important;
+  border-radius: 8px;
+  margin: 1rem;
 }
 </style>
