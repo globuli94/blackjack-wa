@@ -50,6 +50,7 @@
         <div class="player-controls-wrapper">
           <PlayerControls
             v-if="currentPlayer"
+            :current-user-name="authStore.userName"
             :player="currentPlayer"
             :game-state="gameState"
             @hit="hit"
