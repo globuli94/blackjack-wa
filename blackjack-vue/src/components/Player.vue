@@ -28,7 +28,7 @@
       <Hand
         ref="handRef"
         :cards="player.hand?.cards || []"
-        :show-value="true"
+        :show-value="hasCards"
         :animate-cards="true"
       />
     </div>
@@ -66,6 +66,20 @@ const playerCardElement = ref(null)
 const handRef = ref(null)
 const { glow } = useCardAnimations()
 
+// Track the bet amount before evaluation (since bet becomes 0 after evaluation)
+const previousBet = ref(0)
+
+// Watch for bet changes and store it before it becomes 0
+watch(
+  () => props.player.bet,
+  (newBet) => {
+    if (newBet > 0) {
+      previousBet.value = newBet
+    }
+  },
+  { immediate: true }
+)
+
 // Add glow effect when player becomes current
 watch(
   () => props.isCurrent,
@@ -82,6 +96,55 @@ watch(
   { immediate: true }
 )
 
+// Check if player has blackjack (21 with 2 cards)
+const isBlackjack = computed(() => {
+  const cards = props.player.hand?.cards || []
+  if (cards.length !== 2) return false
+  
+  // Calculate hand value
+  let value = 0
+  let aces = 0
+  
+  cards.forEach((card) => {
+    if (card.rank === 'A') {
+      aces++
+      value += 11
+    } else if (['K', 'Q', 'J'].includes(card.rank)) {
+      value += 10
+    } else {
+      value += parseInt(card.rank)
+    }
+  })
+  
+  // Adjust for aces
+  while (value > 21 && aces > 0) {
+    value -= 10
+    aces--
+  }
+  
+  return value === 21
+})
+
+// Get the bet amount to display (use current bet if available, otherwise use stored previous bet)
+const displayBet = computed(() => {
+  // If bet is still set, use it
+  if (props.player.bet && props.player.bet > 0) {
+    return props.player.bet
+  }
+  
+  // For evaluated state, use the stored previous bet
+  if (previousBet.value > 0) {
+    return previousBet.value
+  }
+  
+  return 0
+})
+
+// Check if player has cards
+const hasCards = computed(() => {
+  return props.player?.hand?.cards && props.player.hand.cards.length > 0
+})
+
 const getStatusColor = (state) => {
   switch (state) {
     case 'Playing':
@@ -89,13 +152,19 @@ const getStatusColor = (state) => {
     case 'Idle':
       return 'grey'
     case 'Bust':
+    case 'Busted':
       return 'negative'
     case 'Stand':
+    case 'Standing':
       return 'warning'
     case 'Won':
+    case 'WON':
       return 'green'
     case 'Lost':
+    case 'LOST':
       return 'red'
+    case 'Blackjack':
+      return 'green'
     default:
       return 'grey'
   }

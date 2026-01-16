@@ -14,7 +14,7 @@
     <Navbar @page-change="handlePageChange" />
 
     <!-- HOME (Game) Section -->
-    <div v-if="currentPage === 'home'" class="game-section">
+    <div v-if="currentPage === 'home'" ref="gameSectionRef" class="game-section" :style="mobileScaleStyle">
       <!-- Show game only if authenticated -->
       <div v-if="authStore.isAuthenticated">
         <!-- Game Controls -->
@@ -22,10 +22,12 @@
           <GameControls
             :game-state="gameState"
             :players="players"
+            :current-user-name="authStore.userName"
             @initialize="initializeGame"
             @start="startGame"
-            @add-player="showAddPlayerDialog = true"
+            @add-player="addPlayer"
             @reset="initializeGame"
+            @leave="leavePlayer"
           />
         </div>
 
@@ -40,7 +42,7 @@
             v-for="player in players"
             :key="player.name"
             :player="player"
-            :is-current="player === currentPlayer"
+            :is-current="player === currentPlayer && gameState !== 'Evaluated'"
           />
         </div>
 
@@ -90,32 +92,6 @@
       <Rules />
     </div>
 
-    <!-- Add Player Dialog -->
-    <q-dialog v-model="showAddPlayerDialog">
-      <q-card class="dialog-card">
-        <q-card-section>
-          <div class="text-h6 text-weight-bold">Add Player</div>
-        </q-card-section>
-
-        <q-card-section>
-          <q-input
-            v-model="newPlayerName"
-            label="Player Name"
-            outlined
-            dense
-            autofocus
-            @keyup.enter="addPlayer"
-            class="q-mb-sm"
-          />
-        </q-card-section>
-
-        <q-card-actions align="right" class="dialog-actions">
-          <q-btn flat label="Cancel" color="grey" v-close-popup />
-          <q-btn unelevated label="Add" color="primary" @click="addPlayer" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
     <!-- Bet Dialog -->
     <q-dialog v-model="showBetDialog">
       <q-card class="dialog-card">
@@ -129,38 +105,51 @@
             type="number"
             label="Bet Amount"
             outlined
-            dense
             autofocus
             min="1"
             @keyup.enter="placeBet"
-            class="q-mb-sm"
+            class="q-mb-sm bet-amount-input"
           />
-          <div class="text-caption text-grey-6 q-mt-xs">
-            Quick amounts:
+          <div class="text-caption text-grey-6 q-mt-xs quick-amounts-wrapper">
             <q-btn
               flat
-              dense
-              size="sm"
-              label="50"
+              size="md"
               @click="betAmount = 50"
-              class="q-mx-xs"
-            />
+              class="quick-amount-btn"
+              :disable="!isCurrentUserTurn"
+            >
+              <template v-slot:default>
+                <img src="icons/util-icons/casino-chip.png" alt="Coin" class="coin-icon" />
+                <span class="quick-amount-value">50</span>
+              </template>
+            </q-btn>
             <q-btn
               flat
-              dense
-              size="sm"
-              label="100"
+              size="md"
               @click="betAmount = 100"
-              class="q-mx-xs"
-            />
+              class="quick-amount-btn"
+              :disable="!isCurrentUserTurn"
+            >
+              <template v-slot:default>
+                <img src="icons/util-icons/casino-chip.png" alt="Coin" class="coin-icon" />
+                <img src="icons/util-icons/casino-chip.png" alt="Coin" class="coin-icon" />
+                <span class="quick-amount-value">100</span>
+              </template>
+            </q-btn>
             <q-btn
               flat
-              dense
-              size="sm"
-              label="200"
+              size="md"
               @click="betAmount = 200"
-              class="q-mx-xs"
-            />
+              class="quick-amount-btn"
+              :disable="!isCurrentUserTurn"
+            >
+              <template v-slot:default>
+                <img src="icons/util-icons/casino-chip.png" alt="Coin" class="coin-icon" />
+                <img src="icons/util-icons/casino-chip.png" alt="Coin" class="coin-icon" />
+                <img src="icons/util-icons/casino-chip.png" alt="Coin" class="coin-icon" />
+                <span class="quick-amount-value">200</span>
+              </template>
+            </q-btn>
           </div>
         </q-card-section>
 
@@ -174,7 +163,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { WebSocketManager } from '../services/websocket'
 import { gameApi } from '../services/api'
 import { Notify } from 'quasar'
@@ -199,15 +188,66 @@ const players = ref([])
 const dealer = ref(null)
 const deck = ref(null)
 const gameState = ref(null)
-const newPlayerName = ref('')
 const betAmount = ref(100)
-const showAddPlayerDialog = ref(false)
 const showBetDialog = ref(false)
 
 // for offline management
 const online = ref(navigator.onLine)
 const showOfflineBanner = ref(false)
 let wsManager = null
+
+// Mobile scaling
+const gameSectionRef = ref(null)
+const mobileScale = ref(1)
+
+const mobileScaleStyle = computed(() => {
+  return {
+    transform: `scale(${mobileScale.value})`,
+    transformOrigin: 'top center'
+  }
+})
+
+const calculateMobileScale = () => {
+  if (typeof window === 'undefined') {
+    mobileScale.value = 1
+    return
+  }
+
+  // Use setTimeout to ensure DOM is fully rendered
+  setTimeout(() => {
+    if (!gameSectionRef.value) return
+
+    // Account for navbar and padding
+    const navbarHeight = 60
+    const padding = 20
+    const viewportWidth = window.innerWidth
+    const viewportHeight = window.innerHeight - navbarHeight - padding
+    
+    // Get actual content dimensions
+    const contentWidth = gameSectionRef.value.scrollWidth || gameSectionRef.value.offsetWidth
+    const contentHeight = gameSectionRef.value.scrollHeight || gameSectionRef.value.offsetHeight
+
+    // If content dimensions are not available yet, use estimated values
+    if (contentWidth === 0 || contentHeight === 0) {
+      // Estimate: controls (~100px), dealer (~200px), players (300px * rows), player controls (~150px)
+      const playerRows = Math.ceil((players.value.length || 1) / Math.floor(viewportWidth / 300))
+      const estimatedWidth = Math.max(600, 280 * Math.min(players.value.length || 1, Math.floor(viewportWidth / 300)))
+      const estimatedHeight = 100 + 200 + (300 * playerRows) + 150 // controls + dealer + players + player controls
+      const scaleX = viewportWidth / estimatedWidth
+      const scaleY = viewportHeight / estimatedHeight
+      const scale = Math.min(scaleX, scaleY, 1)
+      mobileScale.value = Math.max(scale, 0.2) // Minimum scale of 20%
+      return
+    }
+
+    // Calculate scale to fit both width and height - prioritize height to fit on one page
+    const scaleX = viewportWidth / contentWidth
+    const scaleY = viewportHeight / contentHeight
+    const scale = Math.min(scaleX, scaleY, 1) // Don't scale up, only down
+
+    mobileScale.value = Math.max(scale, 0.2) // Minimum scale of 20%
+  }, 100)
+}
 
 // Computed
 const currentPlayer = computed(() => {
@@ -217,6 +257,10 @@ const currentPlayer = computed(() => {
   return null
 })
 
+const isCurrentUserTurn = computed(() => {
+  return currentPlayer.value && currentPlayer.value.name === authStore.userName
+})
+
 // Methods
 const updateGameState = (gameData) => {
   current_idx.value = gameData.current_idx
@@ -224,6 +268,10 @@ const updateGameState = (gameData) => {
   dealer.value = gameData.dealer
   deck.value = gameData.deck
   gameState.value = gameData.state
+  // Recalculate scale when game state changes
+  nextTick(() => {
+    calculateMobileScale()
+  })
 }
 
 const handlePageChange = (page) => {
@@ -267,27 +315,35 @@ const startGame = async () => {
 }
 
 const addPlayer = async () => {
-  if (!newPlayerName.value.trim()) {
+  if (!authStore.isAuthenticated) {
     Notify.create({
       type: 'warning',
-      message: 'Please enter a player name',
+      message: 'Please sign in to join the game',
+      position: 'top',
+    })
+    return
+  }
+
+  const playerName = authStore.userName
+  if (!playerName || !playerName.trim()) {
+    Notify.create({
+      type: 'warning',
+      message: 'Unable to get username. Please try again.',
       position: 'top',
     })
     return
   }
 
   try {
-    await gameApi.addPlayer(newPlayerName.value.trim())
-    newPlayerName.value = ''
-    showAddPlayerDialog.value = false
+    await gameApi.addPlayer(playerName.trim())
     Notify.create({
       type: 'positive',
-      message: 'Player added',
+      message: 'Joined game successfully',
       position: 'top',
     })
   } catch (error) {
     console.error('Error adding player:', error)
-    const errorMessage = error.response?.data?.message || error.message || 'Failed to add player'
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to join game'
     console.error('Error details:', {
       status: error.response?.status,
       data: error.response?.data,
@@ -368,6 +424,38 @@ const placeBet = async () => {
   }
 }
 
+const leavePlayer = async () => {
+  try {
+    await gameApi.leavePlayer()
+    Notify.create({
+      type: 'info',
+      message: 'You have left the game',
+      position: 'top',
+    })
+  } catch (error) {
+    console.error('Error leaving game:', error)
+    Notify.create({
+      type: 'negative',
+      message: 'Failed to leave game',
+      position: 'top',
+    })
+  }
+}
+
+// Watch for changes that affect layout (but debounce to prevent rapid recalculations)
+let scaleTimeout = null
+watch([players, dealer, currentPage], () => {
+  if (currentPage.value === 'home') {
+    // Debounce the scale calculation to prevent rapid recalculations
+    if (scaleTimeout) {
+      clearTimeout(scaleTimeout)
+    }
+    scaleTimeout = setTimeout(() => {
+      calculateMobileScale()
+    }, 100)
+  }
+}, { deep: true })
+
 // Lifecycle
 onMounted(() => {
   // Only connect WebSocket if user is authenticated
@@ -375,6 +463,10 @@ onMounted(() => {
     wsManager = new WebSocketManager(updateGameState, authStore)
     wsManager.connect()
   }
+
+  // Calculate initial mobile scale
+  calculateMobileScale()
+  window.addEventListener('resize', calculateMobileScale)
 
   // events fired by browser for connection changes
   window.addEventListener('online', () => {
@@ -403,6 +495,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   wsManager?.disconnect();
+  window.removeEventListener('resize', calculateMobileScale)
 })
 </script>
 
@@ -624,6 +717,83 @@ onUnmounted(() => {
 
 .dialog-actions {
   padding: 0.5rem 1rem 1rem;
+}
+
+.quick-amounts-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.quick-amounts-label {
+  margin-right: 0.5rem;
+}
+
+.quick-amount-btn {
+  padding: 0.75rem 1.25rem !important;
+  min-height: 48px !important;
+  border-radius: 8px !important;
+}
+
+.quick-amount-btn :deep(.q-btn__content) {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+.quick-amount-value {
+  font-size: 1.4rem !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  color: inherit !important;
+}
+
+.coin-icon {
+  height: 24px !important;
+  width: 24px !important;
+  object-fit: contain !important;
+  flex-shrink: 0 !important;
+}
+
+.bet-amount-input {
+  font-size: 1.1rem !important;
+}
+
+.bet-amount-input :deep(.q-field__control) {
+  min-height: 48px !important;
+  padding: 0 1rem !important;
+}
+
+.bet-amount-input :deep(.q-field__native) {
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  padding: 0.5rem 0 !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.bet-amount-input :deep(.q-field__label) {
+  font-size: 1.1rem !important;
+  font-weight: 500 !important;
+  z-index: 2 !important;
+}
+
+.bet-amount-input :deep(.q-field--float .q-field__label) {
+  transform: translateY(-50%) scale(0.85) !important;
+  top: 0 !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  padding: 0 0.5rem !important;
+  z-index: 3 !important;
+}
+
+.bet-amount-input :deep(.q-field__inner) {
+  position: relative !important;
+}
+
+.bet-amount-input :deep(.q-field__marginal) {
+  z-index: 2 !important;
 }
 
 @media (min-width: 600px) {
