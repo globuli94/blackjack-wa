@@ -121,9 +121,9 @@ defineExpose({
 
 <style scoped>
 .playing-card {
-  width: 70px;
-  height: 98px;
-  border-radius: 6px;
+  width: 100px;
+  height: 140px;
+  border-radius: 8px;
   overflow: hidden;
   transition: transform 0.2s ease;
 }
@@ -137,7 +137,7 @@ defineExpose({
   width: 100%;
   height: 100%;
   background: transparent;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 .card-image {
@@ -148,31 +148,5 @@ defineExpose({
 
 .hidden-card {
   background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
-}
-
-/* Tablet - Slightly smaller */
-@media (min-width: 601px) and (max-width: 1024px) {
-  .playing-card {
-    width: 60px;
-    height: 84px;
-  }
-}
-
-/* Mobile Responsive - Much smaller cards */
-@media (max-width: 600px) {
-  .playing-card {
-    width: 45px;
-    height: 63px;
-    border-radius: 4px;
-  }
-}
-
-/* Small mobile devices */
-@media (max-width: 400px) {
-  .playing-card {
-    width: 40px;
-    height: 56px;
-    border-radius: 3px;
-  }
 }
 </style>
