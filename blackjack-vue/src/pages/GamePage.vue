@@ -40,7 +40,7 @@
             v-for="player in players"
             :key="player.name"
             :player="player"
-            :is-current="player === currentPlayer"
+            :is-current="player === currentPlayer && gameState !== 'Evaluated'"
           />
         </div>
 
@@ -214,9 +214,6 @@ const gameSectionRef = ref(null)
 const mobileScale = ref(1)
 
 const mobileScaleStyle = computed(() => {
-  if (typeof window !== 'undefined' && window.innerWidth > 600) {
-    return {}
-  }
   return {
     transform: `scale(${mobileScale.value})`,
     transformOrigin: 'top center'
@@ -224,7 +221,7 @@ const mobileScaleStyle = computed(() => {
 })
 
 const calculateMobileScale = () => {
-  if (typeof window === 'undefined' || window.innerWidth > 600) {
+  if (typeof window === 'undefined') {
     mobileScale.value = 1
     return
   }
@@ -233,8 +230,11 @@ const calculateMobileScale = () => {
   setTimeout(() => {
     if (!gameSectionRef.value) return
 
+    // Account for navbar and padding
+    const navbarHeight = 60
+    const padding = 20
     const viewportWidth = window.innerWidth
-    const viewportHeight = window.innerHeight - 120 // Account for navbar and padding
+    const viewportHeight = window.innerHeight - navbarHeight - padding
     
     // Get actual content dimensions
     const contentWidth = gameSectionRef.value.scrollWidth || gameSectionRef.value.offsetWidth
@@ -242,22 +242,23 @@ const calculateMobileScale = () => {
 
     // If content dimensions are not available yet, use estimated values
     if (contentWidth === 0 || contentHeight === 0) {
-      // Estimate: controls (~600px), dealer (~500px), players (280px * count), player controls (~600px)
-      const estimatedWidth = Math.max(600, 280 * Math.max(players.value.length, 1))
-      const estimatedHeight = 100 + 200 + 300 + 150 // controls + dealer + players + player controls
+      // Estimate: controls (~100px), dealer (~200px), players (300px * rows), player controls (~150px)
+      const playerRows = Math.ceil((players.value.length || 1) / Math.floor(viewportWidth / 300))
+      const estimatedWidth = Math.max(600, 280 * Math.min(players.value.length || 1, Math.floor(viewportWidth / 300)))
+      const estimatedHeight = 100 + 200 + (300 * playerRows) + 150 // controls + dealer + players + player controls
       const scaleX = viewportWidth / estimatedWidth
       const scaleY = viewportHeight / estimatedHeight
       const scale = Math.min(scaleX, scaleY, 1)
-      mobileScale.value = Math.max(scale, 0.25) // Minimum scale of 25%
+      mobileScale.value = Math.max(scale, 0.2) // Minimum scale of 20%
       return
     }
 
-    // Calculate scale to fit both width and height
+    // Calculate scale to fit both width and height - prioritize height to fit on one page
     const scaleX = viewportWidth / contentWidth
     const scaleY = viewportHeight / contentHeight
     const scale = Math.min(scaleX, scaleY, 1) // Don't scale up, only down
 
-    mobileScale.value = Math.max(scale, 0.25) // Minimum scale of 25%
+    mobileScale.value = Math.max(scale, 0.2) // Minimum scale of 20%
   }, 100)
 }
 
@@ -485,7 +486,8 @@ onUnmounted(() => {
 .blackjack-app {
   background: linear-gradient(135deg, #0f766e 0%, #15803d 100%);
   background-attachment: fixed;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   color: white;
   padding: 0.5rem;
 }
@@ -496,8 +498,9 @@ onUnmounted(() => {
   gap: 1.5rem;
   align-items: center;
   padding: 0.5rem;
-  width: 100%;
+  width: fit-content;
   max-width: 100%;
+  margin: 0 auto;
 }
 
 .controls-wrapper {
@@ -536,10 +539,9 @@ onUnmounted(() => {
   justify-content: center;
   margin-top: 0.5rem;
   padding: 0.5rem;
-  position: sticky;
-  bottom: 0;
-  z-index: 100;
-  background: linear-gradient(to top, rgba(15, 118, 110, 0.95) 0%, transparent 100%);
+  position: relative;
+  z-index: 1;
+  background: transparent;
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
@@ -579,27 +581,26 @@ onUnmounted(() => {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
-/* Mobile Responsive Styles - Scale entire layout to fit */
+/* Scale entire layout to fit on one page - applies to all screen sizes */
+.blackjack-app {
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.game-section {
+  transform-origin: top center;
+  /* Scale will be calculated dynamically via JavaScript */
+}
+
+/* Mobile Responsive Styles - Additional adjustments for small screens */
 @media (max-width: 600px) {
   .blackjack-app {
     padding: 0;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    height: 100vh;
-    position: relative;
   }
 
   .game-section {
     gap: 1rem;
     padding: 0.5rem;
-    transform-origin: top center;
-    /* Scale will be calculated dynamically via JavaScript */
-    width: fit-content;
-    min-width: 280px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0 auto;
   }
 
   .players-wrapper {
@@ -623,6 +624,7 @@ onUnmounted(() => {
   .player-controls-wrapper {
     position: relative;
     background: transparent;
+    z-index: 1;
   }
 
   .content-section {
