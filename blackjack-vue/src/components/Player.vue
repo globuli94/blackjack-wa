@@ -105,30 +105,27 @@ const getStatusColor = (state) => {
   flex-direction: column;
   gap: 1rem;
   padding: 1.25rem;
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  width: 100%;
+  background: transparent;
+  border-radius: 0;
+  backdrop-filter: none;
+  border: none;
+  width: 280px;
+  min-width: 280px;
+  max-width: 280px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: none;
 }
 
 .player-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-  border-color: rgba(255, 255, 255, 0.25);
+  transform: none;
 }
 
 .current-player {
-  border-color: #fbbf24;
-  box-shadow: 0 0 24px rgba(251, 191, 36, 0.6);
-  background: rgba(251, 191, 36, 0.15);
-  transform: scale(1.02);
+  /* No special styling for current player */
 }
 
 .current-player:hover {
-  transform: scale(1.02) translateY(-3px);
+  transform: none;
 }
 
 .player-header {
@@ -189,38 +186,10 @@ const getStatusColor = (state) => {
   flex-shrink: 0;
 }
 
-/* Mobile Responsive */
+/* Mobile Responsive - Keep fixed size, scaling handled by parent */
 @media (max-width: 600px) {
   .player-card {
-    padding: 1rem;
-    gap: 0.75rem;
-    border-radius: 12px;
-  }
-
-  .player-header {
-    font-size: 1rem;
-  }
-
-  .player-hand {
-    min-height: 120px;
-  }
-
-  .player-info {
-    gap: 0.5rem;
-    padding-top: 0.5rem;
-  }
-
-  .info-item {
-    font-size: 0.85rem;
-  }
-
-  .info-icon {
-    height: 16px;
-  }
-
-  .status-badge {
-    padding: 4px 10px;
-    font-size: 0.75rem;
+    /* Fixed size maintained, parent will scale */
   }
 }
 
