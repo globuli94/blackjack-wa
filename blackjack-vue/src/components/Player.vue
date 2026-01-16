@@ -19,12 +19,9 @@
         :label="player.state"
         class="status-badge"
       />
-      <span v-if="(player.state === 'Lost' || player.state === 'LOST') && displayBet > 0" class="bet-indicator loss">
-        -${{ displayBet }}
-      </span>
-      <span v-if="(player.state === 'Won' || player.state === 'WON' || player.state === 'Blackjack' || isBlackjack) && displayBet > 0" class="bet-indicator win">
-        +${{ displayBet }}
-      </span>
+      <div v-if="showWinLoss" class="win-loss-amount" :class="getWinLossClass()">
+        {{ getWinLossText() }}
+      </div>
     </div>
 
     <div class="player-hand">
@@ -172,42 +169,106 @@ const getStatusColor = (state) => {
       return 'grey'
   }
 }
+
+// Show win/loss amount when player has won or lost
+const showWinLoss = computed(() => {
+  return props.player?.state === 'Won' || props.player?.state === 'Lost'
+})
+
+// Get win/loss text
+const getWinLossText = () => {
+  if (!props.player?.bet) return ''
+  const betAmount = props.player.bet
+  if (props.player.state === 'Won') {
+    return `+$${betAmount}`
+  } else if (props.player.state === 'Lost') {
+    return `-$${betAmount}`
+  }
+  return ''
+}
+
+// Get win/loss class for styling
+const getWinLossClass = () => {
+  if (props.player?.state === 'Won') {
+    return 'win-amount'
+  } else if (props.player?.state === 'Lost') {
+    return 'loss-amount'
+  }
+  return ''
+}
 </script>
 
 <style scoped>
 .player-card {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding: 1.25rem;
+  gap: 0.5rem;
+  padding: 0.6rem;
   background: transparent;
-  border-radius: 0;
-  backdrop-filter: none;
   border: none;
-  width: 280px;
-  min-width: 280px;
-  max-width: 280px;
+  width: 100%;
   transition: all 0.3s ease;
-  box-shadow: none;
 }
 
 .player-card:hover {
-  transform: none;
+  transform: translateY(-2px);
 }
 
 .current-player {
-  /* No special styling for current player */
+  transform: scale(1.1);
+  z-index: 10;
+  position: relative;
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+              0 0 0 1px rgba(251, 191, 36, 0.3),
+              inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  padding: 0.8rem;
 }
 
 .current-player:hover {
-  transform: none;
+  transform: scale(1.25) translateY(-2px);
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(251, 191, 36, 0.5) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4),
+              0 0 0 1px rgba(251, 191, 36, 0.5),
+              inset 0 1px 1px rgba(255, 255, 255, 0.15);
+}
+
+.current-player .player-header {
+  color: #fbbf24;
+  font-size: 1.1rem;
+}
+
+.current-player .player-name {
+  font-weight: 700;
+}
+
+.current-player .player-hand {
+  min-height: 130px;
+}
+
+.current-player .status-badge {
+  padding: 4px 10px;
+  font-size: 0.85rem;
+}
+
+.current-player .info-item {
+  font-size: 0.9rem;
+}
+
+.current-player .info-icon {
+  height: 18px;
 }
 
 .player-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 1.25rem;
+  gap: 0.4rem;
+  font-size: 0.85rem;
   font-weight: 600;
 }
 
@@ -220,82 +281,247 @@ const getStatusColor = (state) => {
 
 .player-status {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+  gap: 0.3rem;
 }
 
 .status-badge {
-  padding: 6px 14px;
-  font-size: 0.95rem;
+  padding: 3px 8px;
+  font-size: 0.7rem;
   font-weight: 500;
-  border-radius: 20px;
+  border-radius: 12px;
+}
+
+.win-loss-amount {
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+.win-amount {
+  color: #21ba45;
+  background: rgba(33, 186, 69, 0.15);
+}
+
+.loss-amount {
+  color: #c10015;
+  background: rgba(193, 0, 21, 0.15);
 }
 
 .player-hand {
   display: flex;
   justify-content: center;
-  min-height: 140px;
+  min-height: 100px;
   align-items: center;
 }
 
 .player-info {
   display: flex;
   justify-content: space-around;
-  gap: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  gap: 0.5rem;
+  padding-top: 0.4rem;
+  border-top: none;
   flex-wrap: wrap;
 }
 
 .info-item {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 1rem;
+  gap: 0.3rem;
+  font-size: 0.75rem;
   font-weight: 500;
 }
 
 .info-icon {
-  height: 18px;
+  height: 14px;
   width: auto;
   vertical-align: middle;
   flex-shrink: 0;
 }
 
-.bet-indicator {
-  font-size: 1rem;
-  font-weight: 600;
-  padding: 4px 8px;
-  border-radius: 12px;
-}
-
-.bet-indicator.win {
-  color: #10b981;
-  background-color: rgba(0, 0, 0, 0.8);
-}
-
-.bet-indicator.loss {
-  color: #ef4444;
-  background-color: rgba(239, 68, 68, 0.2);
-}
-
-/* Mobile Responsive - Keep fixed size, scaling handled by parent */
+/* Mobile Responsive - Much more compact */
 @media (max-width: 600px) {
   .player-card {
-    /* Fixed size maintained, parent will scale */
+    padding: 0.5rem;
+    gap: 0.4rem;
+  }
+
+  .player-header {
+    font-size: 0.75rem;
+    gap: 0.3rem;
+  }
+
+  .player-header :deep(.q-icon) {
+    font-size: 14px;
+  }
+
+  .player-hand {
+    min-height: 70px;
+  }
+
+  .player-info {
+    gap: 0.4rem;
+    padding-top: 0.4rem;
+    border-top-width: 1px;
+  }
+
+  .info-item {
+    font-size: 0.7rem;
+    gap: 0.25rem;
+  }
+
+  .info-icon {
+    height: 12px;
+  }
+
+  .status-badge {
+    padding: 2px 6px;
+    font-size: 0.65rem;
+  }
+
+  .win-loss-amount {
+    font-size: 0.75rem;
+    padding: 2px 6px;
+  }
+
+  .current-player {
+    transform: scale(1.2);
+    border-radius: 12px;
+    padding: 0.6rem;
+  }
+
+  .current-player .player-header {
+    font-size: 0.95rem;
+  }
+
+  .current-player .player-hand {
+    min-height: 90px;
+  }
+
+  .current-player .status-badge {
+    padding: 3px 8px;
+    font-size: 0.75rem;
+  }
+
+  .current-player .info-item {
+    font-size: 0.8rem;
+  }
+
+  .current-player .info-icon {
+    height: 14px;
+  }
+}
+
+/* Small mobile devices - Even more compact */
+@media (max-width: 400px) {
+  .player-card {
+    padding: 0.4rem;
+    gap: 0.3rem;
+  }
+
+  .player-header {
+    font-size: 0.7rem;
+  }
+
+  .player-hand {
+    min-height: 60px;
+  }
+
+  .info-item {
+    font-size: 0.65rem;
+  }
+
+  .info-icon {
+    height: 10px;
+  }
+
+  .status-badge {
+    padding: 2px 5px;
+    font-size: 0.6rem;
+  }
+
+  .win-loss-amount {
+    font-size: 0.7rem;
+    padding: 1px 5px;
+  }
+
+  .current-player {
+    transform: scale(1.15);
+    border-radius: 10px;
+    padding: 0.5rem;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+  }
+
+  .current-player .player-header {
+    font-size: 0.85rem;
+  }
+
+  .current-player .player-hand {
+    min-height: 75px;
+  }
+
+  .current-player .status-badge {
+    padding: 2px 7px;
+    font-size: 0.7rem;
+  }
+
+  .current-player .info-item {
+    font-size: 0.75rem;
+  }
+
+  .current-player .info-icon {
+    height: 12px;
   }
 }
 
 /* Tablet adjustments */
 @media (min-width: 601px) and (max-width: 1024px) {
   .player-card {
-    padding: 1.15rem;
+    padding: 0.5rem;
+    gap: 0.4rem;
   }
 
   .player-hand {
-    min-height: 130px;
+    min-height: 90px;
+  }
+
+  .player-header {
+    font-size: 0.8rem;
+  }
+
+  .current-player {
+    transform: scale(1.22);
+    border-radius: 14px;
+    padding: 0.7rem;
+  }
+
+  .current-player .player-header {
+    font-size: 1.05rem;
+  }
+
+  .current-player .player-hand {
+    min-height: 120px;
+  }
+
+  .current-player .status-badge {
+    padding: 4px 9px;
+    font-size: 0.8rem;
+  }
+
+  .current-player .win-loss-amount {
+    font-size: 0.95rem;
+    padding: 3px 10px;
+  }
+
+  .current-player .info-item {
+    font-size: 0.85rem;
+  }
+
+  .current-player .info-icon {
+    height: 16px;
   }
 }
 </style>

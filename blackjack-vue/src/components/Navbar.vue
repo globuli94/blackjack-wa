@@ -236,22 +236,24 @@ const handleLogout = async () => {
 
 <style scoped>
 .navbar-toolbar {
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  margin-bottom: 0.5rem;
-  padding: 0.5rem 1rem;
+  background: transparent;
+  backdrop-filter: none;
+  border-radius: 0;
+  margin-bottom: 0.3rem;
+  padding: 0.3rem 0.8rem;
+  min-height: 44px;
+  border: none;
+  box-shadow: none;
 }
 
 .navbar-title {
   display: flex;
   align-items: center;
-  font-size: 1.75rem;
-  font-weight: 600;
+  font-size: 1rem;
 }
 
 .logo-img {
-  height: 56px;
+  height: 28px;
   width: auto;
   vertical-align: middle;
 }
@@ -268,13 +270,8 @@ const handleLogout = async () => {
 
 .nav-btn {
   min-width: auto;
-  padding: 0.5rem 0.75rem;
-  font-size: 1.1rem;
-  font-weight: 500;
-}
-
-.nav-btn :deep(.q-btn__content) {
-  font-size: 1.1rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.85rem;
 }
 
 .separator {
@@ -316,19 +313,21 @@ const handleLogout = async () => {
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* Mobile Responsive */
+/* Mobile Responsive - More compact */
 @media (max-width: 768px) {
   .navbar-toolbar {
-    padding: 0.5rem;
-    border-radius: 8px;
+    padding: 0.3rem 0.5rem;
+    border-radius: 6px;
+    margin-bottom: 0.3rem;
+    min-height: 40px;
   }
 
   .navbar-title {
-    font-size: 1.5rem;
+    font-size: 0.85rem;
   }
 
   .logo-img {
-    height: 40px;
+    height: 20px;
   }
 
   .title-text {
@@ -341,6 +340,18 @@ const handleLogout = async () => {
 
   .mobile-menu-btn {
     display: block;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 400px) {
+  .navbar-toolbar {
+    padding: 0.25rem 0.4rem;
+    min-height: 36px;
+  }
+
+  .logo-img {
+    height: 18px;
   }
 }
 

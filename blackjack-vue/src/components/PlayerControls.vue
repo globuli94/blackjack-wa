@@ -17,7 +17,7 @@
 
     <div v-if="gameState === 'Started' && player" class="action-controls">
       <q-btn
-        color="primary"
+        color="positive"
         icon="add"
         label="Hit"
         @click="emit('hit')"
@@ -48,7 +48,7 @@
     <div v-if="player" class="player-info q-mt-md">
       <q-chip
         icon="person"
-        color="primary"
+        color="grey-8"
         text-color="white"
         size="md"
       >
@@ -101,91 +101,196 @@ const canDoubleDown = computed(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1rem;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  width: 600px;
-  min-width: 600px;
-  max-width: 600px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  padding: 0.5rem;
+  background: transparent !important;
+  border: none !important;
+  width: 100%;
+  max-width: 500px;
+}
+
+/* Remove any blue background from action-controls and betting-controls */
+.betting-controls,
+.action-controls {
+  background: transparent !important;
+  border: none !important;
 }
 
 .betting-controls,
 .action-controls {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.4rem;
   flex-wrap: wrap;
   justify-content: center;
   width: 100%;
 }
 
 .player-controls :deep(.q-btn) {
-  min-height: 48px;
-  padding: 0.75rem 1.5rem;
+  min-height: 36px;
+  padding: 0.5rem 1rem;
   font-weight: 600;
-  border-radius: 12px;
+  font-size: 0.8rem;
+  border-radius: 8px;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Remove any blue colors from buttons - override Quasar defaults */
+.player-controls :deep(.q-btn.bg-primary),
+.player-controls :deep(.q-btn--primary),
+.player-controls :deep(.q-btn[class*="primary"]) {
+  background-color: transparent !important;
+  color: inherit !important;
+  border: none !important;
 }
 
 .player-controls :deep(.q-btn:hover) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .player-controls :deep(.q-btn:active) {
   transform: translateY(0);
 }
 
+/* Ensure positive (green) button shows correctly */
+.player-controls :deep(.q-btn.bg-positive),
+.player-controls :deep(.q-btn--positive) {
+  background-color: #21ba45 !important;
+  color: white !important;
+}
+
+/* Ensure negative (red) button shows correctly */
+.player-controls :deep(.q-btn.bg-negative),
+.player-controls :deep(.q-btn--negative) {
+  background-color: #c10015 !important;
+  color: white !important;
+}
+
+/* Ensure warning (orange) button shows correctly */
+.player-controls :deep(.q-btn.bg-warning),
+.player-controls :deep(.q-btn--warning) {
+  background-color: #f2c037 !important;
+  color: black !important;
+}
+
+/* Ensure amber button shows correctly */
+.player-controls :deep(.q-btn.bg-amber),
+.player-controls :deep(.q-btn--amber) {
+  background-color: #ffb300 !important;
+  color: black !important;
+}
+
 .player-info {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.4rem;
   flex-wrap: wrap;
   justify-content: center;
   width: 100%;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: none;
 }
 
 .player-info :deep(.q-chip) {
-  height: 36px;
-  font-size: 0.9rem;
+  height: 28px;
+  font-size: 0.75rem;
   font-weight: 500;
-  padding: 0 0.75rem;
+  padding: 0 0.5rem;
 }
 
 .btn-icon {
-  height: 24px;
+  height: 18px;
   width: auto;
   vertical-align: middle;
 }
 
 .chip-icon {
-  height: 20px;
+  height: 16px;
   width: auto;
   vertical-align: middle;
 }
 
-/* Mobile Responsive - Keep fixed size, scaling handled by parent */
+/* Mobile Responsive - More compact */
 @media (max-width: 600px) {
   .player-controls {
-    /* Fixed size maintained, parent will scale */
+    padding: 0.5rem;
+    margin: 0 0.25rem;
+  }
+
+  .betting-controls,
+  .action-controls {
+    gap: 0.3rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .player-controls :deep(.q-btn) {
+    flex: 1;
+    min-width: calc(50% - 0.15rem);
+    min-height: 36px;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .player-info {
+    gap: 0.3rem;
+    margin-top: 0.4rem;
+    padding-top: 0.4rem;
+  }
+
+  .player-info :deep(.q-chip) {
+    font-size: 0.7rem;
+    height: 24px;
+    padding: 0 0.5rem;
+  }
+
+  .btn-icon {
+    height: 18px;
+  }
+
+  .chip-icon {
+    height: 16px;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 400px) {
+  .player-controls {
+    padding: 0.4rem;
+  }
+
+  .player-controls :deep(.q-btn) {
+    min-height: 32px;
+    font-size: 0.75rem;
+    padding: 0.3rem 0.5rem;
+  }
+
+  .player-info :deep(.q-chip) {
+    font-size: 0.65rem;
+    height: 22px;
   }
 }
 
 /* Tablet adjustments */
 @media (min-width: 601px) and (max-width: 1024px) {
+  .player-controls {
+    padding: 0.4rem;
+    max-width: 450px;
+  }
+
   .betting-controls,
   .action-controls {
-    gap: 0.625rem;
+    gap: 0.4rem;
   }
 
   .player-controls :deep(.q-btn) {
-    min-height: 50px;
-    padding: 0.625rem 1.25rem;
+    min-height: 34px;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.75rem;
+  }
+
+  .player-info :deep(.q-chip) {
+    height: 26px;
+    font-size: 0.7rem;
   }
 }
 </style>
