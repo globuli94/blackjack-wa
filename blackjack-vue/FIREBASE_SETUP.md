@@ -96,46 +96,6 @@ If using Twitter login:
 
 ## Troubleshooting
 
-### "API key not valid. Please pass a valid API key" (400 error)
-
-This error means Firebase received your API key but it's invalid or restricted. Check:
-
-1. **Verify API Key in Firebase Console**:
-   - Go to [Firebase Console](https://console.firebase.google.com/) > Your Project > Project Settings
-   - Under "Your apps", find your web app
-   - Copy the `apiKey` value exactly (it should start with `AIza...`)
-
-2. **Check API Key Restrictions**:
-   - Go to [Google Cloud Console](https://console.cloud.google.com/) > APIs & Services > Credentials
-   - Find your API key (the one from Firebase)
-   - Click on it to edit
-   - Under "Application restrictions":
-     - If set to "HTTP referrers", make sure `http://localhost:8080/*` and `http://localhost:5173/*` are added
-     - OR temporarily set to "None" for local development (not recommended for production)
-   - Under "API restrictions":
-     - Make sure "Identity Toolkit API" is enabled
-     - Or set to "Don't restrict key" for testing
-
-3. **Check `.env.development` Format**:
-   ```env
-   # ✅ CORRECT - No quotes, no spaces
-   VITE_FIREBASE_API_KEY=AIzaSyCxqMWfOM1xFShZez2Rfoet0aQE4qVuwkQ
-   
-   # ❌ WRONG - Has quotes
-   VITE_FIREBASE_API_KEY="AIzaSyCxqMWfOM1xFShZez2Rfoet0aQE4qVuwkQ"
-   
-   # ❌ WRONG - Has spaces
-   VITE_FIREBASE_API_KEY = AIzaSyCxqMWfOM1xFShZez2Rfoet0aQE4qVuwkQ
-   ```
-
-4. **Restart Dev Server**:
-   - After changing `.env.development`, you MUST restart `npm run dev`
-   - Vite only reads environment variables on startup
-
-5. **Check Console Logs**:
-   - Look for `[Firebase Config] Environment check:` in the browser console
-   - Verify the API key prefix matches what you see in Firebase Console
-
 ### "Firebase: Error (auth/configuration-not-found)"
 - Make sure all environment variables are set correctly
 - Check that your `.env` files are in the correct location (`blackjack-vue/` directory)
