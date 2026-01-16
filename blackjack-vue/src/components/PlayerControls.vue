@@ -72,18 +72,6 @@
         <span class="q-ml-xs">Bet: ${{ player.bet }}</span>
       </q-chip>
     </div>
-
-    <div class="leave-controls q-mt-md">
-      <q-btn
-        color="negative"
-        icon="exit_to_app"
-        label="Leave Game"
-        @click="emit('leave')"
-        size="md"
-        unelevated
-        text-color="white"
-      />
-    </div>
   </div>
 </template>
 
@@ -101,7 +89,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['hit', 'stand', 'double-down', 'bet', 'leave'])
+const emit = defineEmits(['hit', 'stand', 'double-down', 'bet'])
 
 const canDoubleDown = computed(() => {
   return props.player?.hand?.cards?.length === 2
@@ -159,14 +147,6 @@ const canDoubleDown = computed(() => {
   width: 100%;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.leave-controls {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  padding-top: 0.75rem;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
