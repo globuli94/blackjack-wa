@@ -125,7 +125,7 @@ const cardScale = computed(() => {
     const defaultWidth = 240
     const cardWidth = 100
     const cardOverlap = 20
-    const margin = 20
+    const margin = 15
     const totalWidthNeeded = cardWidth + (realCardCount - 1) * (cardWidth - cardOverlap)
     const availableWidth = defaultWidth - (margin * 2)
     
@@ -135,14 +135,14 @@ const cardScale = computed(() => {
     }
     
     const scale = availableWidth / totalWidthNeeded
-    return Math.max(0.25, Math.min(1, scale))
+    return Math.max(0.5, Math.min(1, scale))
   }
 
   // Card base width: 100px
   // Overlap: 20px (each additional card adds 80px visible width)
   const cardWidth = 100
   const cardOverlap = 20
-  const margin = 20 // Margin on each side
+  const margin = 15 // Reduced margin for better scaling
 
   // Calculate total width needed for all cards
   // First card: 100px, each additional: 80px (100px - 20px overlap)
@@ -159,8 +159,8 @@ const cardScale = computed(() => {
   // Calculate scale to fit all cards with margin
   const scale = availableWidth / totalWidthNeeded
 
-  // Ensure minimum scale of 0.25 and maximum of 1
-  const finalScale = Math.max(0.25, Math.min(1, scale))
+  // Ensure minimum scale of 0.5 (50%) for better visibility and maximum of 1
+  const finalScale = Math.max(0.5, Math.min(1, scale))
   
   // Debug: log scale calculation (remove in production if needed)
   // console.log(`Cards: ${realCardCount}, Container: ${containerW}px, Needed: ${totalWidthNeeded}px, Scale: ${finalScale}`)
@@ -389,5 +389,11 @@ defineExpose({
 
 .hand-value {
   margin-top: 0.5rem;
+}
+
+.hand-value :deep(.q-chip) {
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 6px 14px;
 }
 </style>

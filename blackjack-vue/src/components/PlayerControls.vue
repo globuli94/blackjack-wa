@@ -15,7 +15,7 @@
       </q-btn>
     </div>
 
-    <div v-if="gameState === 'Started' && player" class="action-controls">
+    <div v-if="gameState === 'Started' && player && isCurrentUserTurn" class="action-controls" >
       <q-btn
         color="primary"
         icon="add"
@@ -31,18 +31,14 @@
         label="Stand"
         @click="emit('stand')"
         size="lg"
-        class="q-mr-sm"
         unelevated
       />
-      <q-btn
-        v-if="canDoubleDown"
-        color="warning"
-        icon="arrow_upward"
-        label="Double Down"
-        @click="emit('double-down')"
-        size="lg"
-        unelevated
-      />
+    </div>
+
+    <div v-if="gameState === 'Started' && player && !isCurrentUserTurn" class="waiting-message">
+      <div class="text-h6 text-center text-white q-pa-md">
+        {{ player.name }}'s turn
+      </div>
     </div>
 
     <div v-if="player" class="player-info q-mt-md">
@@ -60,7 +56,7 @@
         size="md"
       >
         <img src="icons/util-icons/dollars.png" alt="Money" class="chip-icon" />
-        <span class="q-ml-xs">Money: ${{ player.money }}</span>
+        <span class="q-ml-xs">Balance: ${{ player.money }}</span>
       </q-chip>
       <q-chip
         v-if="player.bet"
@@ -87,13 +83,19 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  currentUserName: {
+    type: String,
+    default: null,
+  },
 })
 
 const emit = defineEmits(['hit', 'stand', 'double-down', 'bet'])
 
-const canDoubleDown = computed(() => {
-  return props.player?.hand?.cards?.length === 2
+const isCurrentUserTurn = computed(() => {
+  console.log(props.player?.name, props.currentUserName)
+  return props.player?.name === props.currentUserName
 })
+
 </script>
 
 <style scoped>
@@ -121,13 +123,33 @@ const canDoubleDown = computed(() => {
   width: 100%;
 }
 
+.waiting-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 1rem;
+  background: rgba(255, 193, 7, 0.2);
+  border-radius: 12px;
+  border: 2px solid rgba(255, 193, 7, 0.4);
+}
+
+.waiting-message :deep(.text-h6) {
+  font-size: 1.5rem;
+}
+
 .player-controls :deep(.q-btn) {
   min-height: 48px;
   padding: 0.75rem 1.5rem;
   font-weight: 600;
+  font-size: 1.2rem;
   border-radius: 12px;
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.player-controls :deep(.q-btn__content) {
+  font-size: 1.2rem;
 }
 
 .player-controls :deep(.q-btn:hover) {
@@ -152,7 +174,7 @@ const canDoubleDown = computed(() => {
 
 .player-info :deep(.q-chip) {
   height: 36px;
-  font-size: 0.9rem;
+  font-size: 1.08rem;
   font-weight: 500;
   padding: 0 0.75rem;
 }

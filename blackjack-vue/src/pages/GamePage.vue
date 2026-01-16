@@ -1,5 +1,5 @@
 <template>
-  <q-page class="blackjack-app">
+  <q-page class="blackjack-app" :class="{ 'allow-scroll': currentPage === 'history' || currentPage === 'rules' }">
     <!-- Offline Banner -->
     <div v-if="showOfflineBanner" class="offline-banner">
       <q-banner class="bg-warning text-white">
@@ -50,6 +50,7 @@
         <div class="player-controls-wrapper">
           <PlayerControls
             v-if="currentPlayer"
+            :current-user-name="authStore.userName"
             :player="currentPlayer"
             :game-state="gameState"
             @hit="hit"
@@ -58,27 +59,6 @@
             @bet="showBetDialog = true"
           />
         </div>
-      </div>
-
-      <div v-else class="login-prompt">
-        <q-card class="prompt-card">
-          <q-card-section class="text-center">
-            <q-icon name="casino" size="64px" color="primary" />
-            <div class="text-h5 q-mt-md">Welcome to Blackjack</div>
-            <div class="text-body1 q-mt-sm text-grey-6">
-              Please sign in to start playing
-            </div>
-          </q-card-section>
-          <q-card-actions align="center">
-            <q-btn
-              color="primary"
-              label="Sign In"
-              icon="login"
-              size="lg"
-              @click="$router.push('/auth')"
-            />
-          </q-card-actions>
-        </q-card>
       </div>
     </div>
 
@@ -236,7 +216,9 @@ const calculateMobileScale = () => {
       const scaleX = viewportWidth / estimatedWidth
       const scaleY = viewportHeight / estimatedHeight
       const scale = Math.min(scaleX, scaleY, 1)
-      mobileScale.value = Math.max(scale, 0.2) // Minimum scale of 20%
+      // Use a higher minimum scale for mobile (at least 50% on very small screens, 60% on larger mobile)
+      const minScale = viewportWidth < 400 ? 0.5 : 0.6
+      mobileScale.value = Math.max(scale, minScale)
       return
     }
 
@@ -245,7 +227,9 @@ const calculateMobileScale = () => {
     const scaleY = viewportHeight / contentHeight
     const scale = Math.min(scaleX, scaleY, 1) // Don't scale up, only down
 
-    mobileScale.value = Math.max(scale, 0.2) // Minimum scale of 20%
+    // Use a higher minimum scale for mobile (at least 50% on very small screens, 60% on larger mobile)
+    const minScale = viewportWidth < 400 ? 0.5 : 0.6
+    mobileScale.value = Math.max(scale, minScale)
   }, 100)
 }
 
@@ -301,7 +285,7 @@ const startGame = async () => {
     await gameApi.startGame()
     Notify.create({
       type: 'positive',
-      message: 'Game started',
+      message: 'Round started',
       position: 'top',
     })
   } catch (error) {
@@ -567,6 +551,9 @@ onUnmounted(() => {
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+  overflow-y: auto;
+  max-height: calc(100vh - 100px);
+  -webkit-overflow-scrolling: touch;
 }
 
 .offline-banner {
@@ -581,26 +568,16 @@ onUnmounted(() => {
   border-radius: 0;
 }
 
-.login-prompt {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 60vh;
-  padding: 1rem;
-}
-
-.prompt-card {
-  max-width: 500px;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
 
 /* Scale entire layout to fit on one page - applies to all screen sizes */
 .blackjack-app {
   overflow-x: hidden;
   overflow-y: hidden;
+}
+
+.blackjack-app.allow-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .game-section {
@@ -645,10 +622,6 @@ onUnmounted(() => {
     padding: 0.75rem;
   }
 
-  .login-prompt {
-    padding: 0.5rem;
-    min-height: 50vh;
-  }
 }
 
 /* Tablet Styles */
