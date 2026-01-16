@@ -56,21 +56,17 @@ const getStatusColor = (state) => {
 .dealer-card {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  padding: 0.75rem;
+  gap: 0.5rem;
+  padding: 0.7rem;
   background: transparent;
-  border-radius: 0;
-  backdrop-filter: none;
   border: none;
-  width: 350px;
-  min-width: 350px;
-  max-width: 350px;
-  box-shadow: none;
-  transition: none;
+  width: 100%;
+  max-width: 400px;
+  transition: all 0.3s ease;
 }
 
 .dealer-card:hover {
-  /* No hover effects */
+  transform: translateY(-2px);
 }
 
 .dealer-header {
@@ -79,7 +75,7 @@ const getStatusColor = (state) => {
   justify-content: center;
   gap: 0.5rem;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #fbbf24;
   text-shadow: none;
 }
@@ -95,30 +91,79 @@ const getStatusColor = (state) => {
 }
 
 .status-badge {
-  padding: 6px 14px;
-  font-size: 0.9rem;
+  padding: 3px 8px;
+  font-size: 0.7rem;
   font-weight: 500;
-  border-radius: 20px;
+  border-radius: 12px;
 }
 
 .dealer-hand {
   display: flex;
   justify-content: center;
-  min-height: 120px;
+  min-height: 100px;
   align-items: center;
 }
 
-/* Mobile Responsive - Keep fixed size, scaling handled by parent */
+/* Mobile Responsive - More compact */
 @media (max-width: 600px) {
   .dealer-card {
-    /* Fixed size maintained, parent will scale */
+    padding: 0.6rem;
+    gap: 0.4rem;
+    max-width: 100%;
+  }
+
+  .dealer-header {
+    font-size: 0.85rem;
+    gap: 0.4rem;
+  }
+
+  .dealer-header :deep(.q-icon) {
+    font-size: 18px;
+  }
+
+  .dealer-title {
+    letter-spacing: 0.5px;
+  }
+
+  .dealer-hand {
+    min-height: 70px;
+  }
+
+  .status-badge {
+    padding: 2px 6px;
+    font-size: 0.65rem;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 400px) {
+  .dealer-card {
+    padding: 0.5rem;
+    gap: 0.3rem;
+  }
+
+  .dealer-header {
+    font-size: 0.75rem;
+  }
+
+  .dealer-hand {
+    min-height: 60px;
   }
 }
 
 /* Tablet adjustments */
 @media (min-width: 601px) and (max-width: 1024px) {
   .dealer-card {
-    /* Fixed size maintained, parent will scale */
+    padding: 0.6rem;
+    max-width: 350px;
+  }
+
+  .dealer-header {
+    font-size: 0.9rem;
+  }
+
+  .dealer-hand {
+    min-height: 90px;
   }
 }
 </style>

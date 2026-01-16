@@ -503,63 +503,63 @@ onUnmounted(() => {
 .blackjack-app {
   background: linear-gradient(135deg, #0f766e 0%, #15803d 100%);
   background-attachment: fixed;
-  height: 100vh;
+  height: 100%;
   overflow: hidden;
   color: white;
-  padding: 0.5rem;
+  padding: 0.3rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .game-section {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.3rem;
   align-items: center;
-  padding: 0.5rem;
-  width: fit-content;
+  padding: 0.2rem;
+  width: 100%;
   max-width: 100%;
-  margin: 0 auto;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .controls-wrapper {
   width: 100%;
   display: flex;
   justify-content: center;
-  padding: 0.5rem;
+  padding: 0.2rem;
 }
 
 .dealer-wrapper {
   width: 100%;
   display: flex;
   justify-content: center;
-  margin-top: 0.5rem;
-  padding: 0.5rem;
-  min-height: 0;
-  flex-shrink: 0;
+  margin-top: 0.2rem;
+  padding: 0.2rem;
 }
 
 .players-wrapper {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 1rem;
   width: 100%;
   max-width: 1400px;
-  padding: 0.5rem;
-  justify-content: center;
-  align-items: center;
-  margin: 0 auto;
+  padding: 0.2rem;
 }
 
 .player-controls-wrapper {
   width: 100%;
   display: flex;
   justify-content: center;
-  margin-top: 0.5rem;
-  padding: 0.5rem;
-  position: relative;
-  z-index: 1;
-  background: transparent;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  margin-top: 0.3rem;
+  padding: 0.3rem;
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+  background: transparent !important;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
 .content-section {
@@ -597,75 +597,114 @@ onUnmounted(() => {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
-/* Scale entire layout to fit on one page - applies to all screen sizes */
-.blackjack-app {
-  overflow-x: hidden;
-  overflow-y: hidden;
-}
-
-.game-section {
-  transform-origin: top center;
-  /* Scale will be calculated dynamically via JavaScript */
-}
-
-/* Mobile Responsive Styles - Additional adjustments for small screens */
+/* Mobile Responsive Styles - Compact for single screen view */
 @media (max-width: 600px) {
   .blackjack-app {
-    padding: 0;
+    padding: 0.15rem;
   }
 
   .game-section {
-    gap: 1rem;
-    padding: 0.5rem;
+    gap: 0.4rem;
+    padding: 0.15rem;
   }
 
   .players-wrapper {
-    gap: 0.75rem;
-    padding: 0.25rem;
-    justify-content: center;
-    width: auto;
-    max-width: none;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+    padding: 0.15rem;
   }
 
   .controls-wrapper,
-  .dealer-wrapper,
-  .player-controls-wrapper {
-    padding: 0.25rem;
-    width: auto;
-    max-width: none;
+  .dealer-wrapper {
+    padding: 0.15rem;
+  }
+
+  .dealer-wrapper {
+    margin-top: 0.2rem;
   }
 
   .player-controls-wrapper {
-    position: relative;
-    background: transparent;
-    z-index: 1;
+    padding: 0.15rem;
+    margin-top: 0.2rem;
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
   }
 
   .content-section {
-    padding: 0.75rem;
+    padding: 0.5rem;
   }
 
   .login-prompt {
     padding: 0.5rem;
     min-height: 50vh;
   }
+
+  /* Make controls more compact */
+  .controls-wrapper :deep(.game-controls) {
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .controls-wrapper :deep(.q-btn) {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+    min-height: 36px;
+  }
+
+  .controls-wrapper :deep(.game-state-badge) {
+    margin-left: 0.3rem;
+  }
+
+  .controls-wrapper :deep(.game-state-badge .q-badge) {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+  }
+}
+
+/* Small mobile devices - Even more compact */
+@media (max-width: 400px) {
+  .blackjack-app {
+    padding: 0.1rem;
+  }
+
+  .game-section {
+    gap: 0.3rem;
+    padding: 0.1rem;
+  }
+
+  .players-wrapper {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+
+  .controls-wrapper :deep(.q-btn) {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.6rem;
+    min-height: 32px;
+  }
 }
 
 /* Tablet Styles */
 @media (min-width: 601px) and (max-width: 1024px) {
   .players-wrapper {
-    justify-content: center;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.8rem;
+  }
+
+  .game-section {
+    gap: 0.25rem;
   }
 }
 
 /* Large Screen Optimizations */
 @media (min-width: 1400px) {
   .game-section {
-    gap: 2rem;
+    gap: 0.4rem;
   }
 
   .players-wrapper {
-    gap: 2rem;
+    gap: 1.2rem;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   }
 }
 
