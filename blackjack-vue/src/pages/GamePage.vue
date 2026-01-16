@@ -54,6 +54,7 @@
             @stand="stand"
             @double-down="doubleDown"
             @bet="showBetDialog = true"
+            @leave="leavePlayer"
           />
         </div>
       </div>
@@ -425,6 +426,24 @@ const placeBet = async () => {
   }
 }
 
+const leavePlayer = async () => {
+  try {
+    await gameApi.leavePlayer()
+    Notify.create({
+      type: 'info',
+      message: 'You have left the game',
+      position: 'top',
+    })
+  } catch (error) {
+    console.error('Error leaving game:', error)
+    Notify.create({
+      type: 'negative',
+      message: 'Failed to leave game',
+      position: 'top',
+    })
+  }
+}
+
 // Watch for changes that affect layout (but debounce to prevent rapid recalculations)
 let scaleTimeout = null
 watch([players, dealer, currentPage], () => {
@@ -521,16 +540,15 @@ onUnmounted(() => {
 }
 
 .players-wrapper {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 280px);
+  display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   width: 100%;
   max-width: 1400px;
   padding: 0.5rem;
   justify-content: center;
-  justify-items: center;
-  grid-auto-flow: row;
-  min-width: 0;
+  align-items: center;
+  margin: 0 auto;
 }
 
 .player-controls-wrapper {
@@ -604,11 +622,9 @@ onUnmounted(() => {
   }
 
   .players-wrapper {
-    grid-template-columns: repeat(auto-fill, 280px);
     gap: 0.75rem;
     padding: 0.25rem;
     justify-content: center;
-    justify-items: center;
     width: auto;
     max-width: none;
   }
@@ -640,7 +656,6 @@ onUnmounted(() => {
 /* Tablet Styles */
 @media (min-width: 601px) and (max-width: 1024px) {
   .players-wrapper {
-    grid-template-columns: repeat(auto-fill, 280px);
     justify-content: center;
   }
 }

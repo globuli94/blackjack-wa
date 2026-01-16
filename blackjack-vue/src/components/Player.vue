@@ -31,7 +31,7 @@
       <Hand
         ref="handRef"
         :cards="player.hand?.cards || []"
-        :show-value="true"
+        :show-value="hasCards"
         :animate-cards="true"
       />
     </div>
@@ -143,6 +143,11 @@ const displayBet = computed(() => {
   return 0
 })
 
+// Check if player has cards
+const hasCards = computed(() => {
+  return props.player?.hand?.cards && props.player.hand.cards.length > 0
+})
+
 const getStatusColor = (state) => {
   switch (state) {
     case 'Playing':
@@ -202,7 +207,7 @@ const getStatusColor = (state) => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: 600;
 }
 
@@ -223,7 +228,7 @@ const getStatusColor = (state) => {
 
 .status-badge {
   padding: 6px 14px;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 500;
   border-radius: 20px;
 }
@@ -248,7 +253,7 @@ const getStatusColor = (state) => {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 500;
 }
 
@@ -260,7 +265,7 @@ const getStatusColor = (state) => {
 }
 
 .bet-indicator {
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 600;
   padding: 4px 8px;
   border-radius: 12px;
