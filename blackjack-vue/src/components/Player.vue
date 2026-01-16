@@ -19,6 +19,12 @@
         :label="player.state"
         class="status-badge"
       />
+      <span v-if="(player.state === 'Lost' || player.state === 'LOST') && displayBet > 0" class="bet-indicator loss">
+        -${{ displayBet }}
+      </span>
+      <span v-if="(player.state === 'Won' || player.state === 'WON' || player.state === 'Blackjack' || isBlackjack) && displayBet > 0" class="bet-indicator win">
+        +${{ displayBet }}
+      </span>
     </div>
 
     <div class="player-hand">
@@ -44,7 +50,7 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, computed } from 'vue'
 import Hand from './Hand.vue'
 import { useCardAnimations } from '../composables/useCardAnimations'
 
@@ -63,6 +69,20 @@ const playerCardElement = ref(null)
 const handRef = ref(null)
 const { glow } = useCardAnimations()
 
+// Track the bet amount before evaluation (since bet becomes 0 after evaluation)
+const previousBet = ref(0)
+
+// Watch for bet changes and store it before it becomes 0
+watch(
+  () => props.player.bet,
+  (newBet) => {
+    if (newBet > 0) {
+      previousBet.value = newBet
+    }
+  },
+  { immediate: true }
+)
+
 // Add glow effect when player becomes current
 watch(
   () => props.isCurrent,
@@ -79,6 +99,50 @@ watch(
   { immediate: true }
 )
 
+// Check if player has blackjack (21 with 2 cards)
+const isBlackjack = computed(() => {
+  const cards = props.player.hand?.cards || []
+  if (cards.length !== 2) return false
+  
+  // Calculate hand value
+  let value = 0
+  let aces = 0
+  
+  cards.forEach((card) => {
+    if (card.rank === 'A') {
+      aces++
+      value += 11
+    } else if (['K', 'Q', 'J'].includes(card.rank)) {
+      value += 10
+    } else {
+      value += parseInt(card.rank)
+    }
+  })
+  
+  // Adjust for aces
+  while (value > 21 && aces > 0) {
+    value -= 10
+    aces--
+  }
+  
+  return value === 21
+})
+
+// Get the bet amount to display (use current bet if available, otherwise use stored previous bet)
+const displayBet = computed(() => {
+  // If bet is still set, use it
+  if (props.player.bet && props.player.bet > 0) {
+    return props.player.bet
+  }
+  
+  // For evaluated state, use the stored previous bet
+  if (previousBet.value > 0) {
+    return previousBet.value
+  }
+  
+  return 0
+})
+
 const getStatusColor = (state) => {
   switch (state) {
     case 'Playing':
@@ -86,13 +150,19 @@ const getStatusColor = (state) => {
     case 'Idle':
       return 'grey'
     case 'Bust':
+    case 'Busted':
       return 'negative'
     case 'Stand':
+    case 'Standing':
       return 'warning'
     case 'Won':
+    case 'WON':
       return 'green'
     case 'Lost':
+    case 'LOST':
       return 'red'
+    case 'Blackjack':
+      return 'green'
     default:
       return 'grey'
   }
@@ -146,6 +216,9 @@ const getStatusColor = (state) => {
 .player-status {
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .status-badge {
@@ -184,6 +257,23 @@ const getStatusColor = (state) => {
   width: auto;
   vertical-align: middle;
   flex-shrink: 0;
+}
+
+.bet-indicator {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+.bet-indicator.win {
+  color: #10b981;
+  background-color: rgba(16, 185, 129, 0.2);
+}
+
+.bet-indicator.loss {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.2);
 }
 
 /* Mobile Responsive - Keep fixed size, scaling handled by parent */
