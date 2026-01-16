@@ -22,10 +22,12 @@
           <GameControls
             :game-state="gameState"
             :players="players"
+            :current-user-name="authStore.userName"
             @initialize="initializeGame"
             @start="startGame"
-            @add-player="showAddPlayerDialog = true"
+            @add-player="addPlayer"
             @reset="initializeGame"
+            @leave="leavePlayer"
           />
         </div>
 
@@ -54,7 +56,6 @@
             @stand="stand"
             @double-down="doubleDown"
             @bet="showBetDialog = true"
-            @leave="leavePlayer"
           />
         </div>
       </div>
@@ -90,32 +91,6 @@
     <div v-if="currentPage === 'rules'" class="content-section">
       <Rules />
     </div>
-
-    <!-- Add Player Dialog -->
-    <q-dialog v-model="showAddPlayerDialog">
-      <q-card class="dialog-card">
-        <q-card-section>
-          <div class="text-h6 text-weight-bold">Add Player</div>
-        </q-card-section>
-
-        <q-card-section>
-          <q-input
-            v-model="newPlayerName"
-            label="Player Name"
-            outlined
-            dense
-            autofocus
-            @keyup.enter="addPlayer"
-            class="q-mb-sm"
-          />
-        </q-card-section>
-
-        <q-card-actions align="right" class="dialog-actions">
-          <q-btn flat label="Cancel" color="grey" v-close-popup />
-          <q-btn unelevated label="Add" color="primary" @click="addPlayer" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
 
     <!-- Bet Dialog -->
     <q-dialog v-model="showBetDialog">
@@ -200,9 +175,7 @@ const players = ref([])
 const dealer = ref(null)
 const deck = ref(null)
 const gameState = ref(null)
-const newPlayerName = ref('')
 const betAmount = ref(100)
-const showAddPlayerDialog = ref(false)
 const showBetDialog = ref(false)
 
 // for offline management
@@ -325,27 +298,35 @@ const startGame = async () => {
 }
 
 const addPlayer = async () => {
-  if (!newPlayerName.value.trim()) {
+  if (!authStore.isAuthenticated) {
     Notify.create({
       type: 'warning',
-      message: 'Please enter a player name',
+      message: 'Please sign in to join the game',
+      position: 'top',
+    })
+    return
+  }
+
+  const playerName = authStore.userName
+  if (!playerName || !playerName.trim()) {
+    Notify.create({
+      type: 'warning',
+      message: 'Unable to get username. Please try again.',
       position: 'top',
     })
     return
   }
 
   try {
-    await gameApi.addPlayer(newPlayerName.value.trim())
-    newPlayerName.value = ''
-    showAddPlayerDialog.value = false
+    await gameApi.addPlayer(playerName.trim())
     Notify.create({
       type: 'positive',
-      message: 'Player added',
+      message: 'Joined game successfully',
       position: 'top',
     })
   } catch (error) {
     console.error('Error adding player:', error)
-    const errorMessage = error.response?.data?.message || error.message || 'Failed to add player'
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to join game'
     console.error('Error details:', {
       status: error.response?.status,
       data: error.response?.data,
