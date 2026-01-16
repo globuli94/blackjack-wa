@@ -273,7 +273,7 @@ const getStatusColor = (state) => {
 
 .bet-indicator.win {
   color: #10b981;
-  background-color: rgba(16, 185, 129, 0.2);
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 .bet-indicator.loss {
