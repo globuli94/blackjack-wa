@@ -24,11 +24,21 @@
     />
 
     <q-btn
-      v-if="gameState === 'Initialized'"
+      v-if="gameState === 'Initialized' && !hasJoined"
       color="secondary"
       icon="person_add"
-      label="Add Player"
+      label="Join"
       @click="emit('add-player')"
+      size="md"
+      unelevated
+    />
+
+    <q-btn
+      v-if="gameState === 'Initialized' && hasJoined"
+      color="negative"
+      icon="exit_to_app"
+      label="Leave"
+      @click="emit('leave')"
       size="md"
       unelevated
     />
@@ -55,7 +65,9 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   gameState: {
     type: String,
     default: null,
@@ -64,9 +76,20 @@ defineProps({
     type: Array,
     default: () => [],
   },
+  currentUserName: {
+    type: String,
+    default: null,
+  },
 })
 
-const emit = defineEmits(['initialize', 'start', 'add-player', 'reset'])
+const emit = defineEmits(['initialize', 'start', 'add-player', 'reset', 'leave'])
+
+const hasJoined = computed(() => {
+  if (!props.currentUserName || !props.players || props.players.length === 0) {
+    return false
+  }
+  return props.players.some(player => player.name === props.currentUserName)
+})
 
 const getStateBadgeColor = (state) => {
   switch (state) {
@@ -95,8 +118,7 @@ const getStateBadgeColor = (state) => {
   border-radius: 16px;
   backdrop-filter: blur(10px);
   border: 2px solid rgba(255, 255, 255, 0.1);
-  width: 100%;
-  max-width: 100%;
+  width: auto;
   flex-wrap: wrap;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }

@@ -19,13 +19,19 @@
         :label="player.state"
         class="status-badge"
       />
+      <span v-if="(player.state === 'Lost' || player.state === 'LOST') && displayBet > 0" class="bet-indicator loss">
+        -${{ displayBet }}
+      </span>
+      <span v-if="(player.state === 'Won' || player.state === 'WON' || player.state === 'Blackjack' || isBlackjack) && displayBet > 0" class="bet-indicator win">
+        +${{ displayBet }}
+      </span>
     </div>
 
     <div class="player-hand">
       <Hand
         ref="handRef"
         :cards="player.hand?.cards || []"
-        :show-value="true"
+        :show-value="hasCards"
         :animate-cards="true"
       />
     </div>
@@ -44,7 +50,7 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, computed } from 'vue'
 import Hand from './Hand.vue'
 import { useCardAnimations } from '../composables/useCardAnimations'
 
@@ -63,6 +69,20 @@ const playerCardElement = ref(null)
 const handRef = ref(null)
 const { glow } = useCardAnimations()
 
+// Track the bet amount before evaluation (since bet becomes 0 after evaluation)
+const previousBet = ref(0)
+
+// Watch for bet changes and store it before it becomes 0
+watch(
+  () => props.player.bet,
+  (newBet) => {
+    if (newBet > 0) {
+      previousBet.value = newBet
+    }
+  },
+  { immediate: true }
+)
+
 // Add glow effect when player becomes current
 watch(
   () => props.isCurrent,
@@ -79,6 +99,55 @@ watch(
   { immediate: true }
 )
 
+// Check if player has blackjack (21 with 2 cards)
+const isBlackjack = computed(() => {
+  const cards = props.player.hand?.cards || []
+  if (cards.length !== 2) return false
+  
+  // Calculate hand value
+  let value = 0
+  let aces = 0
+  
+  cards.forEach((card) => {
+    if (card.rank === 'A') {
+      aces++
+      value += 11
+    } else if (['K', 'Q', 'J'].includes(card.rank)) {
+      value += 10
+    } else {
+      value += parseInt(card.rank)
+    }
+  })
+  
+  // Adjust for aces
+  while (value > 21 && aces > 0) {
+    value -= 10
+    aces--
+  }
+  
+  return value === 21
+})
+
+// Get the bet amount to display (use current bet if available, otherwise use stored previous bet)
+const displayBet = computed(() => {
+  // If bet is still set, use it
+  if (props.player.bet && props.player.bet > 0) {
+    return props.player.bet
+  }
+  
+  // For evaluated state, use the stored previous bet
+  if (previousBet.value > 0) {
+    return previousBet.value
+  }
+  
+  return 0
+})
+
+// Check if player has cards
+const hasCards = computed(() => {
+  return props.player?.hand?.cards && props.player.hand.cards.length > 0
+})
+
 const getStatusColor = (state) => {
   switch (state) {
     case 'Playing':
@@ -86,13 +155,19 @@ const getStatusColor = (state) => {
     case 'Idle':
       return 'grey'
     case 'Bust':
+    case 'Busted':
       return 'negative'
     case 'Stand':
+    case 'Standing':
       return 'warning'
     case 'Won':
+    case 'WON':
       return 'green'
     case 'Lost':
+    case 'LOST':
       return 'red'
+    case 'Blackjack':
+      return 'green'
     default:
       return 'grey'
   }
@@ -105,37 +180,34 @@ const getStatusColor = (state) => {
   flex-direction: column;
   gap: 1rem;
   padding: 1.25rem;
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  width: 100%;
+  background: transparent;
+  border-radius: 0;
+  backdrop-filter: none;
+  border: none;
+  width: 280px;
+  min-width: 280px;
+  max-width: 280px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: none;
 }
 
 .player-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-  border-color: rgba(255, 255, 255, 0.25);
+  transform: none;
 }
 
 .current-player {
-  border-color: #fbbf24;
-  box-shadow: 0 0 24px rgba(251, 191, 36, 0.6);
-  background: rgba(251, 191, 36, 0.15);
-  transform: scale(1.02);
+  /* No special styling for current player */
 }
 
 .current-player:hover {
-  transform: scale(1.02) translateY(-3px);
+  transform: none;
 }
 
 .player-header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: 600;
 }
 
@@ -149,11 +221,14 @@ const getStatusColor = (state) => {
 .player-status {
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .status-badge {
   padding: 6px 14px;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 500;
   border-radius: 20px;
 }
@@ -178,7 +253,7 @@ const getStatusColor = (state) => {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 500;
 }
 
@@ -189,38 +264,27 @@ const getStatusColor = (state) => {
   flex-shrink: 0;
 }
 
-/* Mobile Responsive */
+.bet-indicator {
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+.bet-indicator.win {
+  color: #10b981;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.bet-indicator.loss {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.2);
+}
+
+/* Mobile Responsive - Keep fixed size, scaling handled by parent */
 @media (max-width: 600px) {
   .player-card {
-    padding: 1rem;
-    gap: 0.75rem;
-    border-radius: 12px;
-  }
-
-  .player-header {
-    font-size: 1rem;
-  }
-
-  .player-hand {
-    min-height: 120px;
-  }
-
-  .player-info {
-    gap: 0.5rem;
-    padding-top: 0.5rem;
-  }
-
-  .info-item {
-    font-size: 0.85rem;
-  }
-
-  .info-icon {
-    height: 16px;
-  }
-
-  .status-badge {
-    padding: 4px 10px;
-    font-size: 0.75rem;
+    /* Fixed size maintained, parent will scale */
   }
 }
 

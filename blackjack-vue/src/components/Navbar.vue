@@ -246,11 +246,12 @@ const handleLogout = async () => {
 .navbar-title {
   display: flex;
   align-items: center;
-  font-size: 1.25rem;
+  font-size: 1.75rem;
+  font-weight: 600;
 }
 
 .logo-img {
-  height: 32px;
+  height: 56px;
   width: auto;
   vertical-align: middle;
 }
@@ -268,6 +269,12 @@ const handleLogout = async () => {
 .nav-btn {
   min-width: auto;
   padding: 0.5rem 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.nav-btn :deep(.q-btn__content) {
+  font-size: 1.1rem;
 }
 
 .separator {
@@ -277,6 +284,13 @@ const handleLogout = async () => {
 .user-dropdown,
 .login-btn {
   min-width: auto;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.user-dropdown :deep(.q-btn__content),
+.login-btn :deep(.q-btn__content) {
+  font-size: 1.1rem;
 }
 
 .mobile-menu-btn {
@@ -310,11 +324,11 @@ const handleLogout = async () => {
   }
 
   .navbar-title {
-    font-size: 1rem;
+    font-size: 1.5rem;
   }
 
   .logo-img {
-    height: 24px;
+    height: 40px;
   }
 
   .title-text {
@@ -337,7 +351,7 @@ const handleLogout = async () => {
   }
 
   .nav-btn .q-btn__content {
-    font-size: 0.875rem;
+    font-size: 1rem;
   }
 }
 </style>
