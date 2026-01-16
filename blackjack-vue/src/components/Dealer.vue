@@ -6,6 +6,7 @@
 
     <div class="dealer-status">
       <q-badge
+        v-if="dealer.state === 'Bust' || dealer.state === 'Blackjack'"
         :color="getStatusColor(dealer.state)"
         :label="dealer.state"
         class="status-badge"
@@ -38,14 +39,10 @@ const hasCards = computed(() => {
 
 const getStatusColor = (state) => {
   switch (state) {
-    case 'Playing':
-      return 'positive'
-    case 'Idle':
-      return 'grey'
     case 'Bust':
       return 'negative'
-    case 'Stand':
-      return 'warning'
+    case 'Blackjack':
+      return 'green'
     default:
       return 'grey'
   }

@@ -4,19 +4,11 @@
     class="player-card"
     :class="{ 'current-player': isCurrent }"
   >
-    <div class="player-header">
-      <q-icon
-        :name="isCurrent ? 'person' : 'person_outline'"
-        size="sm"
-        :color="isCurrent ? 'amber' : 'white'"
-      />
-      <span class="player-name">{{ player.name }}</span>
-    </div>
-
     <div class="player-status">
       <q-badge
+        v-if="player.state === 'Won' || player.state === 'WON' || player.state === 'Lost' || player.state === 'LOST' || player.state === 'Blackjack' || isBlackjack"
         :color="getStatusColor(player.state)"
-        :label="player.state"
+        :label="player.state === 'Blackjack' || isBlackjack ? 'Blackjack' : player.state"
         class="status-badge"
       />
       <span v-if="(player.state === 'Lost' || player.state === 'LOST') && displayBet > 0" class="bet-indicator loss">
@@ -34,6 +26,18 @@
         :show-value="hasCards"
         :animate-cards="true"
       />
+    </div>
+
+    <div class="player-header-wrapper">
+      <div class="player-header">
+        <q-icon
+          :name="isCurrent ? 'person' : 'person_outline'"
+          size="sm"
+          :color="isCurrent ? 'amber' : 'white'"
+        />
+        <span class="player-name">{{ player.name }}</span>
+      </div>
+      <div class="header-line"></div>
     </div>
 
     <div class="player-info">
@@ -203,16 +207,34 @@ const getStatusColor = (state) => {
   transform: none;
 }
 
+.player-header-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0.5rem 0;
+  gap: 0.75rem;
+}
+
 .player-header {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   font-size: 1.25rem;
   font-weight: 600;
+  background: linear-gradient(135deg, #0f766e 0%, #15803d 100%);
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+}
+
+.header-line {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .player-name {
-  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -244,21 +266,21 @@ const getStatusColor = (state) => {
   display: flex;
   justify-content: space-around;
   gap: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 0;
+  margin-top: -0.25rem;
   flex-wrap: wrap;
 }
 
 .info-item {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 1rem;
-  font-weight: 500;
+  gap: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
 .info-icon {
-  height: 18px;
+  height: 24px;
   width: auto;
   vertical-align: middle;
   flex-shrink: 0;

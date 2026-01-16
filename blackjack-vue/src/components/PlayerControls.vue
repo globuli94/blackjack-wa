@@ -31,16 +31,6 @@
         label="Stand"
         @click="emit('stand')"
         size="lg"
-        class="q-mr-sm"
-        unelevated
-      />
-      <q-btn
-        v-if="canDoubleDown"
-        color="warning"
-        icon="arrow_upward"
-        label="Double Down"
-        @click="emit('double-down')"
-        size="lg"
         unelevated
       />
     </div>
@@ -66,7 +56,7 @@
         size="md"
       >
         <img src="icons/util-icons/dollars.png" alt="Money" class="chip-icon" />
-        <span class="q-ml-xs">Money: ${{ player.money }}</span>
+        <span class="q-ml-xs">Balance: ${{ player.money }}</span>
       </q-chip>
       <q-chip
         v-if="player.bet"
@@ -106,9 +96,6 @@ const isCurrentUserTurn = computed(() => {
   return props.player?.name === props.currentUserName
 })
 
-const canDoubleDown = computed(() => {
-  return props.player?.hand?.cards?.length === 2
-})
 </script>
 
 <style scoped>
@@ -147,13 +134,22 @@ const canDoubleDown = computed(() => {
   border: 2px solid rgba(255, 193, 7, 0.4);
 }
 
+.waiting-message :deep(.text-h6) {
+  font-size: 1.5rem;
+}
+
 .player-controls :deep(.q-btn) {
   min-height: 48px;
   padding: 0.75rem 1.5rem;
   font-weight: 600;
+  font-size: 1.2rem;
   border-radius: 12px;
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.player-controls :deep(.q-btn__content) {
+  font-size: 1.2rem;
 }
 
 .player-controls :deep(.q-btn:hover) {
@@ -178,7 +174,7 @@ const canDoubleDown = computed(() => {
 
 .player-info :deep(.q-chip) {
   height: 36px;
-  font-size: 0.9rem;
+  font-size: 1.08rem;
   font-weight: 500;
   padding: 0 0.75rem;
 }
