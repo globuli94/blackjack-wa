@@ -106,7 +106,8 @@ const canDoubleDown = computed(() => {
   border-radius: 16px;
   backdrop-filter: blur(10px);
   border: 2px solid rgba(255, 255, 255, 0.1);
-  width: 100%;
+  width: 600px;
+  min-width: 600px;
   max-width: 600px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -168,36 +169,10 @@ const canDoubleDown = computed(() => {
   vertical-align: middle;
 }
 
-/* Mobile Responsive */
+/* Mobile Responsive - Keep fixed size, scaling handled by parent */
 @media (max-width: 600px) {
   .player-controls {
-    padding: 0.75rem;
-    border-radius: 12px;
-    margin: 0 0.5rem;
-  }
-
-  .betting-controls,
-  .action-controls {
-    gap: 0.5rem;
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .player-controls :deep(.q-btn) {
-    width: 100%;
-    min-height: 52px;
-    font-size: 1rem;
-  }
-
-  .player-info {
-    gap: 0.5rem;
-    margin-top: 0.75rem;
-    padding-top: 0.75rem;
-  }
-
-  .player-info :deep(.q-chip) {
-    font-size: 0.85rem;
-    height: 32px;
+    /* Fixed size maintained, parent will scale */
   }
 }
 
