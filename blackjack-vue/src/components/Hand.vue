@@ -1,13 +1,6 @@
 <template>
   <div ref="handContainer" class="hand-container">
-    <div 
-      ref="cardsDisplay" 
-      class="cards-display"
-      :style="{
-        transform: `scale(${cardScale})`,
-        transformOrigin: 'center center'
-      }"
-    >
+    <div class="cards-display">
       <Card
         v-for="(card, index) in paddedCards"
         :key="`${card.rank}-${card.suit}-${index}`"
@@ -34,7 +27,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { computed, ref, watch, nextTick } from 'vue'
 import Card from './Card.vue'
 import { useCardAnimations } from '../composables/useCardAnimations'
 
@@ -54,10 +47,7 @@ const props = defineProps({
 })
 
 const handContainer = ref(null)
-const cardsDisplay = ref(null)
 const cardRefs = ref([])
-const containerWidth = ref(240) // Default width
-const resizeObserver = ref(null)
 const { celebrate, shake, glow, shuffleEffect } = useCardAnimations()
 
 // Add blank card when there's only one card (like the old Hand.js)
@@ -104,113 +94,6 @@ const handValue = computed(() => {
   return value
 })
 
-// Calculate card scale based on number of cards and container width
-// Dynamically calculate based on container width
-const cardScale = computed(() => {
-  const realCardCount = paddedCards.value.filter(
-    (card) => !(card.rank === 'blank' && card.suit === 'blank')
-  ).length
-
-  if (realCardCount === 0) {
-    return 1
-  }
-
-  // Use measured container width
-  const containerW = containerWidth.value
-  if (containerW <= 0) {
-    // If not measured yet, use default calculation
-    // Player cards: 280px - 40px padding = 240px
-    // Dealer cards: 500px - 48px padding = 452px
-    // Use 240px as default for now
-    const defaultWidth = 240
-    const cardWidth = 100
-    const cardOverlap = 20
-    const margin = 20
-    const totalWidthNeeded = cardWidth + (realCardCount - 1) * (cardWidth - cardOverlap)
-    const availableWidth = defaultWidth - (margin * 2)
-    
-    // Prevent division by zero
-    if (totalWidthNeeded <= 0 || availableWidth <= 0) {
-      return 1
-    }
-    
-    const scale = availableWidth / totalWidthNeeded
-    return Math.max(0.25, Math.min(1, scale))
-  }
-
-  // Card base width: 100px
-  // Overlap: 20px (each additional card adds 80px visible width)
-  const cardWidth = 100
-  const cardOverlap = 20
-  const margin = 20 // Margin on each side
-
-  // Calculate total width needed for all cards
-  // First card: 100px, each additional: 80px (100px - 20px overlap)
-  const totalWidthNeeded = cardWidth + (realCardCount - 1) * (cardWidth - cardOverlap)
-
-  // Available width is container width minus margins
-  const availableWidth = containerW - (margin * 2)
-
-  // Prevent division by zero
-  if (totalWidthNeeded <= 0 || availableWidth <= 0) {
-    return 1
-  }
-
-  // Calculate scale to fit all cards with margin
-  const scale = availableWidth / totalWidthNeeded
-
-  // Ensure minimum scale of 0.25 and maximum of 1
-  const finalScale = Math.max(0.25, Math.min(1, scale))
-  
-  // Debug: log scale calculation (remove in production if needed)
-  // console.log(`Cards: ${realCardCount}, Container: ${containerW}px, Needed: ${totalWidthNeeded}px, Scale: ${finalScale}`)
-  
-  return finalScale
-})
-
-// Function to update container width - measure the available width for cards
-const updateContainerWidth = () => {
-  try {
-    // First try: Get parent element width (player-hand or dealer-hand) - this is the actual container
-    if (handContainer.value?.parentElement) {
-      const parent = handContainer.value.parentElement
-      const rect = parent.getBoundingClientRect()
-      const parentWidth = rect.width
-      if (parentWidth > 0 && !isNaN(parentWidth)) {
-        containerWidth.value = parentWidth
-        return
-      }
-    }
-    
-    // Second try: Get grandparent (player-card or dealer-card) width and subtract padding
-    if (handContainer.value?.parentElement?.parentElement) {
-      const grandparent = handContainer.value.parentElement.parentElement
-      const rect = grandparent.getBoundingClientRect()
-      const grandparentWidth = rect.width
-      if (grandparentWidth > 0 && !isNaN(grandparentWidth)) {
-        // Subtract padding: player-card has 1.25rem (20px) on each side = 40px total
-        // dealer-card has 1.5rem (24px) on each side = 48px total
-        // Use 40px as default
-        containerWidth.value = grandparentWidth - 40
-        return
-      }
-    }
-    
-    // Fallback: Measure hand container itself
-    if (handContainer.value) {
-      const rect = handContainer.value.getBoundingClientRect()
-      const width = rect.width
-      if (width > 0 && !isNaN(width)) {
-        containerWidth.value = width
-        return
-      }
-    }
-  } catch (error) {
-    // Silently handle any measurement errors
-    console.warn('Error measuring container width:', error)
-  }
-}
-
 const getValueColor = () => {
   if (handValue.value === 21) return 'green'
   if (handValue.value > 21) return 'red'
@@ -255,88 +138,16 @@ watch(
   }
 )
 
-// Watch for card count changes to trigger shuffle effect and update scale
+// Watch for card count changes to trigger shuffle effect
 watch(
   () => props.cards.length,
-  () => {
-    // Always update when cards change, not just when increasing
-    if (handContainer.value) {
-      // New card added or removed - update container width and scale
-      nextTick(() => {
-        updateContainerWidth()
-        setTimeout(() => {
-          updateContainerWidth()
-        }, 100)
-        setTimeout(() => {
-          updateContainerWidth()
-        }, 300)
-      })
+  (newLength, oldLength) => {
+    if (oldLength && newLength > oldLength && handContainer.value) {
+      // New card added - could trigger shuffle effect
+      // shuffleEffect(handContainer.value)
     }
   }
 )
-
-// Update container width when it becomes available or cards change
-watch(
-  () => [handContainer.value, paddedCards.value.length],
-  () => {
-    nextTick(() => {
-      // Use setTimeout to ensure DOM is fully rendered
-      setTimeout(() => {
-        updateContainerWidth()
-        // Re-observe if ResizeObserver exists
-        const observeTarget = handContainer.value?.parentElement || handContainer.value
-        if (resizeObserver.value && observeTarget && window.ResizeObserver) {
-          resizeObserver.value.disconnect()
-          resizeObserver.value = new ResizeObserver(() => {
-            updateContainerWidth()
-          })
-          resizeObserver.value.observe(observeTarget)
-        }
-      }, 50)
-    })
-  },
-  { immediate: true }
-)
-
-// Also update on window resize and use ResizeObserver
-onMounted(() => {
-  if (typeof window !== 'undefined') {
-    window.addEventListener('resize', updateContainerWidth)
-    
-    // Use ResizeObserver on the parent container (player-hand or dealer-hand)
-    // This is the element that actually constrains the width
-    nextTick(() => {
-      const observeTarget = handContainer.value?.parentElement || handContainer.value
-      if (window.ResizeObserver && observeTarget) {
-        resizeObserver.value = new ResizeObserver(() => {
-          updateContainerWidth()
-        })
-        resizeObserver.value.observe(observeTarget)
-      }
-    })
-    
-    // Initial measurement with delays to ensure DOM is ready
-    nextTick(() => {
-      updateContainerWidth()
-      setTimeout(() => {
-        updateContainerWidth()
-      }, 100)
-      setTimeout(() => {
-        updateContainerWidth()
-      }, 500)
-    })
-  }
-})
-
-onUnmounted(() => {
-  if (typeof window !== 'undefined') {
-    window.removeEventListener('resize', updateContainerWidth)
-    if (resizeObserver.value) {
-      resizeObserver.value.disconnect()
-      resizeObserver.value = null
-    }
-  }
-})
 
 // Expose methods for parent components
 defineExpose({
@@ -369,14 +180,8 @@ defineExpose({
 .cards-display {
   display: flex;
   gap: -20px;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-content: center;
-  align-items: center;
-  overflow: visible;
-  width: fit-content;
-  min-width: 0;
-  transition: transform 0.3s ease;
-  will-change: transform;
 }
 
 .card-item {
