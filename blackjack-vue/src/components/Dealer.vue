@@ -1,7 +1,6 @@
 <template>
   <div class="dealer-card">
     <div class="dealer-header">
-      <q-icon name="support_agent" size="md" color="amber" />
       <span class="dealer-title">Dealer</span>
     </div>
 
@@ -16,20 +15,25 @@
     <div class="dealer-hand">
       <Hand
         :cards="dealer.hand?.cards || []"
-        :show-value="true"
+        :show-value="hasCards"
       />
     </div>
   </div>
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import Hand from './Hand.vue'
 
-defineProps({
+const props = defineProps({
   dealer: {
     type: Object,
     required: true,
   },
+})
+
+const hasCards = computed(() => {
+  return props.dealer?.hand?.cards && props.dealer.hand.cards.length > 0
 })
 
 const getStatusColor = (state) => {
@@ -52,33 +56,32 @@ const getStatusColor = (state) => {
 .dealer-card {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding: 1.5rem;
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(251, 191, 36, 0.4);
-  width: 500px;
-  min-width: 500px;
-  max-width: 500px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  transition: all 0.3s ease;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: transparent;
+  border-radius: 0;
+  backdrop-filter: none;
+  border: none;
+  width: 350px;
+  min-width: 350px;
+  max-width: 350px;
+  box-shadow: none;
+  transition: none;
 }
 
 .dealer-card:hover {
-  border-color: rgba(251, 191, 36, 0.6);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  /* No hover effects */
 }
 
 .dealer-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  font-size: 1.4rem;
-  font-weight: 700;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
   color: #fbbf24;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: none;
 }
 
 .dealer-title {
@@ -101,7 +104,7 @@ const getStatusColor = (state) => {
 .dealer-hand {
   display: flex;
   justify-content: center;
-  min-height: 160px;
+  min-height: 120px;
   align-items: center;
 }
 
@@ -115,16 +118,7 @@ const getStatusColor = (state) => {
 /* Tablet adjustments */
 @media (min-width: 601px) and (max-width: 1024px) {
   .dealer-card {
-    padding: 1.25rem;
-    max-width: 450px;
-  }
-
-  .dealer-header {
-    font-size: 1.25rem;
-  }
-
-  .dealer-hand {
-    min-height: 150px;
+    /* Fixed size maintained, parent will scale */
   }
 }
 </style>
