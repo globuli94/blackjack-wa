@@ -15,7 +15,7 @@
       </q-btn>
     </div>
 
-    <div v-if="gameState === 'Started' && player" class="action-controls">
+    <div v-if="gameState === 'Started' && player && isCurrentUserTurn" class="action-controls" >
       <q-btn
         color="primary"
         icon="add"
@@ -43,6 +43,12 @@
         size="lg"
         unelevated
       />
+    </div>
+
+    <div v-if="gameState === 'Started' && player && !isCurrentUserTurn" class="waiting-message">
+      <div class="text-h6 text-center text-white q-pa-md">
+        {{ player.name }}'s turn
+      </div>
     </div>
 
     <div v-if="player" class="player-info q-mt-md">
@@ -87,9 +93,18 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  currentUserName: {
+    type: String,
+    default: null,
+  },
 })
 
 const emit = defineEmits(['hit', 'stand', 'double-down', 'bet'])
+
+const isCurrentUserTurn = computed(() => {
+  console.log(props.player?.name, props.currentUserName)
+  return props.player?.name === props.currentUserName
+})
 
 const canDoubleDown = computed(() => {
   return props.player?.hand?.cards?.length === 2
@@ -119,6 +134,17 @@ const canDoubleDown = computed(() => {
   flex-wrap: wrap;
   justify-content: center;
   width: 100%;
+}
+
+.waiting-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 1rem;
+  background: rgba(255, 193, 7, 0.2);
+  border-radius: 12px;
+  border: 2px solid rgba(255, 193, 7, 0.4);
 }
 
 .player-controls :deep(.q-btn) {
