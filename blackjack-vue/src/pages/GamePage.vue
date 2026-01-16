@@ -1,5 +1,5 @@
 <template>
-  <q-page class="blackjack-app">
+  <q-page class="blackjack-app" :class="{ 'allow-scroll': currentPage === 'history' || currentPage === 'rules' }">
     <!-- Offline Banner -->
     <div v-if="showOfflineBanner" class="offline-banner">
       <q-banner class="bg-warning text-white">
@@ -547,6 +547,9 @@ onUnmounted(() => {
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+  overflow-y: auto;
+  max-height: calc(100vh - 100px);
+  -webkit-overflow-scrolling: touch;
 }
 
 .offline-banner {
@@ -566,6 +569,11 @@ onUnmounted(() => {
 .blackjack-app {
   overflow-x: hidden;
   overflow-y: hidden;
+}
+
+.blackjack-app.allow-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .game-section {
