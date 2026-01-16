@@ -15,7 +15,7 @@
       v-if="gameState === 'Initialized'"
       color="positive"
       icon="play_arrow"
-      label="Start Game"
+      label="Start Round"
       @click="emit('start')"
       :disable="players.length === 0"
       size="md"
@@ -53,14 +53,6 @@
       unelevated
     />
 
-    <div v-if="gameState" class="game-state-badge q-ml-md">
-      <q-badge
-        :color="getStateBadgeColor(gameState)"
-        :label="`State: ${gameState}`"
-        class="text-subtitle2"
-        style="padding: 8px 16px"
-      />
-    </div>
   </div>
 </template>
 
@@ -91,20 +83,6 @@ const hasJoined = computed(() => {
   return props.players.some(player => player.name === props.currentUserName)
 })
 
-const getStateBadgeColor = (state) => {
-  switch (state) {
-    case 'Initialized':
-      return 'info'
-    case 'Betting':
-      return 'warning'
-    case 'Started':
-      return 'positive'
-    case 'Evaluated':
-      return 'accent'
-    default:
-      return 'grey'
-  }
-}
 </script>
 
 <style scoped>
@@ -141,17 +119,6 @@ const getStateBadgeColor = (state) => {
   transform: translateY(0);
 }
 
-.game-state-badge {
-  display: flex;
-  align-items: center;
-  margin-left: 0.5rem;
-}
-
-.game-state-badge :deep(.q-badge) {
-  font-weight: 600;
-  padding: 8px 16px;
-  border-radius: 20px;
-}
 
 /* Mobile Responsive */
 @media (max-width: 600px) {
@@ -169,17 +136,6 @@ const getStateBadgeColor = (state) => {
     min-width: calc(50% - 0.25rem);
   }
 
-  .game-state-badge {
-    width: 100%;
-    justify-content: center;
-    margin-left: 0;
-    margin-top: 0.5rem;
-  }
-
-  .game-state-badge :deep(.q-badge) {
-    font-size: 0.85rem;
-    padding: 6px 12px;
-  }
 }
 
 /* Tablet adjustments */

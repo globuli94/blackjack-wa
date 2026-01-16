@@ -298,22 +298,66 @@ const handleLogout = async () => {
 }
 
 .mobile-drawer {
-  background: rgba(0, 0, 0, 0.95);
+  background: linear-gradient(135deg, #0f766e 0%, #15803d 100%);
   backdrop-filter: blur(20px);
+}
+
+.mobile-drawer :deep(.q-drawer__content) {
+  background: transparent;
 }
 
 .mobile-menu-list {
   padding: 1rem;
+  background: transparent;
 }
 
 .mobile-menu-item {
   border-radius: 8px;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
   transition: all 0.2s ease;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
 }
 
 .mobile-menu-item:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.5);
+  border-color: rgba(251, 191, 36, 0.4);
+}
+
+.mobile-menu-item :deep(.q-item__label) {
+  color: white;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.mobile-menu-item :deep(.q-item__label--caption) {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.mobile-menu-item :deep(.q-icon) {
+  color: #fbbf24;
+}
+
+.mobile-menu-item.text-negative :deep(.q-item__label) {
+  color: #ef4444;
+}
+
+.mobile-menu-item.text-negative :deep(.q-icon) {
+  color: #ef4444;
+}
+
+.mobile-menu-list :deep(.q-item-label--header) {
+  color: white;
+  font-weight: 700;
+  font-size: 1.25rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-menu-list :deep(.q-separator) {
+  background: rgba(255, 255, 255, 0.2);
+  margin: 1rem 0;
 }
 
 /* Mobile Responsive */

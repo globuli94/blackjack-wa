@@ -390,4 +390,10 @@ defineExpose({
 .hand-value {
   margin-top: 0.5rem;
 }
+
+.hand-value :deep(.q-chip) {
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 6px 14px;
+}
 </style>

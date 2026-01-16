@@ -216,7 +216,9 @@ const calculateMobileScale = () => {
       const scaleX = viewportWidth / estimatedWidth
       const scaleY = viewportHeight / estimatedHeight
       const scale = Math.min(scaleX, scaleY, 1)
-      mobileScale.value = Math.max(scale, 0.2) // Minimum scale of 20%
+      // Use a higher minimum scale for mobile (at least 50% on very small screens, 60% on larger mobile)
+      const minScale = viewportWidth < 400 ? 0.5 : 0.6
+      mobileScale.value = Math.max(scale, minScale)
       return
     }
 
@@ -225,7 +227,9 @@ const calculateMobileScale = () => {
     const scaleY = viewportHeight / contentHeight
     const scale = Math.min(scaleX, scaleY, 1) // Don't scale up, only down
 
-    mobileScale.value = Math.max(scale, 0.2) // Minimum scale of 20%
+    // Use a higher minimum scale for mobile (at least 50% on very small screens, 60% on larger mobile)
+    const minScale = viewportWidth < 400 ? 0.5 : 0.6
+    mobileScale.value = Math.max(scale, minScale)
   }, 100)
 }
 
@@ -281,7 +285,7 @@ const startGame = async () => {
     await gameApi.startGame()
     Notify.create({
       type: 'positive',
-      message: 'Game started',
+      message: 'Round started',
       position: 'top',
     })
   } catch (error) {
