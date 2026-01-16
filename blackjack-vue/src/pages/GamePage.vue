@@ -14,7 +14,7 @@
     <Navbar @page-change="handlePageChange" />
 
     <!-- HOME (Game) Section -->
-    <div v-if="currentPage === 'home'" class="game-section">
+    <div v-if="currentPage === 'home'" ref="gameSectionRef" class="game-section" :style="mobileScaleStyle">
       <!-- Show game only if authenticated -->
       <div v-if="authStore.isAuthenticated">
         <!-- Game Controls -->
@@ -174,7 +174,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { WebSocketManager } from '../services/websocket'
 import { gameApi } from '../services/api'
 import { Notify } from 'quasar'
@@ -209,6 +209,58 @@ const online = ref(navigator.onLine)
 const showOfflineBanner = ref(false)
 let wsManager = null
 
+// Mobile scaling
+const gameSectionRef = ref(null)
+const mobileScale = ref(1)
+
+const mobileScaleStyle = computed(() => {
+  if (typeof window !== 'undefined' && window.innerWidth > 600) {
+    return {}
+  }
+  return {
+    transform: `scale(${mobileScale.value})`,
+    transformOrigin: 'top center'
+  }
+})
+
+const calculateMobileScale = () => {
+  if (typeof window === 'undefined' || window.innerWidth > 600) {
+    mobileScale.value = 1
+    return
+  }
+
+  // Use setTimeout to ensure DOM is fully rendered
+  setTimeout(() => {
+    if (!gameSectionRef.value) return
+
+    const viewportWidth = window.innerWidth
+    const viewportHeight = window.innerHeight - 120 // Account for navbar and padding
+    
+    // Get actual content dimensions
+    const contentWidth = gameSectionRef.value.scrollWidth || gameSectionRef.value.offsetWidth
+    const contentHeight = gameSectionRef.value.scrollHeight || gameSectionRef.value.offsetHeight
+
+    // If content dimensions are not available yet, use estimated values
+    if (contentWidth === 0 || contentHeight === 0) {
+      // Estimate: controls (~600px), dealer (~500px), players (280px * count), player controls (~600px)
+      const estimatedWidth = Math.max(600, 280 * Math.max(players.value.length, 1))
+      const estimatedHeight = 100 + 200 + 300 + 150 // controls + dealer + players + player controls
+      const scaleX = viewportWidth / estimatedWidth
+      const scaleY = viewportHeight / estimatedHeight
+      const scale = Math.min(scaleX, scaleY, 1)
+      mobileScale.value = Math.max(scale, 0.25) // Minimum scale of 25%
+      return
+    }
+
+    // Calculate scale to fit both width and height
+    const scaleX = viewportWidth / contentWidth
+    const scaleY = viewportHeight / contentHeight
+    const scale = Math.min(scaleX, scaleY, 1) // Don't scale up, only down
+
+    mobileScale.value = Math.max(scale, 0.25) // Minimum scale of 25%
+  }, 100)
+}
+
 // Computed
 const currentPlayer = computed(() => {
   if (current_idx.value !== null && players.value.length > 0) {
@@ -224,6 +276,10 @@ const updateGameState = (gameData) => {
   dealer.value = gameData.dealer
   deck.value = gameData.deck
   gameState.value = gameData.state
+  // Recalculate scale when game state changes
+  nextTick(() => {
+    calculateMobileScale()
+  })
 }
 
 const handlePageChange = (page) => {
@@ -368,6 +424,20 @@ const placeBet = async () => {
   }
 }
 
+// Watch for changes that affect layout (but debounce to prevent rapid recalculations)
+let scaleTimeout = null
+watch([players, dealer, currentPage], () => {
+  if (currentPage.value === 'home') {
+    // Debounce the scale calculation to prevent rapid recalculations
+    if (scaleTimeout) {
+      clearTimeout(scaleTimeout)
+    }
+    scaleTimeout = setTimeout(() => {
+      calculateMobileScale()
+    }, 100)
+  }
+}, { deep: true })
+
 // Lifecycle
 onMounted(() => {
   // Only connect WebSocket if user is authenticated
@@ -375,6 +445,10 @@ onMounted(() => {
     wsManager = new WebSocketManager(updateGameState, authStore)
     wsManager.connect()
   }
+
+  // Calculate initial mobile scale
+  calculateMobileScale()
+  window.addEventListener('resize', calculateMobileScale)
 
   // events fired by browser for connection changes
   window.addEventListener('online', () => {
@@ -403,6 +477,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   wsManager?.disconnect();
+  window.removeEventListener('resize', calculateMobileScale)
 })
 </script>
 
@@ -438,15 +513,21 @@ onUnmounted(() => {
   justify-content: center;
   margin-top: 0.5rem;
   padding: 0.5rem;
+  min-height: 0;
+  flex-shrink: 0;
 }
 
 .players-wrapper {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, 280px);
   gap: 1rem;
   width: 100%;
   max-width: 1400px;
   padding: 0.5rem;
+  justify-content: center;
+  justify-items: center;
+  grid-auto-flow: row;
+  min-width: 0;
 }
 
 .player-controls-wrapper {
@@ -498,27 +579,50 @@ onUnmounted(() => {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
-/* Mobile Responsive Styles */
+/* Mobile Responsive Styles - Scale entire layout to fit */
 @media (max-width: 600px) {
   .blackjack-app {
-    padding: 0.25rem;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    height: 100vh;
+    position: relative;
   }
 
   .game-section {
     gap: 1rem;
-    padding: 0.25rem;
+    padding: 0.5rem;
+    transform-origin: top center;
+    /* Scale will be calculated dynamically via JavaScript */
+    width: fit-content;
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
   }
 
   .players-wrapper {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fill, 280px);
     gap: 0.75rem;
     padding: 0.25rem;
+    justify-content: center;
+    justify-items: center;
+    width: auto;
+    max-width: none;
   }
 
   .controls-wrapper,
   .dealer-wrapper,
   .player-controls-wrapper {
     padding: 0.25rem;
+    width: auto;
+    max-width: none;
+  }
+
+  .player-controls-wrapper {
+    position: relative;
+    background: transparent;
   }
 
   .content-section {
@@ -534,7 +638,8 @@ onUnmounted(() => {
 /* Tablet Styles */
 @media (min-width: 601px) and (max-width: 1024px) {
   .players-wrapper {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, 280px);
+    justify-content: center;
   }
 }
 

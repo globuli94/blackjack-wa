@@ -58,7 +58,8 @@ const getStatusColor = (state) => {
   border-radius: 16px;
   backdrop-filter: blur(10px);
   border: 2px solid rgba(251, 191, 36, 0.4);
-  width: 100%;
+  width: 500px;
+  min-width: 500px;
   max-width: 500px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   transition: all 0.3s ease;
@@ -104,31 +105,10 @@ const getStatusColor = (state) => {
   align-items: center;
 }
 
-/* Mobile Responsive */
+/* Mobile Responsive - Keep fixed size, scaling handled by parent */
 @media (max-width: 600px) {
   .dealer-card {
-    padding: 1rem;
-    gap: 0.75rem;
-    border-radius: 12px;
-    max-width: 100%;
-  }
-
-  .dealer-header {
-    font-size: 1.1rem;
-    gap: 0.5rem;
-  }
-
-  .dealer-title {
-    letter-spacing: 1px;
-  }
-
-  .dealer-hand {
-    min-height: 140px;
-  }
-
-  .status-badge {
-    padding: 4px 10px;
-    font-size: 0.8rem;
+    /* Fixed size maintained, parent will scale */
   }
 }
 
