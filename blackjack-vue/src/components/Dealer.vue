@@ -1,6 +1,6 @@
 <template>
   <div class="dealer-card">
-    <div class="dealer-header">
+    <div v-if="hasCards" class="dealer-header">
       <span class="dealer-title">Dealer</span>
     </div>
 

@@ -1,17 +1,6 @@
 <template>
   <div class="game-controls">
     <q-btn
-      v-if="gameState === 'Initialized' || !gameState"
-      color="primary"
-      icon="refresh"
-      label="Initialize Game"
-      @click="emit('initialize')"
-      size="md"
-      class="q-mr-sm"
-      unelevated
-    />
-
-    <q-btn
       v-if="gameState === 'Initialized'"
       color="positive"
       icon="play_arrow"
