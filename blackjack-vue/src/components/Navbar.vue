@@ -37,10 +37,23 @@
       <!-- User Info -->
       <q-separator vertical class="q-mx-md separator" />
 
+      <q-btn
+        v-if="authStore.isAuthenticated"
+        flat
+        icon="refresh"
+        label="Reset"
+        color="grey-6"
+        text-color="white"
+        @click="emit('reset')"
+        class="reset-btn"
+      />
+
+      <q-separator v-if="authStore.isAuthenticated" vertical class="q-mx-md separator" />
+
       <q-btn-dropdown
         v-if="authStore.isAuthenticated"
         flat
-        :label="authStore.userName"
+        :label="userDisplayName"
         icon="account_circle"
         color="white"
         class="user-dropdown"
@@ -79,6 +92,12 @@
         @click="router.push('/auth')"
         class="login-btn"
       />
+    </div>
+
+    <!-- Mobile Money Display -->
+    <div v-if="authStore.isAuthenticated && playerMoney !== null" class="mobile-money-display">
+      <img src="icons/util-icons/dollars.png" alt="Money" class="money-icon" />
+      <span class="money-amount">${{ playerMoney }}</span>
     </div>
 
     <!-- Mobile Menu Button -->
@@ -172,6 +191,21 @@
         v-if="authStore.isAuthenticated"
         clickable
         v-close-popup
+        @click="emit('reset')"
+        class="mobile-menu-item"
+      >
+        <q-item-section avatar>
+          <q-icon name="refresh" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>Reset</q-item-label>
+        </q-item-section>
+      </q-item>
+
+      <q-item
+        v-if="authStore.isAuthenticated"
+        clickable
+        v-close-popup
         @click="handleLogout"
         class="mobile-menu-item text-negative"
       >
@@ -202,17 +236,31 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from 'src/stores/auth'
 import { Notify } from 'quasar'
 
-const emit = defineEmits(['page-change'])
+const props = defineProps({
+  playerMoney: {
+    type: Number,
+    default: null,
+  },
+})
+
+const emit = defineEmits(['page-change', 'reset'])
 const router = useRouter()
 const authStore = useAuthStore()
 
 const currentPage = ref('home')
 const mobileMenuOpen = ref(false)
+
+const userDisplayName = computed(() => {
+  if (props.playerMoney !== null) {
+    return `${authStore.userName} - $${props.playerMoney}`
+  }
+  return authStore.userName
+})
 
 const changePage = (page) => {
   currentPage.value = page
@@ -236,9 +284,9 @@ const handleLogout = async () => {
 
 <style scoped>
 .navbar-toolbar {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(10px);
-  border-radius: 12px;
+  border-radius: 0;
   margin-bottom: 0.5rem;
   padding: 0.5rem 1rem;
 }
@@ -251,7 +299,7 @@ const handleLogout = async () => {
 }
 
 .logo-img {
-  height: 56px;
+  height: 72px;
   width: auto;
   vertical-align: middle;
 }
@@ -281,16 +329,47 @@ const handleLogout = async () => {
   height: 30px;
 }
 
+.reset-btn {
+  min-width: auto;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.reset-btn :deep(.q-btn__content) {
+  font-size: 0.95rem;
+}
+
 .user-dropdown,
 .login-btn {
   min-width: auto;
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 500;
 }
 
 .user-dropdown :deep(.q-btn__content),
 .login-btn :deep(.q-btn__content) {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
+}
+
+.mobile-money-display {
+  display: none;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  margin-right: 0.5rem;
+}
+
+.money-icon {
+  height: 20px;
+  width: auto;
+}
+
+.money-amount {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
 }
 
 .mobile-menu-btn {
@@ -363,16 +442,21 @@ const handleLogout = async () => {
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .navbar-toolbar {
-    padding: 0.5rem;
-    border-radius: 8px;
+    padding: 0.15rem 0.5rem;
+    border-radius: 0;
+    min-height: 40px !important;
+  }
+
+  .navbar-toolbar :deep(.q-toolbar__content) {
+    min-height: 40px;
   }
 
   .navbar-title {
-    font-size: 1.5rem;
+    font-size: 1rem;
   }
 
   .logo-img {
-    height: 40px;
+    height: 32px;
   }
 
   .title-text {
@@ -383,8 +467,17 @@ const handleLogout = async () => {
     display: none;
   }
 
+  .mobile-money-display {
+    display: flex;
+  }
+
   .mobile-menu-btn {
     display: block;
+    padding: 0.25rem;
+  }
+
+  .mobile-menu-btn :deep(.q-icon) {
+    font-size: 1.5rem;
   }
 }
 

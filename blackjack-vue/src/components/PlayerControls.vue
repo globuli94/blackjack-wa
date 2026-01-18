@@ -1,6 +1,6 @@
 <template>
-  <div class="player-controls">
-    <div v-if="gameState === 'Betting'" class="betting-controls">
+  <div v-if="hasContent" class="player-controls">
+    <div v-if="gameState === 'Betting' && player && isCurrentUserTurn" class="betting-controls">
       <q-btn
         color="amber"
         label="Place Bet"
@@ -13,6 +13,12 @@
           <span class="q-ml-sm">Place Bet</span>
         </template>
       </q-btn>
+    </div>
+
+    <div v-if="gameState === 'Betting' && player && !isCurrentUserTurn" class="waiting-message">
+      <div class="text-h6 text-center text-white q-pa-md">
+        {{ possessiveName }} turn to bet
+      </div>
     </div>
 
     <div v-if="gameState === 'Started' && player && isCurrentUserTurn" class="action-controls" >
@@ -31,42 +37,23 @@
         label="Stand"
         @click="emit('stand')"
         size="lg"
+        class="q-mr-sm"
+        unelevated
+      />
+      <q-btn
+        color="grey-8"
+        icon="exit_to_app"
+        label="Leave"
+        @click="emit('leave')"
+        size="lg"
         unelevated
       />
     </div>
 
     <div v-if="gameState === 'Started' && player && !isCurrentUserTurn" class="waiting-message">
       <div class="text-h6 text-center text-white q-pa-md">
-        {{ player.name }}'s turn
+        {{ possessiveName }} turn
       </div>
-    </div>
-
-    <div v-if="player" class="player-info q-mt-md">
-      <q-chip
-        icon="person"
-        color="primary"
-        text-color="white"
-        size="md"
-      >
-        {{ player.name }}
-      </q-chip>
-      <q-chip
-        color="green"
-        text-color="white"
-        size="md"
-      >
-        <img src="icons/util-icons/dollars.png" alt="Money" class="chip-icon" />
-        <span class="q-ml-xs">Balance: ${{ player.money }}</span>
-      </q-chip>
-      <q-chip
-        v-if="player.bet"
-        color="amber"
-        text-color="black"
-        size="md"
-      >
-        <img src="icons/util-icons/casino-chip.png" alt="Bet" class="chip-icon" />
-        <span class="q-ml-xs">Bet: ${{ player.bet }}</span>
-      </q-chip>
     </div>
   </div>
 </template>
@@ -89,11 +76,25 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['hit', 'stand', 'double-down', 'bet'])
+const emit = defineEmits(['hit', 'stand', 'double-down', 'bet', 'leave'])
 
 const isCurrentUserTurn = computed(() => {
   console.log(props.player?.name, props.currentUserName)
   return props.player?.name === props.currentUserName
+})
+
+const hasContent = computed(() => {
+  if (!props.player) return false
+  if (props.gameState === 'Betting') return true
+  if (props.gameState === 'Started') return true
+  return false
+})
+
+const possessiveName = computed(() => {
+  if (!props.player?.name) return ''
+  const name = props.player.name
+  // If name ends with 's', just add apostrophe, otherwise add 's
+  return name.endsWith('s') ? `${name}'` : `${name}'s`
 })
 
 </script>
@@ -108,10 +109,11 @@ const isCurrentUserTurn = computed(() => {
   border-radius: 16px;
   backdrop-filter: blur(10px);
   border: 2px solid rgba(255, 255, 255, 0.1);
-  width: 600px;
-  min-width: 600px;
+  width: clamp(300px, 80%, 600px);
+  min-width: 300px;
   max-width: 600px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  margin: 0 auto;
 }
 
 .betting-controls,
@@ -120,7 +122,21 @@ const isCurrentUserTurn = computed(() => {
   gap: 0.75rem;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   width: 100%;
+}
+
+.betting-controls :deep(.q-btn) {
+  flex: 1 1 auto;
+  min-width: 150px;
+  max-width: 100%;
+  width: 100%;
+}
+
+.action-controls :deep(.q-btn) {
+  flex: 1 1 auto;
+  min-width: 120px;
+  max-width: 200px;
 }
 
 .waiting-message {
@@ -129,9 +145,9 @@ const isCurrentUserTurn = computed(() => {
   align-items: center;
   width: 100%;
   padding: 1rem;
-  background: rgba(255, 193, 7, 0.2);
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
-  border: 2px solid rgba(255, 193, 7, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .waiting-message :deep(.text-h6) {
@@ -161,45 +177,52 @@ const isCurrentUserTurn = computed(() => {
   transform: translateY(0);
 }
 
-.player-info {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  justify-content: center;
-  width: 100%;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.player-info :deep(.q-chip) {
-  height: 36px;
-  font-size: 1.08rem;
-  font-weight: 500;
-  padding: 0 0.75rem;
-}
-
 .btn-icon {
   height: 24px;
   width: auto;
   vertical-align: middle;
 }
 
-.chip-icon {
-  height: 20px;
-  width: auto;
-  vertical-align: middle;
-}
-
-/* Mobile Responsive - Keep fixed size, scaling handled by parent */
+/* Mobile Responsive */
 @media (max-width: 600px) {
   .player-controls {
-    /* Fixed size maintained, parent will scale */
+    padding: 0.75rem;
+    width: clamp(250px, 90%, 100%);
+    min-width: 250px;
+    max-width: 100%;
+  }
+
+  .betting-controls {
+    gap: 0.5rem;
+  }
+
+  .betting-controls :deep(.q-btn) {
+    min-width: 100%;
+    width: 100%;
+    font-size: 0.9rem;
+    padding: 0.625rem 0.75rem;
+  }
+
+  .action-controls {
+    gap: 0.5rem;
+  }
+
+  .action-controls :deep(.q-btn) {
+    min-width: 100px;
+    flex: 1 1 calc(33.333% - 0.5rem);
+    font-size: 0.9rem;
+    padding: 0.625rem 0.75rem;
   }
 }
 
 /* Tablet adjustments */
 @media (min-width: 601px) and (max-width: 1024px) {
+  .player-controls {
+    width: clamp(350px, 75%, 550px);
+    min-width: 350px;
+    max-width: 550px;
+  }
+
   .betting-controls,
   .action-controls {
     gap: 0.625rem;

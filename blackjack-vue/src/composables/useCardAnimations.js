@@ -4,20 +4,20 @@
  */
 export function useCardAnimations() {
   /**
-   * Deal card animation - card appears from top with rotation
+   * Deal card animation - card appears from left to right
    */
   const dealCard = (element, delay = 0, callback = null) => {
     if (!element) return
 
-    // Set initial state
+    // Set initial state - card starts from left
     element.style.opacity = '0'
-    element.style.transform = 'translateY(-100px) rotate(-10deg) scale(0.5)'
+    element.style.transform = 'translateX(-150px) rotate(-10deg) scale(0.5)'
     element.style.transition = 'none'
 
     setTimeout(() => {
       element.style.transition = 'all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)'
       element.style.opacity = '1'
-      element.style.transform = 'translateY(0) rotate(0deg) scale(1)'
+      element.style.transform = 'translateX(0) rotate(0deg) scale(1)'
 
       if (callback) {
         setTimeout(callback, 800)
@@ -101,6 +101,7 @@ export function useCardAnimations() {
       green: '0 0 20px rgba(31, 163, 74, 0.8)',
       red: '0 0 20px rgba(220, 53, 69, 0.8)',
       blue: '0 0 20px rgba(13, 110, 253, 0.8)',
+      white: '0 0 20px rgba(255, 255, 255, 0.8)',
     }
 
     element.style.boxShadow = glowColors[color] || glowColors.gold

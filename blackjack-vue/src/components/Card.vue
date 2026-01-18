@@ -53,6 +53,7 @@ const props = defineProps({
 const emit = defineEmits(['animation-complete'])
 
 const cardElement = ref(null)
+const hasAnimated = ref(false)
 const { dealCard, flipCard } = useCardAnimations()
 
 // Check if card is blank
@@ -88,9 +89,10 @@ const cardImagePath = computed(() => {
 
 // Animate card when it appears
 onMounted(() => {
-  if (props.animateOnMount && cardElement.value) {
+  if (props.animateOnMount && cardElement.value && !hasAnimated.value) {
     dealCard(cardElement.value, props.animationDelay, () => {
       emit('animation-complete')
+      hasAnimated.value = true
     })
   }
 })

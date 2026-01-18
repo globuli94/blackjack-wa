@@ -24,7 +24,7 @@
         ref="handRef"
         :cards="player.hand?.cards || []"
         :show-value="hasCards"
-        :animate-cards="true"
+        :animate-cards="isCurrent"
       />
     </div>
 
@@ -93,7 +93,7 @@ watch(
   (newVal) => {
     if (newVal && playerCardElement.value) {
       nextTick(() => {
-        glow(playerCardElement.value, 'gold', 0) // Continuous glow
+        glow(playerCardElement.value, 'white', 0) // Continuous white glow
       })
     } else if (playerCardElement.value) {
       // Remove glow
@@ -191,6 +191,7 @@ const getStatusColor = (state) => {
   width: 280px;
   min-width: 280px;
   max-width: 280px;
+  flex: 0 0 280px;
   transition: all 0.3s ease;
   box-shadow: none;
 }
@@ -200,7 +201,8 @@ const getStatusColor = (state) => {
 }
 
 .current-player {
-  /* No special styling for current player */
+  border-radius: 16px;
+  overflow: hidden;
 }
 
 .current-player:hover {
@@ -303,10 +305,10 @@ const getStatusColor = (state) => {
   background-color: rgba(239, 68, 68, 0.2);
 }
 
-/* Mobile Responsive - Keep fixed size, scaling handled by parent */
+/* Mobile Responsive - Scaling handled by parent transform */
 @media (max-width: 600px) {
   .player-card {
-    /* Fixed size maintained, parent will scale */
+    /* Size maintained at 280px, scaling handled by parent transform */
   }
 }
 

@@ -1,10 +1,10 @@
 <template>
-  <div class="game-controls">
+  <div v-if="hasControls" class="game-controls">
     <q-btn
-      v-if="gameState === 'Initialized'"
+      v-if="gameState === 'Initialized' || gameState === 'Evaluated'"
       color="positive"
       icon="play_arrow"
-      label="Start Round"
+      :label="gameState === 'Evaluated' ? 'Continue' : 'Start Round'"
       @click="emit('start')"
       :disable="players.length === 0"
       size="md"
@@ -21,27 +21,6 @@
       size="md"
       unelevated
     />
-
-    <q-btn
-      v-if="gameState === 'Initialized' && hasJoined"
-      color="negative"
-      icon="exit_to_app"
-      label="Leave"
-      @click="emit('leave')"
-      size="md"
-      unelevated
-    />
-
-    <q-btn
-      color="negative"
-      icon="refresh"
-      label="Reset"
-      @click="emit('reset')"
-      size="md"
-      class="q-ml-sm"
-      unelevated
-    />
-
   </div>
 </template>
 
@@ -63,13 +42,18 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['initialize', 'start', 'add-player', 'reset', 'leave'])
+const emit = defineEmits(['initialize', 'start', 'add-player', 'reset'])
 
 const hasJoined = computed(() => {
   if (!props.currentUserName || !props.players || props.players.length === 0) {
     return false
   }
   return props.players.some(player => player.name === props.currentUserName)
+})
+
+const hasControls = computed(() => {
+  // Show controls when game is initialized or evaluated
+  return props.gameState === 'Initialized' || props.gameState === 'Evaluated'
 })
 
 </script>

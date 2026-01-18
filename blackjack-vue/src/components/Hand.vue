@@ -58,6 +58,7 @@ const cardsDisplay = ref(null)
 const cardRefs = ref([])
 const containerWidth = ref(240) // Default width
 const resizeObserver = ref(null)
+const previousCardCount = ref(0)
 const { celebrate, shake, glow, shuffleEffect } = useCardAnimations()
 
 // Add blank card when there's only one card (like the old Hand.js)
@@ -258,7 +259,10 @@ watch(
 // Watch for card count changes to trigger shuffle effect and update scale
 watch(
   () => props.cards.length,
-  () => {
+  (newLength) => {
+    // Update previous count for tracking
+    previousCardCount.value = newLength
+    
     // Always update when cards change, not just when increasing
     if (handContainer.value) {
       // New card added or removed - update container width and scale
@@ -272,7 +276,8 @@ watch(
         }, 300)
       })
     }
-  }
+  },
+  { immediate: true }
 )
 
 // Update container width when it becomes available or cards change
@@ -300,6 +305,9 @@ watch(
 
 // Also update on window resize and use ResizeObserver
 onMounted(() => {
+  // Initialize previous card count
+  previousCardCount.value = props.cards.length
+  
   if (typeof window !== 'undefined') {
     window.addEventListener('resize', updateContainerWidth)
     
