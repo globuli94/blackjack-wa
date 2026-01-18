@@ -13,6 +13,7 @@
     <!-- Navbar -->
     <Navbar 
       @page-change="handlePageChange"
+      @reset="initializeGame"
       :player-money="currentUserPlayer?.money || null"
     />
 
@@ -95,10 +96,10 @@
           <q-input
             v-model.number="betAmount"
             type="number"
-            label="Bet Amount"
             outlined
             autofocus
             min="1"
+            placeholder="Enter bet amount"
             @keyup.enter="placeBet"
             class="q-mb-sm bet-amount-input"
           />
@@ -146,8 +147,22 @@
         </q-card-section>
 
         <q-card-actions align="right" class="dialog-actions">
-          <q-btn flat label="Cancel" color="grey" v-close-popup />
-          <q-btn unelevated label="Place Bet" color="primary" @click="placeBet" />
+          <q-btn 
+            flat 
+            label="Cancel" 
+            color="grey-6" 
+            text-color="white"
+            v-close-popup 
+            class="dialog-btn"
+          />
+          <q-btn 
+            unelevated 
+            label="Place Bet" 
+            color="amber" 
+            text-color="black"
+            @click="placeBet" 
+            class="dialog-btn"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -227,18 +242,43 @@ const calculateMobileScale = () => {
   setTimeout(() => {
     if (!gameSectionRef.value) return
 
-    // Account for navbar and padding
-    const navbarHeight = 60
-    const padding = 20
-    const viewportWidth = window.innerWidth
-    const viewportHeight = window.innerHeight - navbarHeight - padding
+    // Check if we're on mobile
+    const isMobile = window.innerWidth <= 768
     
-    // Get actual content dimensions
-    const contentWidth = gameSectionRef.value.scrollWidth || gameSectionRef.value.offsetWidth
-    const contentHeight = gameSectionRef.value.scrollHeight || gameSectionRef.value.offsetHeight
+    // Account for navbar and padding
+    // On mobile, use actual navbar height (smaller)
+    const navbarHeight = isMobile ? 50 : 60
+    const padding = isMobile ? 5 : 20
+    
+    // Use visual viewport if available (better for mobile browsers with address bars)
+    const viewportWidth = window.visualViewport?.width || window.innerWidth
+    const viewportHeight = (window.visualViewport?.height || window.innerHeight) - navbarHeight - padding
+    
+    // Get actual content dimensions - measure all child elements to get accurate height
+    let contentWidth = gameSectionRef.value.scrollWidth || gameSectionRef.value.offsetWidth
+    let contentHeight = 0
+    
+    // Measure all visible child elements to get accurate total height
+    const children = gameSectionRef.value.children
+    if (children && children.length > 0) {
+      Array.from(children).forEach((child) => {
+        const childRect = child.getBoundingClientRect()
+        if (childRect.height > 0) {
+          contentHeight = Math.max(contentHeight, child.offsetTop + child.offsetHeight)
+        }
+      })
+    }
+    
+    // Fallback to scrollHeight if measurement failed
+    if (contentHeight === 0) {
+      contentHeight = gameSectionRef.value.scrollHeight || gameSectionRef.value.offsetHeight
+    }
+    
+    // Add some buffer for spacing
+    contentHeight += 20
 
     // If content dimensions are not available yet, use estimated values
-    if (contentWidth === 0 || contentHeight === 0) {
+    if (contentWidth === 0 || contentHeight === 0 || isNaN(contentWidth) || isNaN(contentHeight)) {
       // Estimate: controls (~100px), dealer (~200px), players (300px * rows), player controls (~150px)
       const playerRows = Math.ceil((players.value.length || 1) / Math.floor(viewportWidth / 300))
       const estimatedWidth = Math.max(600, 280 * Math.min(players.value.length || 1, Math.floor(viewportWidth / 300)))
@@ -246,9 +286,14 @@ const calculateMobileScale = () => {
       const scaleX = viewportWidth / estimatedWidth
       const scaleY = viewportHeight / estimatedHeight
       const scale = Math.min(scaleX, scaleY, 1)
-      // Use a higher minimum scale for mobile (at least 50% on very small screens, 60% on larger mobile)
-      const minScale = viewportWidth < 400 ? 0.5 : 0.6
-      mobileScale.value = Math.max(scale, minScale)
+      
+      // On mobile, allow scaling down more aggressively to fit everything
+      if (isMobile) {
+        mobileScale.value = Math.max(scale, 0.3) // Allow very small scale but with a reasonable minimum
+      } else {
+        const minScale = viewportWidth < 400 ? 0.5 : 0.6
+        mobileScale.value = Math.max(scale, minScale)
+      }
       return
     }
 
@@ -257,10 +302,16 @@ const calculateMobileScale = () => {
     const scaleY = viewportHeight / contentHeight
     const scale = Math.min(scaleX, scaleY, 1) // Don't scale up, only down
 
-    // Use a higher minimum scale for mobile (at least 50% on very small screens, 60% on larger mobile)
-    const minScale = viewportWidth < 400 ? 0.5 : 0.6
-    mobileScale.value = Math.max(scale, minScale)
-  }, 100)
+    // On mobile, allow scaling down as much as needed to fit everything on one screen
+    if (isMobile) {
+      // Use a very small minimum scale to ensure everything fits, but not too small to be unusable
+      mobileScale.value = Math.max(scale, 0.3)
+    } else {
+      // Desktop: use minimum scale to maintain readability
+      const minScale = viewportWidth < 400 ? 0.5 : 0.6
+      mobileScale.value = Math.max(scale, minScale)
+    }
+  }, 150) // Increased timeout to ensure all elements are rendered
 }
 
 const calculatePlayersScale = () => {
@@ -328,9 +379,17 @@ const updateGameState = (gameData) => {
   gameState.value = gameData.state
   // Recalculate scale when game state changes
   nextTick(() => {
-    calculateMobileScale()
-    calculatePlayersScale()
-    calculatePlayerControlsScale()
+    // Use multiple timeouts to ensure DOM is fully updated
+    setTimeout(() => {
+      calculateMobileScale()
+      calculatePlayersScale()
+      calculatePlayerControlsScale()
+    }, 100)
+    setTimeout(() => {
+      calculateMobileScale()
+      calculatePlayersScale()
+      calculatePlayerControlsScale()
+    }, 300)
   })
 }
 
@@ -575,11 +634,20 @@ onMounted(() => {
   calculateMobileScale()
   calculatePlayersScale()
   calculatePlayerControlsScale()
-  window.addEventListener('resize', () => {
+  
+  // Handle window resize
+  const handleResize = () => {
     calculateMobileScale()
     calculatePlayersScale()
     calculatePlayerControlsScale()
-  })
+  }
+  window.addEventListener('resize', handleResize)
+  
+  // Handle visual viewport changes (mobile browser address bar show/hide)
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', handleResize)
+    window.visualViewport.addEventListener('scroll', handleResize)
+  }
 
   // events fired by browser for connection changes
   window.addEventListener('online', () => {
@@ -608,7 +676,16 @@ onMounted(() => {
 
 onUnmounted(() => {
   wsManager?.disconnect();
-  window.removeEventListener('resize', calculateMobileScale)
+  const handleResize = () => {
+    calculateMobileScale()
+    calculatePlayersScale()
+    calculatePlayerControlsScale()
+  }
+  window.removeEventListener('resize', handleResize)
+  if (window.visualViewport) {
+    window.visualViewport.removeEventListener('resize', handleResize)
+    window.visualViewport.removeEventListener('scroll', handleResize)
+  }
 })
 </script>
 
@@ -711,6 +788,9 @@ onUnmounted(() => {
 .blackjack-app {
   overflow-x: hidden;
   overflow-y: hidden;
+  position: relative;
+  height: 100vh;
+  width: 100vw;
 }
 
 .blackjack-app.allow-scroll {
@@ -721,6 +801,11 @@ onUnmounted(() => {
 .game-section {
   transform-origin: top center;
   /* Scale will be calculated dynamically via JavaScript */
+  overflow: visible;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* Mobile Responsive Styles - Additional adjustments for small screens */
@@ -789,21 +874,41 @@ onUnmounted(() => {
 
 /* Dialog Styles */
 .dialog-card {
-  min-width: 90vw;
+  min-width: clamp(280px, 90vw, 500px);
   max-width: 500px;
   border-radius: 16px;
+  background: rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.dialog-card :deep(.q-card__section) {
+  color: white;
+}
+
+.dialog-card :deep(.q-card__section:first-child) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 1rem;
+}
+
+.dialog-card :deep(.text-h6) {
+  color: white;
+  font-weight: 600;
 }
 
 .dialog-actions {
   padding: 0.5rem 1rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .quick-amounts-wrapper {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
   margin-top: 1rem;
+  justify-content: center;
 }
 
 .quick-amounts-label {
@@ -811,27 +916,41 @@ onUnmounted(() => {
 }
 
 .quick-amount-btn {
-  padding: 0.75rem 1.25rem !important;
+  padding: 0.75rem 1rem !important;
   min-height: 48px !important;
-  border-radius: 8px !important;
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  transition: all 0.2s ease !important;
+}
+
+.quick-amount-btn:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(251, 191, 36, 0.5) !important;
+  transform: translateY(-2px) !important;
+}
+
+.quick-amount-btn:active {
+  transform: translateY(0) !important;
 }
 
 .quick-amount-btn :deep(.q-btn__content) {
   display: flex !important;
   align-items: center !important;
-  gap: 0.5rem !important;
+  gap: 0.4rem !important;
+  color: white !important;
 }
 
 .quick-amount-value {
-  font-size: 1.4rem !important;
+  font-size: 1.2rem !important;
   font-weight: 700 !important;
   line-height: 1 !important;
-  color: inherit !important;
+  color: white !important;
 }
 
 .coin-icon {
-  height: 24px !important;
-  width: 24px !important;
+  height: 20px !important;
+  width: 20px !important;
   object-fit: contain !important;
   flex-shrink: 0 !important;
 }
@@ -843,6 +962,8 @@ onUnmounted(() => {
 .bet-amount-input :deep(.q-field__control) {
   min-height: 48px !important;
   padding: 0 1rem !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
 }
 
 .bet-amount-input :deep(.q-field__native) {
@@ -851,20 +972,23 @@ onUnmounted(() => {
   padding: 0.5rem 0 !important;
   position: relative !important;
   z-index: 1 !important;
+  color: white !important;
 }
 
 .bet-amount-input :deep(.q-field__label) {
   font-size: 1.1rem !important;
   font-weight: 500 !important;
   z-index: 2 !important;
+  color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .bet-amount-input :deep(.q-field--float .q-field__label) {
   transform: translateY(-50%) scale(0.85) !important;
   top: 0 !important;
-  background: rgba(255, 255, 255, 0.95) !important;
+  background: rgba(0, 0, 0, 0.3) !important;
   padding: 0 0.5rem !important;
   z-index: 3 !important;
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 .bet-amount-input :deep(.q-field__inner) {
@@ -875,9 +999,132 @@ onUnmounted(() => {
   z-index: 2 !important;
 }
 
+.bet-amount-input :deep(.q-field__outlined) {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.bet-amount-input :deep(.q-field--focused .q-field__outlined) {
+  border-color: rgba(251, 191, 36, 0.8) !important;
+}
+
+.dialog-btn {
+  min-height: 44px !important;
+  padding: 0.625rem 1.25rem !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+}
+
+.dialog-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dialog-btn:active {
+  transform: translateY(0) !important;
+}
+
 @media (min-width: 600px) {
   .dialog-card {
-    min-width: 350px;
+    min-width: clamp(350px, 50vw, 500px);
+  }
+
+  .quick-amount-btn {
+    padding: 0.875rem 1.5rem !important;
+    min-height: 52px !important;
+  }
+
+  .quick-amount-value {
+    font-size: 1.4rem !important;
+  }
+
+  .coin-icon {
+    height: 24px !important;
+    width: 24px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .dialog-card {
+    min-width: calc(100vw - 0.75rem);
+    max-width: calc(100vw - 0.75rem);
+    margin: 0.375rem;
+    padding: 0.3rem !important;
+    max-height: calc(100vh - 1rem);
+    overflow-y: auto;
+  }
+
+  .dialog-card :deep(.q-card__section) {
+    padding: 0.3rem 0.25rem !important;
+  }
+
+  .dialog-card :deep(.q-card__section:first-child) {
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.3rem !important;
+  }
+
+  .dialog-card :deep(.q-card__section:nth-child(2)) {
+    padding-top: 0.3rem !important;
+    padding-bottom: 0.3rem !important;
+  }
+
+  .dialog-card :deep(.text-h6) {
+    font-size: 0.85rem !important;
+    margin-bottom: 0 !important;
+  }
+
+  .bet-amount-input {
+    font-size: 0.75rem !important;
+    margin-bottom: 0.3rem !important;
+  }
+
+  .bet-amount-input :deep(.q-field__control) {
+    min-height: 28px !important;
+    padding: 0 0.4rem !important;
+  }
+
+  .bet-amount-input :deep(.q-field__native) {
+    font-size: 0.75rem !important;
+    padding: 0.25rem 0 !important;
+  }
+
+  .bet-amount-input :deep(.q-field__label) {
+    font-size: 0.75rem !important;
+  }
+
+  .quick-amounts-wrapper {
+    gap: 0.2rem;
+    margin-top: 0.3rem;
+  }
+
+  .quick-amount-btn {
+    flex: 1 1 calc(33.333% - 0.2rem);
+    min-width: 0;
+    padding: 0.25rem 0.25rem !important;
+    min-height: 28px !important;
+  }
+
+  .quick-amount-value {
+    font-size: 0.65rem !important;
+  }
+
+  .coin-icon {
+    height: 10px !important;
+    width: 10px !important;
+  }
+
+  .dialog-actions {
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.25rem 0.25rem 0.3rem !important;
+    margin-top: 0 !important;
+  }
+
+  .dialog-btn {
+    width: 100%;
+    min-height: 28px !important;
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.75rem !important;
   }
 }
 </style>

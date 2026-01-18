@@ -17,7 +17,7 @@
 
     <div v-if="gameState === 'Betting' && player && !isCurrentUserTurn" class="waiting-message">
       <div class="text-h6 text-center text-white q-pa-md">
-        {{ player.name }}'s turn to bet
+        {{ possessiveName }} turn to bet
       </div>
     </div>
 
@@ -52,7 +52,7 @@
 
     <div v-if="gameState === 'Started' && player && !isCurrentUserTurn" class="waiting-message">
       <div class="text-h6 text-center text-white q-pa-md">
-        {{ player.name }}'s turn
+        {{ possessiveName }} turn
       </div>
     </div>
   </div>
@@ -88,6 +88,13 @@ const hasContent = computed(() => {
   if (props.gameState === 'Betting') return true
   if (props.gameState === 'Started') return true
   return false
+})
+
+const possessiveName = computed(() => {
+  if (!props.player?.name) return ''
+  const name = props.player.name
+  // If name ends with 's', just add apostrophe, otherwise add 's
+  return name.endsWith('s') ? `${name}'` : `${name}'s`
 })
 
 </script>
@@ -138,9 +145,9 @@ const hasContent = computed(() => {
   align-items: center;
   width: 100%;
   padding: 1rem;
-  background: rgba(255, 193, 7, 0.2);
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
-  border: 2px solid rgba(255, 193, 7, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .waiting-message :deep(.text-h6) {
