@@ -24,7 +24,7 @@
         ref="handRef"
         :cards="player.hand?.cards || []"
         :show-value="hasCards"
-        :animate-cards="true"
+        :animate-cards="isCurrent"
       />
     </div>
 

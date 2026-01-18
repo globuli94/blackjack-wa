@@ -4,20 +4,20 @@
  */
 export function useCardAnimations() {
   /**
-   * Deal card animation - card appears from top with rotation
+   * Deal card animation - card appears from left to right
    */
   const dealCard = (element, delay = 0, callback = null) => {
     if (!element) return
 
-    // Set initial state
+    // Set initial state - card starts from left
     element.style.opacity = '0'
-    element.style.transform = 'translateY(-100px) rotate(-10deg) scale(0.5)'
+    element.style.transform = 'translateX(-150px) rotate(-10deg) scale(0.5)'
     element.style.transition = 'none'
 
     setTimeout(() => {
       element.style.transition = 'all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)'
       element.style.opacity = '1'
-      element.style.transform = 'translateY(0) rotate(0deg) scale(1)'
+      element.style.transform = 'translateX(0) rotate(0deg) scale(1)'
 
       if (callback) {
         setTimeout(callback, 800)
