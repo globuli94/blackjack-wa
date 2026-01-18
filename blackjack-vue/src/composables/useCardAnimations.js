@@ -101,6 +101,7 @@ export function useCardAnimations() {
       green: '0 0 20px rgba(31, 163, 74, 0.8)',
       red: '0 0 20px rgba(220, 53, 69, 0.8)',
       blue: '0 0 20px rgba(13, 110, 253, 0.8)',
+      white: '0 0 20px rgba(255, 255, 255, 0.8)',
     }
 
     element.style.boxShadow = glowColors[color] || glowColors.gold

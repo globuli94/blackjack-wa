@@ -11,7 +11,10 @@
     </div>
 
     <!-- Navbar -->
-    <Navbar @page-change="handlePageChange" />
+    <Navbar 
+      @page-change="handlePageChange"
+      :player-money="currentUserPlayer?.money || null"
+    />
 
     <!-- HOME (Game) Section -->
     <div v-if="currentPage === 'home'" ref="gameSectionRef" class="game-section" :style="mobileScaleStyle">
@@ -27,7 +30,6 @@
             @start="startGame"
             @add-player="addPlayer"
             @reset="initializeGame"
-            @leave="leavePlayer"
           />
         </div>
 
@@ -37,7 +39,12 @@
         </div>
 
         <!-- Players -->
-        <div v-if="players.length > 0" class="players-wrapper">
+        <div 
+          v-if="players.length > 0" 
+          ref="playersWrapperRef"
+          class="players-wrapper"
+          :style="playersScaleStyle"
+        >
           <Player
             v-for="player in players"
             :key="player.name"
@@ -47,9 +54,13 @@
         </div>
 
         <!-- Player Controls -->
-        <div class="player-controls-wrapper">
+        <div 
+          v-if="currentPlayer && (gameState === 'Betting' || gameState === 'Started')"
+          ref="playerControlsWrapperRef"
+          class="player-controls-wrapper"
+          :style="playerControlsScaleStyle"
+        >
           <PlayerControls
-            v-if="currentPlayer"
             :current-user-name="authStore.userName"
             :player="currentPlayer"
             :game-state="gameState"
@@ -57,6 +68,7 @@
             @stand="stand"
             @double-down="doubleDown"
             @bet="showBetDialog = true"
+            @leave="leavePlayer"
           />
         </div>
       </div>
@@ -179,11 +191,29 @@ let wsManager = null
 // Mobile scaling
 const gameSectionRef = ref(null)
 const mobileScale = ref(1)
+const playersWrapperRef = ref(null)
+const playersScale = ref(1)
+const playerControlsWrapperRef = ref(null)
+const playerControlsScale = ref(0.9)
 
 const mobileScaleStyle = computed(() => {
   return {
     transform: `scale(${mobileScale.value})`,
     transformOrigin: 'top center'
+  }
+})
+
+const playersScaleStyle = computed(() => {
+  return {
+    transform: `scale(${playersScale.value})`,
+    transformOrigin: 'center'
+  }
+})
+
+const playerControlsScaleStyle = computed(() => {
+  return {
+    transform: `scale(${playerControlsScale.value})`,
+    transformOrigin: 'center'
   }
 })
 
@@ -233,12 +263,56 @@ const calculateMobileScale = () => {
   }, 100)
 }
 
+const calculatePlayersScale = () => {
+  if (typeof window === 'undefined' || !playersWrapperRef.value || players.value.length === 0) {
+    playersScale.value = 1
+    return
+  }
+
+  // Use setTimeout to ensure DOM is fully rendered
+  setTimeout(() => {
+    if (!playersWrapperRef.value) return
+
+    const playerCardWidth = 280 // Fixed width per player
+    const gap = 16 // 1rem gap between players
+    const padding = 16 // 0.5rem padding on each side (0.5rem * 2 = 1rem = 16px)
+    
+    // Calculate needed width: (number of players * card width) + (gaps between players) + (padding)
+    const neededWidth = (players.value.length * playerCardWidth) + ((players.value.length - 1) * gap) + (padding * 2)
+    
+    // Get available width (parent container width)
+    const availableWidth = playersWrapperRef.value.parentElement?.offsetWidth || window.innerWidth
+    
+    // Calculate scale to fit available width
+    let scale = availableWidth / neededWidth
+    
+    // Don't scale up beyond 1, and set a minimum scale
+    scale = Math.min(scale, 1)
+    const minScale = 0.5 // Minimum 50% scale
+    scale = Math.max(scale, minScale)
+    
+    playersScale.value = scale
+  }, 100)
+}
+
+const calculatePlayerControlsScale = () => {
+  // Set player controls scale to 0.9 (fixed scale)
+  playerControlsScale.value = 0.9
+}
+
 // Computed
 const currentPlayer = computed(() => {
   if (current_idx.value !== null && players.value.length > 0) {
     return players.value[current_idx.value]
   }
   return null
+})
+
+const currentUserPlayer = computed(() => {
+  if (!authStore.userName || !players.value.length) {
+    return null
+  }
+  return players.value.find(player => player.name === authStore.userName) || null
 })
 
 const isCurrentUserTurn = computed(() => {
@@ -255,6 +329,8 @@ const updateGameState = (gameData) => {
   // Recalculate scale when game state changes
   nextTick(() => {
     calculateMobileScale()
+    calculatePlayersScale()
+    calculatePlayerControlsScale()
   })
 }
 
@@ -426,6 +502,49 @@ const leavePlayer = async () => {
   }
 }
 
+// Track if we've already triggered auto-leave to prevent multiple calls
+const hasAutoLeft = ref(false)
+
+// Watch for player money reaching 0 and automatically leave
+watch(
+  () => currentUserPlayer.value?.money,
+  (newMoney, oldMoney) => {
+    // Only check if we're authenticated, have a player, and haven't already auto-left
+    if (
+      authStore.isAuthenticated &&
+      currentUserPlayer.value &&
+      newMoney !== undefined &&
+      newMoney <= 0 &&
+      oldMoney !== undefined &&
+      oldMoney > 0 &&
+      !hasAutoLeft.value
+    ) {
+      hasAutoLeft.value = true
+      Notify.create({
+        type: 'warning',
+        message: 'You have no money left. Leaving the game...',
+        position: 'top',
+        timeout: 2000,
+      })
+      // Small delay before leaving to show the message
+      setTimeout(() => {
+        leavePlayer()
+      }, 500)
+    }
+  },
+  { immediate: false }
+)
+
+// Reset auto-left flag when player rejoins or game resets
+watch(
+  () => [currentUserPlayer.value, gameState.value],
+  () => {
+    if (currentUserPlayer.value && currentUserPlayer.value.money > 0) {
+      hasAutoLeft.value = false
+    }
+  }
+)
+
 // Watch for changes that affect layout (but debounce to prevent rapid recalculations)
 let scaleTimeout = null
 watch([players, dealer, currentPage], () => {
@@ -436,9 +555,13 @@ watch([players, dealer, currentPage], () => {
     }
     scaleTimeout = setTimeout(() => {
       calculateMobileScale()
+      calculatePlayersScale()
+      calculatePlayerControlsScale()
     }, 100)
   }
 }, { deep: true })
+
+// Player controls scale is fixed at 1.2, no need to sync with players scale
 
 // Lifecycle
 onMounted(() => {
@@ -450,7 +573,13 @@ onMounted(() => {
 
   // Calculate initial mobile scale
   calculateMobileScale()
-  window.addEventListener('resize', calculateMobileScale)
+  calculatePlayersScale()
+  calculatePlayerControlsScale()
+  window.addEventListener('resize', () => {
+    calculateMobileScale()
+    calculatePlayersScale()
+    calculatePlayerControlsScale()
+  })
 
   // events fired by browser for connection changes
   window.addEventListener('online', () => {
@@ -523,14 +652,16 @@ onUnmounted(() => {
 
 .players-wrapper {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 1rem;
   width: 100%;
-  max-width: 1400px;
+  max-width: 100%;
   padding: 0.5rem;
   justify-content: center;
   align-items: center;
   margin: 0 auto;
+  overflow: hidden;
+  transform-origin: center;
 }
 
 .player-controls-wrapper {
@@ -538,12 +669,19 @@ onUnmounted(() => {
   display: flex;
   justify-content: center;
   margin-top: 0.5rem;
-  padding: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 1rem;
   position: relative;
   z-index: 1;
   background: transparent;
   padding-top: 1rem;
   padding-bottom: 1rem;
+  transform-origin: center;
+  /* Ensure margins are maintained when scaling - left, right, and bottom */
+  margin-left: auto;
+  margin-right: auto;
+  max-width: calc(100% - 2rem);
+  box-sizing: border-box;
 }
 
 .content-section {
@@ -597,16 +735,19 @@ onUnmounted(() => {
   }
 
   .players-wrapper {
-    gap: 0.75rem;
+    gap: 0.5rem;
     padding: 0.25rem;
     justify-content: center;
-    width: auto;
-    max-width: none;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    box-sizing: border-box;
   }
 
   .controls-wrapper,
-  .dealer-wrapper,
-  .player-controls-wrapper {
+  .dealer-wrapper {
     padding: 0.25rem;
     width: auto;
     max-width: none;
@@ -616,6 +757,10 @@ onUnmounted(() => {
     position: relative;
     background: transparent;
     z-index: 1;
+    max-width: calc(100% - 1rem);
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 0.5rem;
+    box-sizing: border-box;
   }
 
   .content-section {
