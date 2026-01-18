@@ -23,16 +23,6 @@
     />
 
     <q-btn
-      v-if="gameState === 'Initialized' && hasJoined"
-      color="negative"
-      icon="exit_to_app"
-      label="Leave"
-      @click="emit('leave')"
-      size="md"
-      unelevated
-    />
-
-    <q-btn
       color="negative"
       icon="refresh"
       label="Reset"
@@ -63,7 +53,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['initialize', 'start', 'add-player', 'reset', 'leave'])
+const emit = defineEmits(['initialize', 'start', 'add-player', 'reset'])
 
 const hasJoined = computed(() => {
   if (!props.currentUserName || !props.players || props.players.length === 0) {
