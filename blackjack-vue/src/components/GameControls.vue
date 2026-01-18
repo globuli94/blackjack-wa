@@ -1,10 +1,10 @@
 <template>
-  <div class="game-controls">
+  <div v-if="hasControls" class="game-controls">
     <q-btn
-      v-if="gameState === 'Initialized'"
+      v-if="gameState === 'Initialized' || gameState === 'Evaluated'"
       color="positive"
       icon="play_arrow"
-      label="Start Round"
+      :label="gameState === 'Evaluated' ? 'Continue' : 'Start Round'"
       @click="emit('start')"
       :disable="players.length === 0"
       size="md"
@@ -21,17 +21,6 @@
       size="md"
       unelevated
     />
-
-    <q-btn
-      color="negative"
-      icon="refresh"
-      label="Reset"
-      @click="emit('reset')"
-      size="md"
-      class="q-ml-sm"
-      unelevated
-    />
-
   </div>
 </template>
 
@@ -60,6 +49,11 @@ const hasJoined = computed(() => {
     return false
   }
   return props.players.some(player => player.name === props.currentUserName)
+})
+
+const hasControls = computed(() => {
+  // Show controls when game is initialized or evaluated
+  return props.gameState === 'Initialized' || props.gameState === 'Evaluated'
 })
 
 </script>

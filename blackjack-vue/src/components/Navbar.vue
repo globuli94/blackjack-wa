@@ -37,6 +37,19 @@
       <!-- User Info -->
       <q-separator vertical class="q-mx-md separator" />
 
+      <q-btn
+        v-if="authStore.isAuthenticated"
+        flat
+        icon="refresh"
+        label="Reset"
+        color="grey-6"
+        text-color="white"
+        @click="emit('reset')"
+        class="reset-btn"
+      />
+
+      <q-separator v-if="authStore.isAuthenticated" vertical class="q-mx-md separator" />
+
       <q-btn-dropdown
         v-if="authStore.isAuthenticated"
         flat
@@ -178,6 +191,21 @@
         v-if="authStore.isAuthenticated"
         clickable
         v-close-popup
+        @click="emit('reset')"
+        class="mobile-menu-item"
+      >
+        <q-item-section avatar>
+          <q-icon name="refresh" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>Reset</q-item-label>
+        </q-item-section>
+      </q-item>
+
+      <q-item
+        v-if="authStore.isAuthenticated"
+        clickable
+        v-close-popup
         @click="handleLogout"
         class="mobile-menu-item text-negative"
       >
@@ -220,7 +248,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['page-change'])
+const emit = defineEmits(['page-change', 'reset'])
 const router = useRouter()
 const authStore = useAuthStore()
 
@@ -299,6 +327,16 @@ const handleLogout = async () => {
 
 .separator {
   height: 30px;
+}
+
+.reset-btn {
+  min-width: auto;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.reset-btn :deep(.q-btn__content) {
+  font-size: 0.95rem;
 }
 
 .user-dropdown,
