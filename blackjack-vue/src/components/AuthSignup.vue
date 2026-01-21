@@ -123,12 +123,23 @@ const handleSignUp = async () => {
 
   const result = await authStore.signUp(email.value, password.value, displayName.value || null)
   if (result.success) {
-    Notify.create({
-      type: 'positive',
-      message: 'Account created successfully!',
-      position: 'top',
-    })
-    emit('authenticated')
+    // Automatically log in the user after signup
+    const loginResult = await authStore.signIn(email.value, password.value)
+    if (loginResult.success) {
+      Notify.create({
+        type: 'positive',
+        message: 'Account created and signed in successfully!',
+        position: 'top',
+      })
+      emit('authenticated')
+    } else {
+      Notify.create({
+        type: 'positive',
+        message: 'Account created successfully!',
+        position: 'top',
+      })
+      emit('authenticated')
+    }
   }
 }
 
@@ -146,7 +157,19 @@ const handleGoogleSignIn = async () => {
 </script>
 
 <style scoped>
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .auth-card {
+  animation: fadeIn 0.4s ease-out;
   min-width: 400px;
   max-width: 500px;
   margin: 0 auto;

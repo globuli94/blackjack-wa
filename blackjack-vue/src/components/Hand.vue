@@ -367,6 +367,20 @@ defineExpose({
 </script>
 
 <style scoped>
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hand-container {
+  animation: fadeIn 0.4s ease-out;
+}
 .hand-container {
   display: flex;
   flex-direction: column;
@@ -400,8 +414,22 @@ defineExpose({
 }
 
 .hand-value :deep(.q-chip) {
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: 1rem; /* Standard readable size */
+  font-weight: 600;
   padding: 6px 14px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+  .hand-value :deep(.q-chip) {
+    font-size: 1.3rem !important; /* Slightly larger on mobile */
+    font-weight: 600 !important;
+    padding: 8px 18px !important;
+    min-height: 44px !important;
+  }
+
+  .hand-value :deep(.q-chip__content) {
+    font-size: 1.3rem !important;
+  }
 }
 </style>

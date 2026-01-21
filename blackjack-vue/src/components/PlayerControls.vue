@@ -1,9 +1,8 @@
 <template>
-  <div v-if="hasContent" class="player-controls">
+  <div class="player-controls" :class="{ 'hidden': !hasContent }">
     <div v-if="gameState === 'Betting' && player && isCurrentUserTurn" class="betting-controls">
       <q-btn
         color="amber"
-        label="Place Bet"
         @click="emit('bet')"
         size="lg"
         unelevated
@@ -100,6 +99,17 @@ const possessiveName = computed(() => {
 </script>
 
 <style scoped>
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .player-controls {
   display: flex;
   flex-direction: column;
@@ -114,6 +124,16 @@ const possessiveName = computed(() => {
   max-width: 600px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   margin: 0 auto;
+  min-height: 80px;
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.player-controls.hidden {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .betting-controls,
@@ -186,32 +206,40 @@ const possessiveName = computed(() => {
 /* Mobile Responsive */
 @media (max-width: 600px) {
   .player-controls {
-    padding: 0.75rem;
+    padding: 1rem; /* Increased from 0.75rem */
     width: clamp(250px, 90%, 100%);
     min-width: 250px;
     max-width: 100%;
   }
 
   .betting-controls {
-    gap: 0.5rem;
+    gap: 0.75rem; /* Increased from 0.5rem */
   }
 
   .betting-controls :deep(.q-btn) {
     min-width: 100%;
     width: 100%;
-    font-size: 0.9rem;
-    padding: 0.625rem 0.75rem;
+    font-size: 1.3rem; /* Increased from 1.1rem */
+    padding: 1rem 1.25rem; /* Increased padding */
   }
 
   .action-controls {
-    gap: 0.5rem;
+    gap: 0.75rem; /* Increased from 0.5rem */
   }
 
   .action-controls :deep(.q-btn) {
     min-width: 100px;
     flex: 1 1 calc(33.333% - 0.5rem);
-    font-size: 0.9rem;
-    padding: 0.625rem 0.75rem;
+    font-size: 1.3rem; /* Increased from 1.1rem */
+    padding: 1rem 1.25rem; /* Increased padding */
+  }
+
+  .waiting-message :deep(.text-h6) {
+    font-size: 1.75rem !important; /* Increased from 1.5rem */
+  }
+
+  .player-controls :deep(.q-btn) {
+    font-size: 1.3rem !important; /* Increased from 1.1rem */
   }
 }
 

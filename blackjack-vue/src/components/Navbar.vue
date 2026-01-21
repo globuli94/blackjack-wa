@@ -283,7 +283,19 @@ const handleLogout = async () => {
 </script>
 
 <style scoped>
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .navbar-toolbar {
+  animation: fadeIn 0.4s ease-out;
   background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(10px);
   border-radius: 0;
@@ -442,21 +454,21 @@ const handleLogout = async () => {
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .navbar-toolbar {
-    padding: 0.15rem 0.5rem;
+    padding: 0.5rem 0.75rem; /* Increased padding */
     border-radius: 0;
-    min-height: 40px !important;
+    min-height: 56px !important; /* Increased from 40px */
   }
 
   .navbar-toolbar :deep(.q-toolbar__content) {
-    min-height: 40px;
+    min-height: 56px; /* Increased from 40px */
   }
 
   .navbar-title {
-    font-size: 1rem;
+    font-size: 1.5rem; /* Increased from 1.25rem */
   }
 
   .logo-img {
-    height: 32px;
+    height: 56px; /* Increased from 48px */
   }
 
   .title-text {
@@ -473,11 +485,23 @@ const handleLogout = async () => {
 
   .mobile-menu-btn {
     display: block;
-    padding: 0.25rem;
+    padding: 0.75rem; /* Increased from 0.5rem */
   }
 
   .mobile-menu-btn :deep(.q-icon) {
-    font-size: 1.5rem;
+    font-size: 2rem; /* Increased from 1.75rem */
+  }
+
+  .mobile-menu-item :deep(.q-item__label) {
+    font-size: 1.3rem !important; /* Increased from 1.1rem */
+  }
+
+  .mobile-menu-list :deep(.q-item-label--header) {
+    font-size: 1.75rem !important; /* Increased from 1.5rem */
+  }
+
+  .money-amount {
+    font-size: 1.1rem !important; /* Increased from 0.9rem */
   }
 }
 

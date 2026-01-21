@@ -1,5 +1,5 @@
 <template>
-  <div v-if="hasControls" class="game-controls">
+  <div class="game-controls" :class="{ 'hidden': !hasControls }">
     <q-btn
       v-if="gameState === 'Initialized' || gameState === 'Evaluated'"
       color="positive"
@@ -59,6 +59,17 @@ const hasControls = computed(() => {
 </script>
 
 <style scoped>
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .game-controls {
   display: flex;
   align-items: center;
@@ -72,6 +83,16 @@ const hasControls = computed(() => {
   width: auto;
   flex-wrap: wrap;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  min-height: 64px;
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.game-controls.hidden {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .game-controls :deep(.q-btn) {
@@ -96,15 +117,15 @@ const hasControls = computed(() => {
 /* Mobile Responsive */
 @media (max-width: 600px) {
   .game-controls {
-    padding: 0.75rem;
-    gap: 0.5rem;
+    padding: 1rem; /* Increased from 0.75rem */
+    gap: 0.75rem; /* Increased from 0.5rem */
     border-radius: 12px;
   }
 
   .game-controls :deep(.q-btn) {
-    min-height: 48px;
-    padding: 0.75rem 1rem;
-    font-size: 0.9rem;
+    min-height: 64px; /* Increased from 56px */
+    padding: 1rem 1.5rem; /* Increased padding */
+    font-size: 1.3rem; /* Increased from 1.1rem */
     flex: 1 1 auto;
     min-width: calc(50% - 0.25rem);
   }
