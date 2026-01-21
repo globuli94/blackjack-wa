@@ -3,7 +3,6 @@
     <div v-if="gameState === 'Betting' && player && isCurrentUserTurn" class="betting-controls">
       <q-btn
         color="amber"
-        label="Place Bet"
         @click="emit('bet')"
         size="lg"
         unelevated

@@ -564,18 +564,15 @@ const leavePlayer = async () => {
 // Track if we've already triggered auto-leave to prevent multiple calls
 const hasAutoLeft = ref(false)
 
-// Watch for player money reaching 0 and automatically leave
+// Watch for player money and bet reaching 0 and automatically leave
 watch(
-  () => currentUserPlayer.value?.money,
-  (newMoney, oldMoney) => {
-    // Only check if we're authenticated, have a player, and haven't already auto-left
+  () => [currentUserPlayer.value?.money, currentUserPlayer.value?.bet],
+  ([money, bet]) => {
     if (
       authStore.isAuthenticated &&
       currentUserPlayer.value &&
-      newMoney !== undefined &&
-      newMoney <= 0 &&
-      oldMoney !== undefined &&
-      oldMoney > 0 &&
+      money === 0 &&
+      (bet === 0 || bet === undefined || bet === null) &&
       !hasAutoLeft.value
     ) {
       hasAutoLeft.value = true
