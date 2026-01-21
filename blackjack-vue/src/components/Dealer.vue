@@ -50,6 +50,20 @@ const getStatusColor = (state) => {
 </script>
 
 <style scoped>
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dealer-card {
+  animation: fadeIn 0.4s ease-out;
+}
 .dealer-card {
   display: flex;
   flex-direction: column;
@@ -109,6 +123,15 @@ const getStatusColor = (state) => {
 @media (max-width: 600px) {
   .dealer-card {
     /* Fixed size maintained, parent will scale */
+  }
+
+  .dealer-header {
+    font-size: 1.3rem !important; /* Increased from 1rem */
+  }
+
+  .status-badge {
+    font-size: 1.1rem !important; /* Increased from 0.9rem */
+    padding: 8px 16px !important; /* Increased padding */
   }
 }
 

@@ -14,6 +14,15 @@ body {
 
 /* Better touch targets for mobile */
 @media (max-width: 600px) {
+  /* Global base font size for mobile */
+  html {
+    font-size: 16px !important; /* Back to default */
+  }
+
+  body {
+    font-size: 1rem !important; /* Standard size */
+  }
+
   .q-btn {
     min-height: 48px !important;
     min-width: 48px !important;
@@ -24,12 +33,24 @@ body {
   }
 
   /* Improve text readability on mobile */
-  .text-h1 { font-size: 2rem !important; }
-  .text-h2 { font-size: 1.75rem !important; }
-  .text-h3 { font-size: 1.5rem !important; }
-  .text-h4 { font-size: 1.25rem !important; }
-  .text-h5 { font-size: 1.125rem !important; }
-  .text-h6 { font-size: 1rem !important; }
+  .text-h1 { font-size: 1.75rem !important; }
+  .text-h2 { font-size: 1.5rem !important; }
+  .text-h3 { font-size: 1.25rem !important; }
+  .text-h4 { font-size: 1.125rem !important; }
+  .text-h5 { font-size: 1rem !important; }
+  .text-h6 { font-size: 0.95rem !important; }
+
+  /* Make chips (like hand values) readable but not too big */
+  .q-chip {
+    font-size: 1.2rem !important;
+    font-weight: 600 !important;
+    padding: 8px 16px !important;
+    min-height: 44px !important;
+  }
+
+  .q-chip .q-chip__content {
+    font-size: 1.2rem !important;
+  }
 }
 
 /* Smooth scrolling */

@@ -179,6 +179,20 @@ const getStatusColor = (state) => {
 </script>
 
 <style scoped>
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.player-card {
+  animation: fadeIn 0.4s ease-out;
+}
 .player-card {
   display: flex;
   flex-direction: column;
@@ -309,6 +323,26 @@ const getStatusColor = (state) => {
 @media (max-width: 600px) {
   .player-card {
     /* Size maintained at 280px, scaling handled by parent transform */
+  }
+
+  .player-header {
+    font-size: 1.4rem !important; /* Increased from 1.25rem */
+  }
+
+  .status-badge {
+    font-size: 1.1rem !important; /* Increased from 0.95rem */
+    padding: 8px 16px !important; /* Increased padding */
+  }
+
+  .info-item {
+    font-size: 1.6rem !important; /* Increased from 1.4rem */
+    font-weight: 700 !important; /* Bolder */
+  }
+
+  .bet-indicator {
+    font-size: 1.4rem !important; /* Increased from 1.2rem */
+    font-weight: 700 !important; /* Bolder */
+    padding: 6px 12px !important; /* More padding */
   }
 }
 

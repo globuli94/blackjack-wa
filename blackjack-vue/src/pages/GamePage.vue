@@ -20,7 +20,15 @@
     <!-- HOME (Game) Section -->
     <div v-if="currentPage === 'home'" ref="gameSectionRef" class="game-section" :style="mobileScaleStyle">
       <!-- Show game only if authenticated -->
-      <div v-if="authStore.isAuthenticated">
+      <div v-if="authStore.isAuthenticated" style="position: relative;">
+        <!-- Lottie Animation - appears over the game board -->
+        <LottieAnimation
+          :show="showLottieAnimation"
+          url="https://lottie.host/3d1ef821-43c0-4471-b55a-4f1269a9ee5e/RSE3t0WkBG.lottie"
+          :loop="false"
+          @complete="onLottieComplete"
+        />
+
         <!-- Game Controls -->
         <div class="controls-wrapper">
           <GameControls
@@ -35,13 +43,12 @@
         </div>
 
         <!-- Dealer -->
-        <div v-if="dealer" class="dealer-wrapper">
-          <Dealer :dealer="dealer" />
+        <div class="dealer-wrapper">
+          <Dealer v-if="dealer" :dealer="dealer" />
         </div>
 
         <!-- Players -->
         <div 
-          v-if="players.length > 0" 
           ref="playersWrapperRef"
           class="players-wrapper"
           :style="playersScaleStyle"
@@ -56,14 +63,13 @@
 
         <!-- Player Controls -->
         <div 
-          v-if="currentPlayer && (gameState === 'Betting' || gameState === 'Started')"
           ref="playerControlsWrapperRef"
           class="player-controls-wrapper"
           :style="playerControlsScaleStyle"
         >
           <PlayerControls
             :current-user-name="authStore.userName"
-            :player="currentPlayer"
+            :player="(currentPlayer && (gameState === 'Betting' || gameState === 'Started')) ? currentPlayer : null"
             :game-state="gameState"
             @hit="hit"
             @stand="stand"
@@ -184,6 +190,7 @@ import Dealer from '../components/Dealer.vue'
 import Player from '../components/Player.vue'
 import History from '../components/History.vue'
 import Rules from '../components/Rules.vue'
+import LottieAnimation from '../components/LottieAnimation.vue'
 
 // Auth Store
 const authStore = useAuthStore()
@@ -197,6 +204,7 @@ const deck = ref(null)
 const gameState = ref(null)
 const betAmount = ref(100)
 const showBetDialog = ref(false)
+const showLottieAnimation = ref(false)
 
 // for offline management
 const online = ref(navigator.onLine)
@@ -289,7 +297,7 @@ const calculateMobileScale = () => {
       
       // On mobile, allow scaling down more aggressively to fit everything
       if (isMobile) {
-        mobileScale.value = Math.max(scale, 0.3) // Allow very small scale but with a reasonable minimum
+        mobileScale.value = Math.max(scale, 0.5) // Increased from 0.3 to 0.5 for larger mobile display
       } else {
         const minScale = viewportWidth < 400 ? 0.5 : 0.6
         mobileScale.value = Math.max(scale, minScale)
@@ -304,8 +312,8 @@ const calculateMobileScale = () => {
 
     // On mobile, allow scaling down as much as needed to fit everything on one screen
     if (isMobile) {
-      // Use a very small minimum scale to ensure everything fits, but not too small to be unusable
-      mobileScale.value = Math.max(scale, 0.3)
+      // Use a larger minimum scale to make everything bigger on mobile
+      mobileScale.value = Math.max(scale, 0.5) // Increased from 0.3 to 0.5
     } else {
       // Desktop: use minimum scale to maintain readability
       const minScale = viewportWidth < 400 ? 0.5 : 0.6
@@ -339,7 +347,8 @@ const calculatePlayersScale = () => {
     
     // Don't scale up beyond 1, and set a minimum scale
     scale = Math.min(scale, 1)
-    const minScale = 0.5 // Minimum 50% scale
+    const isMobile = window.innerWidth <= 768
+    const minScale = isMobile ? 0.7 : 0.5 // Larger minimum scale on mobile (70% vs 50%)
     scale = Math.max(scale, minScale)
     
     playersScale.value = scale
@@ -347,8 +356,9 @@ const calculatePlayersScale = () => {
 }
 
 const calculatePlayerControlsScale = () => {
-  // Set player controls scale to 0.9 (fixed scale)
-  playerControlsScale.value = 0.9
+  // Set player controls scale - larger on mobile
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768
+  playerControlsScale.value = isMobile ? 1.0 : 0.9 // Full scale on mobile, 0.9 on desktop
 }
 
 // Computed
@@ -416,21 +426,32 @@ const initializeGame = async () => {
 }
 
 const startGame = async () => {
-  try {
-    await gameApi.startGame()
-    Notify.create({
-      type: 'positive',
-      message: 'Round started',
-      position: 'top',
-    })
-  } catch (error) {
-    console.error('Error starting game:', error)
-    Notify.create({
-      type: 'negative',
-      message: 'Failed to start game',
-      position: 'top',
-    })
-  }
+  // Show Lottie animation first
+  showLottieAnimation.value = true
+}
+
+const onLottieComplete = async () => {
+  // Hide animation
+  showLottieAnimation.value = false
+  
+  // Small delay before starting the game
+  setTimeout(async () => {
+    try {
+      await gameApi.startGame()
+      Notify.create({
+        type: 'positive',
+        message: 'Round started',
+        position: 'top',
+      })
+    } catch (error) {
+      console.error('Error starting game:', error)
+      Notify.create({
+        type: 'negative',
+        message: 'Failed to start game',
+        position: 'top',
+      })
+    }
+  }, 300)
 }
 
 const addPlayer = async () => {
@@ -712,6 +733,7 @@ onUnmounted(() => {
   display: flex;
   justify-content: center;
   padding: 0.5rem;
+  min-height: 84px; /* Reserve space for controls (64px min-height + padding) */
 }
 
 .dealer-wrapper {
@@ -720,7 +742,7 @@ onUnmounted(() => {
   justify-content: center;
   margin-top: 0.5rem;
   padding: 0.5rem;
-  min-height: 0;
+  min-height: 200px; /* Reserve space for dealer (350px width, ~180px height with padding) */
   flex-shrink: 0;
 }
 
@@ -736,6 +758,7 @@ onUnmounted(() => {
   margin: 0 auto;
   overflow: hidden;
   transform-origin: center;
+  min-height: 200px; /* Reserve space for players (280px width per player, ~180px height with padding) */
 }
 
 .player-controls-wrapper {
@@ -745,12 +768,13 @@ onUnmounted(() => {
   margin-top: 0.5rem;
   margin-bottom: 1rem;
   padding: 0.5rem 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
   position: relative;
   z-index: 1;
   background: transparent;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
   transform-origin: center;
+  min-height: 100px; /* Reserve space for player controls (80px min-height + padding) */
   /* Ensure margins are maintained when scaling - left, right, and bottom */
   margin-left: auto;
   margin-right: auto;
@@ -809,6 +833,7 @@ onUnmounted(() => {
 @media (max-width: 600px) {
   .blackjack-app {
     padding: 0;
+    font-size: 1rem; /* Standard size */
   }
 
   .game-section {
@@ -826,13 +851,21 @@ onUnmounted(() => {
     margin-left: 1rem;
     margin-right: 1rem;
     box-sizing: border-box;
+    min-height: 200px; /* Reserve space for players on mobile */
   }
 
-  .controls-wrapper,
+  .controls-wrapper {
+    padding: 0.25rem;
+    width: auto;
+    max-width: none;
+    min-height: 84px; /* Reserve space for controls on mobile */
+  }
+
   .dealer-wrapper {
     padding: 0.25rem;
     width: auto;
     max-width: none;
+    min-height: 200px; /* Reserve space for dealer on mobile */
   }
 
   .player-controls-wrapper {
@@ -843,6 +876,7 @@ onUnmounted(() => {
     padding: 0.25rem 0.5rem;
     margin-bottom: 0.5rem;
     box-sizing: border-box;
+    min-height: 100px; /* Reserve space for player controls on mobile */
   }
 
   .content-section {
@@ -1043,16 +1077,16 @@ onUnmounted(() => {
 
 @media (max-width: 600px) {
   .dialog-card {
-    min-width: calc(100vw - 0.75rem);
-    max-width: calc(100vw - 0.75rem);
-    margin: 0.375rem;
-    padding: 0.3rem !important;
+    min-width: calc(100vw - 1rem); /* Increased margin */
+    max-width: calc(100vw - 1rem);
+    margin: 0.5rem; /* Increased from 0.375rem */
+    padding: 0.75rem !important; /* Increased from 0.3rem */
     max-height: calc(100vh - 1rem);
     overflow-y: auto;
   }
 
   .dialog-card :deep(.q-card__section) {
-    padding: 0.3rem 0.25rem !important;
+    padding: 0.75rem 0.5rem !important; /* Increased padding */
   }
 
   .dialog-card :deep(.q-card__section:first-child) {
@@ -1066,62 +1100,62 @@ onUnmounted(() => {
   }
 
   .dialog-card :deep(.text-h6) {
-    font-size: 0.85rem !important;
+    font-size: 1.4rem !important; /* Increased from 1.1rem */
     margin-bottom: 0 !important;
   }
 
   .bet-amount-input {
-    font-size: 0.75rem !important;
-    margin-bottom: 0.3rem !important;
+    font-size: 1.2rem !important; /* Increased from 1rem */
+    margin-bottom: 0.5rem !important;
   }
 
   .bet-amount-input :deep(.q-field__control) {
-    min-height: 28px !important;
-    padding: 0 0.4rem !important;
+    min-height: 56px !important; /* Increased from 48px */
+    padding: 0 1rem !important; /* Increased padding */
   }
 
   .bet-amount-input :deep(.q-field__native) {
-    font-size: 0.75rem !important;
-    padding: 0.25rem 0 !important;
+    font-size: 1.2rem !important; /* Increased from 1rem */
+    padding: 0.75rem 0 !important; /* Increased padding */
   }
 
   .bet-amount-input :deep(.q-field__label) {
-    font-size: 0.75rem !important;
+    font-size: 1.2rem !important; /* Increased from 1rem */
   }
 
   .quick-amounts-wrapper {
-    gap: 0.2rem;
-    margin-top: 0.3rem;
+    gap: 0.5rem; /* Increased from 0.2rem */
+    margin-top: 0.5rem; /* Increased from 0.3rem */
   }
 
   .quick-amount-btn {
     flex: 1 1 calc(33.333% - 0.2rem);
     min-width: 0;
-    padding: 0.25rem 0.25rem !important;
-    min-height: 28px !important;
+    padding: 0.75rem 0.75rem !important; /* Increased from 0.5rem */
+    min-height: 56px !important; /* Increased from 48px */
   }
 
   .quick-amount-value {
-    font-size: 0.65rem !important;
+    font-size: 1.2rem !important; /* Increased from 1rem */
   }
 
   .coin-icon {
-    height: 10px !important;
-    width: 10px !important;
+    height: 24px !important; /* Increased from 20px */
+    width: 24px !important; /* Increased from 20px */
   }
 
   .dialog-actions {
     flex-direction: column;
-    gap: 0.25rem;
-    padding: 0.25rem 0.25rem 0.3rem !important;
+    gap: 0.75rem; /* Increased from 0.5rem */
+    padding: 0.75rem 0.75rem 1rem !important; /* Increased padding */
     margin-top: 0 !important;
   }
 
   .dialog-btn {
     width: 100%;
-    min-height: 28px !important;
-    padding: 0.25rem 0.5rem !important;
-    font-size: 0.75rem !important;
+    min-height: 56px !important; /* Increased from 48px */
+    padding: 0.75rem 1.5rem !important; /* Increased padding */
+    font-size: 1.2rem !important; /* Increased from 1rem */
   }
 }
 </style>
